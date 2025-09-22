@@ -93,19 +93,7 @@ export async function POST(req: NextRequest) {
       message_length: message.length
     });
 
-    // 11. Prepare response data
-    const responseData = {
-      response: botResponse,
-      suggestions,
-      intent: intent.intent,
-      escalation: escalation ? {
-        triggered: true,
-        reason: escalation.reason,
-        priority: escalation.priority
-      } : null
-    };
-
-    // 12. Stream the response back
+    // 11. Stream the response back
     const stream = new ReadableStream({
       start(controller) {
         const encoder = new TextEncoder();

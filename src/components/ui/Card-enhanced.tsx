@@ -7,10 +7,11 @@ interface CardProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   hover?: 'lift' | 'glow' | 'scale' | 'none';
   onClick?: () => void;
+  alignContent?: 'start' | 'center' | 'end';
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ children, className = '', variant = 'default', size = 'md', hover = 'none', ...props }, ref) => {
+  ({ children, className = '', variant = 'default', size = 'md', hover = 'none', alignContent = 'start', ...props }, ref) => {
     const baseClasses = 'rounded-2xl transition-all duration-300 overflow-hidden';
 
     const variantClasses = {
@@ -34,8 +35,14 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       scale: 'hover:scale-105',
       none: '',
     };
+    
+    const alignmentClasses = {
+      start: 'text-left',
+      center: 'text-center',
+      end: 'text-right',
+    };
 
-    const combinedClasses = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${hoverClasses[hover]} ${className}`.trim();
+    const combinedClasses = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${hoverClasses[hover]} ${alignmentClasses[alignContent]} ${className}`.trim();
 
     return (
       <div

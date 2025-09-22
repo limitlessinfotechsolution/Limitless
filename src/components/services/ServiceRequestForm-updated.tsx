@@ -24,7 +24,7 @@ interface ServiceRequestFormProps {
   serviceName?: string;
 }
 
-const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ serviceId, serviceName }) => {
+const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({  serviceName }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 

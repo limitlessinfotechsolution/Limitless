@@ -1,13 +1,16 @@
-import { supabase } from './supabaseClient';
+interface AuditLogDetails {
+  [key: string]: string | number | boolean | object | null;
+}
 
 export interface AuditLogEntry {
   action: string;
   entity: string;
   entityId?: string;
   userId?: string;
-  details?: Record<string, any>;
+  details?: AuditLogDetails;
   ipAddress?: string;
   userAgent?: string;
+  timestamp?: string;
 }
 
 class AuditLogger {
@@ -29,7 +32,7 @@ class AuditLogger {
    */
   async log(entry: AuditLogEntry): Promise<void> {
     // Add timestamp and basic context
-    const logEntry = {
+    const logEntry: AuditLogEntry = {
       ...entry,
       timestamp: new Date().toISOString(),
       ipAddress: this.getClientIP(),
@@ -52,7 +55,7 @@ class AuditLogger {
     action: string,
     entity: string,
     entityId?: string,
-    details?: Record<string, any>
+    details?: AuditLogDetails
   ): Promise<void> {
     await this.log({
       action,
@@ -68,7 +71,7 @@ class AuditLogger {
   async logUserAction(
     action: string,
     userId: string,
-    details?: Record<string, any>
+    details?: AuditLogDetails
   ): Promise<void> {
     await this.log({
       action,
@@ -84,7 +87,7 @@ class AuditLogger {
    */
   async logSecurityEvent(
     action: string,
-    details: Record<string, any>
+    details: AuditLogDetails
   ): Promise<void> {
     await this.log({
       action,

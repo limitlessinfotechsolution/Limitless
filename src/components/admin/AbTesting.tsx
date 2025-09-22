@@ -14,7 +14,7 @@ interface AbTest {
   variants: Array<{
     id: string;
     name: string;
-    content: any;
+    content: Record<string, unknown>;
     traffic_percentage: number;
   }>;
   status: 'active' | 'paused' | 'completed';
@@ -74,7 +74,7 @@ const AbTesting: React.FC = () => {
 
       if (error) throw error;
       setTests(tests.map(test =>
-        test.id === id ? { ...test, status: status as any } : test
+        test.id === id ? { ...test, status } : test
       ));
     } catch (error) {
       console.error('Error updating test status:', error);

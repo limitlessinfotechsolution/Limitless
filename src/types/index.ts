@@ -16,6 +16,8 @@ export interface Testimonial {
   content: string;
   rating: number;
   image?: string;
+  service?: string;
+  industry?: string;
 }
 
 export interface Project {
@@ -61,7 +63,7 @@ export interface AdvancedFormData {
   
   // Step 2: Project Details
   serviceType: string;
-  desiredFeatures: string[];
+  desiredFeatures: string;
   techPreferences: string;
   
   // Step 3: Timeline & Budget

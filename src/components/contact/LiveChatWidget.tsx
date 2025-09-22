@@ -3,12 +3,23 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Send, Minimize2, Maximize2 } from 'lucide-react';
+import { useContactBehaviorTracking } from '../../hooks/useContactBehaviorTracking';
 
 interface Message {
   id: string;
   text: string;
   sender: 'user' | 'bot';
   timestamp: Date;
+}
+
+interface ChatPreferences {
+  preferredTopics: string[];
+  interactionCount: number;
+  lastInteraction: Date;
+  responsePreferences: {
+    formal: boolean;
+    detailed: boolean;
+  };
 }
 
 interface LiveChatWidgetProps {
@@ -28,6 +39,47 @@ const LiveChatWidget: React.FC<LiveChatWidgetProps> = ({ className = '' }) => {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [sessionId, setSessionId] = useState<string>('');
+  const [preferences, setPreferences] = useState<ChatPreferences>({
+    preferredTopics: [],
+    interactionCount: 0,
+    lastInteraction: new Date(),
+    responsePreferences: {
+      formal: true,
+      detailed: true
+    }
+  });
+  const { trackChatInteraction } = useContactBehaviorTracking();
+
+  // Load user preferences from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedPreferences = localStorage.getItem('chatPreferences');
+      if (savedPreferences) {
+        try {
+          const parsed = JSON.parse(savedPreferences);
+          setPreferences({
+            ...parsed,
+            lastInteraction: new Date(parsed.lastInteraction)
+          });
+        } catch {
+          // If parsing fails, use default preferences
+        }
+      }
+      
+      // Generate or retrieve session ID
+      const existingSessionId = sessionStorage.getItem('chatSessionId') || `session-${Date.now()}`;
+      setSessionId(existingSessionId);
+      sessionStorage.setItem('chatSessionId', existingSessionId);
+    }
+  }, []);
+
+  // Save preferences to localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('chatPreferences', JSON.stringify(preferences));
+    }
+  }, [preferences]);
 
   const quickReplies = [
     'Get a quote',
@@ -38,6 +90,8 @@ const LiveChatWidget: React.FC<LiveChatWidgetProps> = ({ className = '' }) => {
 
   const handleSendMessage = async (text: string) => {
     if (!text.trim()) return;
+
+    trackChatInteraction();
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -50,41 +104,71 @@ const LiveChatWidget: React.FC<LiveChatWidgetProps> = ({ className = '' }) => {
     setInputValue('');
     setIsTyping(true);
 
-    // Simulate bot response
-    setTimeout(() => {
-      const botResponse = getBotResponse(text);
+    try {
+      // Update preferences based on user message
+      const updatedPreferences = { ...preferences };
+      updatedPreferences.interactionCount += 1;
+      updatedPreferences.lastInteraction = new Date();
+      
+      // Simple topic detection
+      const lowerText = text.toLowerCase();
+      if (lowerText.includes('pricing') || lowerText.includes('cost') || lowerText.includes('budget')) {
+        if (!updatedPreferences.preferredTopics.includes('pricing')) {
+          updatedPreferences.preferredTopics.push('pricing');
+        }
+      }
+      if (lowerText.includes('service') || lowerText.includes('offer')) {
+        if (!updatedPreferences.preferredTopics.includes('services')) {
+          updatedPreferences.preferredTopics.push('services');
+        }
+      }
+      if (lowerText.includes('project') || lowerText.includes('timeline')) {
+        if (!updatedPreferences.preferredTopics.includes('projects')) {
+          updatedPreferences.preferredTopics.push('projects');
+        }
+      }
+      
+      setPreferences(updatedPreferences);
+
+      // Send message to AI API
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: text,
+          sessionId: sessionId,
+          preferences: updatedPreferences
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get response');
+      }
+
+      const botResponse = await response.text();
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: botResponse,
         sender: 'bot',
         timestamp: new Date()
       };
+      
       setMessages(prev => [...prev, botMessage]);
+    } catch {
+      // Fallback response if API fails
+      const botMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: 'Thanks for your message! Our team will get back to you shortly. In the meantime, feel free to browse our services or portfolio for more information.',
+        sender: 'bot',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, botMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1000 + Math.random() * 2000);
+    }
   };
 
-  const getBotResponse = (userInput: string): string => {
-    const input = userInput.toLowerCase();
-
-    if (input.includes('quote') || input.includes('pricing')) {
-      return 'I\'d be happy to help you get a quote! Could you tell me about your project requirements? Our services start from $5,000 for basic web development.';
-    }
-
-    if (input.includes('service') || input.includes('what do you do')) {
-      return 'We offer AI development, web applications, mobile apps, cloud solutions, and digital transformation services. Which area interests you most?';
-    }
-
-    if (input.includes('timeline') || input.includes('how long')) {
-      return 'Project timelines vary based on complexity. A typical web application takes 4-8 weeks. Would you like me to provide a more specific estimate?';
-    }
-
-    if (input.includes('contact') || input.includes('phone') || input.includes('email')) {
-      return 'You can reach us at +91 7710909492 or Info@limitlessinfotech.com. Our team typically responds within 24 hours!';
-    }
-
-    return 'Thanks for your message! Our team will get back to you shortly. In the meantime, feel free to browse our services or portfolio for more information.';
-  };
+  // Removed unused function - now using AI API for responses
 
   const handleQuickReply = (reply: string) => {
     handleSendMessage(reply);

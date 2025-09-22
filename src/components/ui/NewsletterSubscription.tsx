@@ -28,7 +28,7 @@ const NewsletterSubscription: React.FC<NewsletterSubscriptionProps> = ({
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const [error, setError] = useState('');
+  
   const [showModal, setShowModal] = useState(false);
 
   const validateEmail = (email: string) => {
@@ -59,7 +59,7 @@ const NewsletterSubscription: React.FC<NewsletterSubscriptionProps> = ({
       } else {
         setError('Failed to subscribe. Please try again.');
       }
-    } catch (err) {
+    } catch {
       setError('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);

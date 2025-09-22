@@ -11,6 +11,7 @@ import AwardsCertifications from '../components/about/AwardsCertifications';
 import TeamProfiles from '../components/about/TeamProfiles';
 import InteractiveValuesIcons from '../components/about/InteractiveValuesIcons';
 import MissionVisionVisuals from '../components/about/MissionVisionVisuals';
+import InteractiveParticleBackground from '../components/ui/InteractiveParticleBackground';
 
 const About: React.FC = () => {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
@@ -36,14 +37,53 @@ const About: React.FC = () => {
 
   return (
     <div className="pt-20">
-      <header className="section-padding bg-gray-bg dark:bg-gray-900/50 text-center">
-        <h1 className="text-4xl lg:text-5xl font-bold mb-4">About Us</h1>
-        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-          From Vision to Impact: The Story of Limitless Infotech Solution.
-        </p>
+      {/* Hero Section with Premium Design */}
+      <header className="section-padding relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-accent/5 dark:from-gray-900 dark:via-gray-800 dark:to-accent/10">
+        {/* Enhanced Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{ 
+            backgroundImage: `radial-gradient(circle at 25% 25%, #D4AF37 0%, transparent 50%), 
+                            radial-gradient(circle at 75% 75%, #1A237E 0%, transparent 50%)` 
+          }}></div>
+        </div>
+
+        {/* Interactive Particle Background */}
+        <InteractiveParticleBackground
+          particleCount={50}
+          className="absolute inset-0"
+        />
+
+        <div className="container-custom text-center relative z-10">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-4xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-accent to-accent-orange bg-clip-text text-transparent"
+          >
+            About Us
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-xl text-gray-700 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed mb-8"
+          >
+            From Vision to Impact: The Story of Limitless Infotech Solution.
+          </motion.p>
+
+          {/* Trust Badge */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="inline-block bg-gradient-to-r from-accent/20 to-accent-orange/20 text-accent rounded-full font-bold text-lg mb-8 px-6 py-3 backdrop-blur-sm border border-accent/30"
+          >
+            Trusted by 50+ Global Enterprises
+          </motion.div>
+        </div>
       </header>
 
-      {/* Our Story & Founder */}
+      {/* Our Story & Founder - Enhanced card design */}
       <section className="section-padding">
         <div className="container-custom">
           {loading ? (
@@ -55,7 +95,7 @@ const About: React.FC = () => {
                 <SkeletonLoader width="90%" height="1rem" />
               </div>
               <div className="lg:col-span-2">
-                <CardEnhanced variant='gradient' hover='glow' className="p-8 text-center">
+                <CardEnhanced variant='elevated' hover='glow' className="p-8 text-center">
                   <SkeletonLoader width="8rem" height="8rem" rounded className="mx-auto mb-4" />
                   <SkeletonLoader width="60%" height="1.5rem" className="mb-2" />
                   <SkeletonLoader width="40%" height="1rem" className="mb-2" />
@@ -68,7 +108,7 @@ const About: React.FC = () => {
               <div className="lg:col-span-3">
                 <h2 className="text-3xl font-bold mb-6">Our Story</h2>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-                  Founded in 2018 by Faisal Khan, Limitless Infotech began with a simple idea: technology should empower businesses, not complicate them. Starting with a small team of passionate developers, we’ve grown to deliver 120+ projects globally, partnering with startups and enterprises alike.
+                  Founded in 2018 by Faisal Khan, Limitless Infotech began with a simple idea: technology should empower businesses, not complicate them. Starting with a small team of passionate developers, we've grown to deliver 120+ projects globally, partnering with startups and enterprises alike.
                 </p>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                   Our journey is driven by one promise: 'Where Innovation Meets Execution'. We believe in building long-term partnerships, crafting unique solutions, and delivering a 'Royal Client Experience' that sets new industry standards.
@@ -81,13 +121,13 @@ const About: React.FC = () => {
                 transition={{ duration: 0.6 }}
                 className="lg:col-span-2"
               >
-                <CardEnhanced variant='gradient' hover='glow' className="p-8 text-center">
+                <CardEnhanced variant='elevated' hover='glow' className="p-8 text-center group">
                   <LazyImage
                     src={founder.image}
                     alt={founder.name}
                     width={128}
                     height={128}
-                    className="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-accent"
+                    className="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-accent shadow-lg group-hover:shadow-xl transition-shadow duration-300"
                   />
                   <h3 className="text-2xl font-bold">{founder.name}</h3>
                   <p className="text-accent font-semibold mb-2">{founder.role}</p>
@@ -157,7 +197,7 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      {/* Awards & Certifications */}
+      {/* Awards & Certifications - Enhanced card design */}
       <section className="section-padding bg-gray-bg dark:bg-gray-900/50">
         <div className="container-custom">
           <div className="text-center mb-12">
@@ -230,7 +270,7 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      {/* Enhanced Team Profiles */}
+      {/* Enhanced Team Profiles - Improved card design and alignment */}
       <section className="section-padding">
         <div className="container-custom">
           <div className="text-center mb-12">

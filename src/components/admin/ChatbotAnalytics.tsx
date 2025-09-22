@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Card from '../ui/Card';
 import LoadingSpinner from '../ui/LoadingSpinner';
-import { MessageSquare, Users, TrendingUp, Clock, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Users, MessageSquare, Clock } from 'lucide-react';
 
 interface ChatbotStats {
   totalConversations: number;

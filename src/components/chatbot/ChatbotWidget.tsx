@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Minimize2 } from 'lucide-react';
+import { MessageSquare, Minimize2, Sparkles } from 'lucide-react';
 import ChatWindow from './ChatWindow';
 
 const ChatbotWidget: React.FC = () => {
@@ -76,7 +76,7 @@ const ChatbotWidget: React.FC = () => {
                   </motion.div>
                 ) : (
                   <motion.div key="open" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }}>
-                    <MessageSquare size={28} />
+                    <Sparkles size={28} />
                   </motion.div>
                 )}
               </AnimatePresence>

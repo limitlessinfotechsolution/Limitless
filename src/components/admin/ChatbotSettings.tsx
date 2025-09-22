@@ -97,7 +97,7 @@ const ChatbotSettings: React.FC = () => {
     }
   };
 
-  const updateConfig = (field: keyof ChatbotConfig, value: any) => {
+  const updateConfig = (field: keyof ChatbotConfig, value: unknown) => {
     if (!config) return;
     setConfig({ ...config, [field]: value });
   };

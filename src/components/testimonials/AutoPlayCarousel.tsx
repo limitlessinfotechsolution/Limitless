@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
 import LazyImage from '../ui/LazyImage';
+import SocialShare from './SocialShare';
 
 interface Testimonial {
   id: string;
@@ -118,8 +119,11 @@ const AutoPlayCarousel: React.FC<AutoPlayCarouselProps> = ({
                 <p className="text-gray-600 dark:text-gray-400">
                   {testimonials[currentIndex].role} at {testimonials[currentIndex].company}
                 </p>
-                <div className="flex items-center space-x-1 mt-1">
-                  {renderStars(testimonials[currentIndex].rating)}
+                <div className="flex items-center justify-between mt-1">
+                  <div className="flex items-center space-x-1">
+                    {renderStars(testimonials[currentIndex].rating)}
+                  </div>
+                  <SocialShare testimonial={testimonials[currentIndex]} />
                 </div>
               </div>
             </div>

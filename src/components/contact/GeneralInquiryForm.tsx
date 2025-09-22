@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { CheckCircle, XCircle } from 'lucide-react';
+import { useContactBehaviorTracking } from '../../hooks/useContactBehaviorTracking';
+import { useAdaptiveForms } from '../../hooks/useAdaptiveForms';
 
 type FormData = {
   name: string;
@@ -16,10 +18,16 @@ const GeneralInquiryForm: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submissionStartTime] = useState(Date.now());
+  const { trackFormInteraction } = useContactBehaviorTracking();
+  const { trackFormSubmission, getAdaptiveSubjectOptions, getCompletionHints } = useAdaptiveForms();
 
   const watchedFields = watch();
 
   const onSubmit = async (data: FormData) => {
+    trackFormInteraction();
+    const submissionTime = Date.now() - submissionStartTime;
+    trackFormSubmission(data, submissionTime);
     setIsSubmitting(true);
 
     try {
@@ -132,10 +140,11 @@ const GeneralInquiryForm: React.FC = () => {
             }`}
           >
             <option value="">Select a subject...</option>
-            <option value="Consultation">Consultation</option>
-            <option value="Feedback">Feedback</option>
-            <option value="Support">Support</option>
-            <option value="Other">Other</option>
+            {getAdaptiveSubjectOptions().map(({ value, label, isPopular }) => (
+              <option key={value} value={value}>
+                {label}{isPopular ? ' ★' : ''}
+              </option>
+            ))}
           </select>
           {watchedFields.subject && !errors.subject && (
             <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-green-500 pointer-events-none" />
@@ -167,6 +176,9 @@ const GeneralInquiryForm: React.FC = () => {
           )}
         </div>
         {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message.message}</p>}
+        {getCompletionHints().message && (
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{getCompletionHints().message}</p>
+        )}
       </div>
       <button type="submit" disabled={isSubmitting} className="btn-secondary w-full">
         {isSubmitting ? 'Sending...' : 'Send Message'}

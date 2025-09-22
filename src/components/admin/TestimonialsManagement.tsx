@@ -14,6 +14,11 @@ interface Testimonial {
   rating: number;
   is_published: boolean;
   is_featured: boolean;
+  approved: boolean;
+  verified: boolean;
+  verification_method?: string;
+  categories?: { id: string; name: string }[];
+  tags?: { id: string; name: string; color: string }[];
   created_at: string;
   updated_at: string;
 }
@@ -26,6 +31,7 @@ const TestimonialsManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'published' | 'draft'>('all');
   const [filterRating, setFilterRating] = useState<'all' | '5' | '4' | '3' | '2' | '1'>('all');
+  const [filterApproval, setFilterApproval] = useState<'all' | 'approved' | 'pending'>('all');
   const [showFilters, setShowFilters] = useState(false);
   const router = useRouter();
 
@@ -54,7 +60,10 @@ const TestimonialsManagement: React.FC = () => {
       (filterStatus === 'published' && testimonial.is_published) ||
       (filterStatus === 'draft' && !testimonial.is_published);
     const matchesRating = filterRating === 'all' || testimonial.rating.toString() === filterRating;
-    return matchesSearch && matchesStatus && matchesRating;
+    const matchesApproval = filterApproval === 'all' ||
+      (filterApproval === 'approved' && testimonial.approved) ||
+      (filterApproval === 'pending' && !testimonial.approved);
+    return matchesSearch && matchesStatus && matchesRating && matchesApproval;
   });
 
   const handleSelectAll = () => {
@@ -130,6 +139,50 @@ const TestimonialsManagement: React.FC = () => {
 
       setTestimonials(testimonials.map(t =>
         selectedTestimonials.has(t.id) ? { ...t, is_featured: feature } : t
+      ));
+      setSelectedTestimonials(new Set());
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to update testimonials');
+    }
+  };
+
+  const handleBulkApprove = async (approve: boolean) => {
+    try {
+      const response = await fetch('/api/testimonials/bulk', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ids: Array.from(selectedTestimonials),
+          action: 'approve',
+          value: approve
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to update testimonials');
+
+      setTestimonials(testimonials.map(t =>
+        selectedTestimonials.has(t.id) ? { ...t, approved: approve } : t
+      ));
+      setSelectedTestimonials(new Set());
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to update testimonials');
+    }
+  };
+
+  const handleBulkVerify = async (verify: boolean) => {
+    try {
+      const response = await fetch('/api/testimonials/bulk', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ids: Array.from(selectedTestimonials),
+          action: 'verify',
+          value: verify
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to update testimonials');
+
+      setTestimonials(testimonials.map(t =>
+        selectedTestimonials.has(t.id) ? { ...t, verified: verify } : t
       ));
       setSelectedTestimonials(new Set());
     } catch (err: unknown) {
@@ -239,7 +292,7 @@ const TestimonialsManagement: React.FC = () => {
                 <label className="block text-sm font-medium mb-1">Status</label>
                 <select
                   value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value as any)}
+                  onChange={(e) => setFilterStatus(e.target.value as 'all' | 'published' | 'draft')}
                   className="px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-600"
                 >
                   <option value="all">All Status</option>
@@ -251,7 +304,7 @@ const TestimonialsManagement: React.FC = () => {
                 <label className="block text-sm font-medium mb-1">Rating</label>
                 <select
                   value={filterRating}
-                  onChange={(e) => setFilterRating(e.target.value as any)}
+                  onChange={(e) => setFilterRating(e.target.value as 'all' | '5' | '4' | '3' | '2' | '1')}
                   className="px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-600"
                 >
                   <option value="all">All Ratings</option>
@@ -260,6 +313,18 @@ const TestimonialsManagement: React.FC = () => {
                   <option value="3">3 Stars</option>
                   <option value="2">2 Stars</option>
                   <option value="1">1 Star</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Approval</label>
+                <select
+                  value={filterApproval}
+                  onChange={(e) => setFilterApproval(e.target.value as 'all' | 'approved' | 'pending')}
+                  className="px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-600"
+                >
+                  <option value="all">All Status</option>
+                  <option value="approved">Approved</option>
+                  <option value="pending">Pending</option>
                 </select>
               </div>
             </div>
@@ -300,6 +365,24 @@ const TestimonialsManagement: React.FC = () => {
                 Unfeature
               </button>
               <button
+                onClick={() => handleBulkApprove(true)}
+                className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700"
+              >
+                Approve
+              </button>
+              <button
+                onClick={() => handleBulkApprove(false)}
+                className="px-3 py-1 bg-orange-500 text-white text-sm rounded hover:bg-orange-600"
+              >
+                Reject
+              </button>
+              <button
+                onClick={() => handleBulkVerify(true)}
+                className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
+              >
+                Verify
+              </button>
+              <button
                 onClick={handleBulkDelete}
                 className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600"
               >
@@ -329,6 +412,7 @@ const TestimonialsManagement: React.FC = () => {
           <span className="w-24 text-center">Rating</span>
           <span className="w-20 text-center">Status</span>
           <span className="w-20 text-center">Featured</span>
+          <span className="w-20 text-center">Approved</span>
           <span className="w-32 text-center">Created</span>
           <span className="w-24">Actions</span>
         </div>
@@ -385,6 +469,13 @@ const TestimonialsManagement: React.FC = () => {
                   <Eye className="w-5 h-5 text-purple-500 mx-auto" />
                 ) : (
                   <EyeOff className="w-5 h-5 text-gray-400 mx-auto" />
+                )}
+              </div>
+              <div className="w-20 text-center">
+                {testimonial.approved ? (
+                  <span className="text-green-500">✓</span>
+                ) : (
+                  <span className="text-orange-500">⚠</span>
                 )}
               </div>
               <div className="w-32 text-center text-sm">

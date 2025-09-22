@@ -10,7 +10,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     return (
       <div
         ref={ref}
-        className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg transition-shadow duration-300 hover:shadow-xl overflow-hidden ${className}`}
+        className={`bg-white dark:bg-gray-800 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl overflow-hidden border border-gray-100 dark:border-gray-700 ${className}`}
       >
         {children}
       </div>

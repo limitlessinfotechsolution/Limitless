@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Upload, X, CheckCircle, AlertCircle } from 'lucide-react';
-import LazyImage from '../ui/LazyImage';
+
 
 interface ReviewSubmissionProps {
   onSubmit: (data: ReviewData) => Promise<void>;
@@ -18,6 +18,8 @@ interface ReviewData {
   content: string;
   industry: string;
   service: string;
+  email?: string;
+  projectUrl?: string;
   attachments?: File[];
   projectSnippet?: File;
 }
@@ -30,7 +32,9 @@ const ReviewSubmission: React.FC<ReviewSubmissionProps> = ({ onSubmit, className
     rating: 5,
     content: '',
     industry: '',
-    service: ''
+    service: '',
+    email: '',
+    projectUrl: ''
   });
   const [attachments, setAttachments] = useState<File[]>([]);
   const [projectSnippet, setProjectSnippet] = useState<File | null>(null);
@@ -48,6 +52,8 @@ const ReviewSubmission: React.FC<ReviewSubmissionProps> = ({ onSubmit, className
     'Cloud Services', 'Digital Transformation', 'UI/UX Design',
     'Consulting', 'Maintenance & Support', 'Other'
   ];
+
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const handleInputChange = (field: keyof ReviewData, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -83,6 +89,12 @@ const ReviewSubmission: React.FC<ReviewSubmissionProps> = ({ onSubmit, className
     if (!formData.content.trim()) newErrors.content = 'Review content is required';
     if (!formData.industry) newErrors.industry = 'Industry is required';
     if (!formData.service) newErrors.service = 'Service is required';
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+    if (formData.projectUrl && !/^https?:\/\/.+/.test(formData.projectUrl)) {
+      newErrors.projectUrl = 'Please enter a valid URL';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -96,11 +108,39 @@ const ReviewSubmission: React.FC<ReviewSubmissionProps> = ({ onSubmit, className
     setIsSubmitting(true);
 
     try {
-      await onSubmit({
+      // Prepare data for submission
+      const submissionData = {
         ...formData,
         attachments,
         projectSnippet: projectSnippet || undefined
-      });
+      };
+      
+      // Submit to parent handler
+      await onSubmit(submissionData);
+      
+      // Send notification email if email is provided
+      if (formData.email) {
+        try {
+          await fetch('/api/email/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: formData.email,
+              from: 'noreply@limitlessinfotech.com',
+              subject: 'Thank you for your testimonial',
+              html: `
+                <h2>Thank You for Your Testimonial!</h2>
+                <p>Dear ${formData.name},</p>
+                <p>We appreciate you taking the time to share your experience with us. Your testimonial is important to us and will help others understand the value we provide.</p>
+                <p>Our team will review your submission and, once approved, it will be published on our website.</p>
+                <p>Best regards,<br/>The Limitless Infotech Team</p>
+              `
+            })
+          });
+        } catch (emailError) {
+          console.error('Failed to send confirmation email:', emailError);
+        }
+      }
       setSubmitted(true);
     } catch (error) {
       console.error('Submission error:', error);
@@ -205,6 +245,18 @@ const ReviewSubmission: React.FC<ReviewSubmissionProps> = ({ onSubmit, className
           />
         </div>
 
+        {/* Email (Optional) */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Email (Optional)</label>
+          <input
+            type="email"
+            value={formData.email}
+            onChange={(e) => handleInputChange('email', e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-accent focus:border-transparent"
+            placeholder="Your email address"
+          />
+        </div>
+
         {/* Industry and Service */}
         <div className="grid md:grid-cols-2 gap-6">
           <div>
@@ -262,6 +314,50 @@ const ReviewSubmission: React.FC<ReviewSubmissionProps> = ({ onSubmit, className
             </span>
           </div>
         </div>
+
+        {/* Advanced Options Toggle */}
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="text-accent hover:text-accent-dark text-sm font-medium"
+          >
+            {showAdvanced ? 'Hide Advanced Options' : 'Show Advanced Options'}
+          </button>
+        </div>
+
+        {/* Advanced Options */}
+        {showAdvanced && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="space-y-6"
+          >
+            {/* Project URL */}
+            <div>
+              <label className="block text-sm font-medium mb-2">Project URL (Optional)</label>
+              <input
+                type="url"
+                value={formData.projectUrl}
+                onChange={(e) => handleInputChange('projectUrl', e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-accent focus:border-transparent"
+                placeholder="https://yourproject.com"
+              />
+            </div>
+
+            {/* Project Results */}
+            <div>
+              <label className="block text-sm font-medium mb-2">Project Results (Optional)</label>
+              <textarea
+                value={formData.content}
+                onChange={(e) => handleInputChange('content', e.target.value)}
+                rows={4}
+                className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-accent focus:border-transparent"
+                placeholder="What results did you achieve with our services?"
+              />
+            </div>
+          </motion.div>
+        )}
 
         {/* Review Content */}
         <div>

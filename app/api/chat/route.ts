@@ -16,7 +16,7 @@ const ai = new AuralisAI();
 
 export async function POST(req: NextRequest) {
   try {
-    const { message, sessionId } = await req.json();
+    const { message, sessionId, preferences } = await req.json();
 
     if (!message) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 });
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       try {
         const { data: sessionData, error: sessionError } = await supabase
           .from('chat_sessions')
-          .insert({})
+          .insert({ preferences: preferences || {} })
           .select('id')
           .single();
         if (!sessionError && sessionData) {
@@ -56,8 +56,8 @@ export async function POST(req: NextRequest) {
     // 3. Detect intent
     const intent = ai.detectIntent(message);
 
-    // 4. Generate response using Google AI
-    const botResponse = await ai.generateResponse(message, intent);
+    // 4. Generate response using Google AI with preferences
+    const botResponse = await ai.generateResponse(message, intent, preferences || undefined);
 
     // 5. Save the bot's response if Supabase is available
     if (supabase) {

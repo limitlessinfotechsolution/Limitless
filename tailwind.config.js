@@ -37,6 +37,10 @@ module.exports = {
           '60%': { transform: 'translateY(-5px)' },
         },
       },
+      spacing: {
+        'section-padding': '4rem',
+        'section-padding-lg': '6rem',
+      },
     },
   },
   plugins: [],

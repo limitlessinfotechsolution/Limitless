@@ -3,7 +3,7 @@ type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 interface LogEntry {
   level: LogLevel;
   message: string;
-  data?: any;
+  data?: unknown;
   timestamp: string;
   userId?: string;
   sessionId?: string;
@@ -24,7 +24,7 @@ class Logger {
     }
   }
 
-  private createLogEntry(level: LogLevel, message: string, data?: any): LogEntry {
+  private createLogEntry(level: LogLevel, message: string, data?: unknown): LogEntry {
     return {
       level,
       message,
@@ -88,7 +88,7 @@ class Logger {
     await Promise.all(logsToSend.map(log => this.sendToServer(log)));
   }
 
-  debug(message: string, data?: any) {
+  debug(message: string, data?: unknown) {
     const entry = this.createLogEntry('debug', message, data);
     if (this.isDevelopment) {
       console.debug(`[${entry.timestamp}] DEBUG:`, message, data);
@@ -99,7 +99,7 @@ class Logger {
     }
   }
 
-  info(message: string, data?: any) {
+  info(message: string, data?: unknown) {
     const entry = this.createLogEntry('info', message, data);
     if (this.isDevelopment) {
       console.info(`[${entry.timestamp}] INFO:`, message, data);
@@ -110,7 +110,7 @@ class Logger {
     }
   }
 
-  warn(message: string, data?: any) {
+  warn(message: string, data?: unknown) {
     const entry = this.createLogEntry('warn', message, data);
     console.warn(`[${entry.timestamp}] WARN:`, message, data);
     this.logQueue.push(entry);
@@ -127,7 +127,7 @@ class Logger {
     this.flush();
   }
 
-  trackEvent(eventType: string, data?: any) {
+  trackEvent(eventType: string, data?: unknown) {
     const entry = this.createLogEntry('info', `Event: ${eventType}`, data);
     this.logQueue.push(entry);
     if (this.logQueue.length >= this.batchSize) {

@@ -93,11 +93,17 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose, onMinimize }) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch('/api/chat/auralis-brain', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text, sessionId }),
       });
+
+      // Extract session ID from response headers if available
+      const newSessionId = response.headers.get('X-Session-ID');
+      if (newSessionId) {
+        setSessionId(newSessionId);
+      }
 
       if (!response.ok) throw new Error('Failed to send message');
 

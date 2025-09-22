@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Search } from 'lucide-react';
+
 import SearchFunctionality from '../../src/components/faq/SearchFunctionality';
 import CategoryTabs from '../../src/components/faq/CategoryTabs';
 import RelatedQuestions from '../../src/components/faq/RelatedQuestions';
@@ -14,21 +14,18 @@ interface FAQ {
   question: string;
   answer: string;
   category: string | null;
+  helpful?: number;
 }
 
 // This is now a Client Component for search functionality
 const FaqPage: React.FC = () => {
   const [faqs, setFaqs] = useState<FAQ[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [filteredFaqs, setFilteredFaqs] = useState<FAQ[]>([]);
-  const [popularFaqs, setPopularFaqs] = useState<FAQ[]>([]);
 
   React.useEffect(() => {
     const fetchFaqs = async () => {
-      const { createClient } = await import('@/lib/supabaseClient');
-      const supabase = createClient();
+      const { supabase } = await import('@/lib/supabaseClient');
 
       const { data, error } = await supabase
         .from('faqs')
@@ -50,21 +47,13 @@ const FaqPage: React.FC = () => {
   const finalFilteredFaqs = useMemo(() => {
     let filtered = faqs;
 
-    // Apply search filter
-    if (searchTerm) {
-      filtered = filtered.filter(faq =>
-        faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        faq.answer.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
     // Apply category filter
     if (selectedCategory) {
       filtered = filtered.filter(faq => faq.category === selectedCategory);
     }
 
     return filtered;
-  }, [faqs, searchTerm, selectedCategory]);
+  }, [faqs, selectedCategory]);
 
   // Group filtered FAQs by category
   const groupedFaqs = useMemo(() => {
@@ -112,12 +101,14 @@ const FaqPage: React.FC = () => {
         {/* Enhanced Search Functionality */}
         <SearchFunctionality
           faqs={faqs}
-          onSearchResults={setFilteredFaqs}
+          onSearchResults={(results) => {
+            // Handle search results if needed
+          }}
           className="mb-8"
         />
 
         {/* Popular FAQs Section */}
-        {popularFaqsList.length > 0 && !searchTerm && !selectedCategory && (
+        {popularFaqsList.length > 0 && !selectedCategory && (
           <div className="mb-12">
             <h2 className="text-2xl font-semibold mb-6 text-center">Popular Questions</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -148,9 +139,9 @@ const FaqPage: React.FC = () => {
         {Object.keys(groupedFaqs).length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-500 mb-6">
-              {searchTerm || selectedCategory ? 'No FAQs match your criteria.' : 'No FAQs have been added yet.'}
+              {selectedCategory ? 'No FAQs match your criteria.' : 'No FAQs have been added yet.'}
             </p>
-            <ContactForm searchQuery={searchTerm} />
+            <ContactForm />
           </div>
         ) : (
           <div className="grid lg:grid-cols-3 gap-8">
@@ -164,7 +155,7 @@ const FaqPage: React.FC = () => {
                       <div key={faq.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
                         <details className="group">
                           <summary className="flex justify-between items-center cursor-pointer list-none p-6">
-                            <span className="font-medium pr-4">{highlightText(faq.question, searchTerm)}</span>
+                            <span className="font-medium pr-4">{faq.question}</span>
                             <span className="transition-transform transform group-open:rotate-180 flex-shrink-0">
                               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
@@ -173,14 +164,14 @@ const FaqPage: React.FC = () => {
                           </summary>
                           <div className="px-6 pb-6">
                             <p className="text-gray-600 dark:text-gray-300 mb-4">
-                              {highlightText(faq.answer, searchTerm)}
+                              {faq.answer}
                             </p>
 
                             {/* Voting System */}
                             <FAQVotingSystem
                               faq={faq}
                               onVote={async (faqId, type) => {
-                                // Here you would update the FAQ's vote count in your database
+                                // Here you would update the FAQ's vote count in the database
                                 console.log(`Vote for FAQ ${faqId}: ${type}`);
                               }}
                             />
@@ -206,7 +197,7 @@ const FaqPage: React.FC = () => {
 
             {/* Sidebar */}
             <div className="space-y-6">
-              <ContactForm searchQuery={searchTerm} />
+              <ContactForm />
 
               {/* Quick Stats */}
               <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">

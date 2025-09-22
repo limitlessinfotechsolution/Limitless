@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, Package, TrendingUp } from 'lucide-react';
-import * as Icons from 'lucide-react';
+
 
 interface ServiceModalProps {
   isOpen: boolean;

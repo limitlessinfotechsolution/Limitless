@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { supabase } from '../../lib/supabaseClient';
 import { Service } from '../../types';
 import * as Icons from 'lucide-react';
-import Card from '../ui/Card';
+import CardEnhanced from '../ui/Card-enhanced';
 import SkeletonLoader from '../ui/SkeletonLoader';
 
 const CoreServices: React.FC = () => {
@@ -34,7 +34,7 @@ const CoreServices: React.FC = () => {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {[...Array(5)].map((_, index) => (
-              <Card key={index} className="p-8 h-full flex flex-col">
+              <CardEnhanced key={index} variant="elevated" className="p-8 h-full flex flex-col">
                 <div className="flex items-center space-x-4 mb-4">
                   <SkeletonLoader width="3rem" height="3rem" rounded />
                   <SkeletonLoader width="60%" height="1.5rem" />
@@ -43,7 +43,7 @@ const CoreServices: React.FC = () => {
                 <SkeletonLoader width="90%" height="1rem" className="mb-2" />
                 <SkeletonLoader width="80%" height="1rem" className="mb-6" />
                 <SkeletonLoader width="40%" height="1rem" />
-              </Card>
+              </CardEnhanced>
             ))}
           </div>
         ) : (
@@ -58,19 +58,20 @@ const CoreServices: React.FC = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ y: -5 }}
                 >
-                  <Card className="p-8 h-full flex flex-col">
+                  <CardEnhanced variant="elevated" hover="lift" className="p-8 h-full flex flex-col group border border-gray-200/50 dark:border-gray-700/50">
                     <div className="flex items-center space-x-4 mb-4">
-                      <div className="p-3 bg-accent/10 rounded-lg">
+                      <div className="p-3 bg-gradient-to-br from-accent/20 to-accent-orange/20 rounded-lg transition-all duration-300 group-hover:from-accent/30 group-hover:to-accent-orange/30">
                         <Icon className="w-6 h-6 text-accent" />
                       </div>
-                      <h3 className="text-xl font-bold">{service.title}</h3>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">{service.title}</h3>
                     </div>
                     <p className="text-gray-600 dark:text-gray-300 mb-6 flex-grow">{service.description}</p>
-                    <Link href={`/services#${service.id}`} className="font-medium text-accent hover:underline mt-auto">
-                      View Details &rarr;
+                    <Link href={`/services#${service.id}`} className="font-medium text-accent hover:text-accent-orange transition-colors mt-auto flex items-center">
+                      View Details <span className="ml-1">→</span>
                     </Link>
-                  </Card>
+                  </CardEnhanced>
                 </motion.div>
               );
             })}

@@ -215,7 +215,7 @@ export class AuralisAI {
   }
 
   // Phase 3: Enhanced Response Generation with Google AI
-  async generateResponse(message: string, intent: IntentDetection): Promise<string> {
+  async generateResponse(message: string, intent: IntentDetection, preferences?: { preferredTopics: string[]; interactionCount: number; responsePreferences: { formal: boolean; detailed: boolean } }): Promise<string> {
     await this.loadKnowledgeBase();
 
     // If Google AI is available, use it for generating responses
@@ -227,6 +227,16 @@ export class AuralisAI {
         const knowledgeContext = this.knowledgeBase.map(item =>
           `${item.category}: ${item.content}`
         ).join('\n');
+
+        // Build user context from preferences
+        let userContext = '';
+        if (preferences) {
+          userContext = `User Context:
+- Interaction Count: ${preferences.interactionCount}
+- Preferred Topics: ${preferences.preferredTopics.join(', ') || 'None'}
+- Response Style: ${preferences.responsePreferences.formal ? 'Formal' : 'Casual'}, ${preferences.responsePreferences.detailed ? 'Detailed' : 'Concise'}
+`;
+        }
 
         const prompt = `
 You are Auralis, an AI assistant for Limitless Infotech, a technology company specializing in web development, mobile applications, AI automation, and custom software solutions.
@@ -240,13 +250,14 @@ Company Information:
 Knowledge Base:
 ${knowledgeContext}
 
+${userContext}
 User Message: "${message}"
 Detected Intent: ${intent.intent}
 Confidence: ${intent.confidence}
 
 Please provide a helpful, professional response as Auralis. Keep responses concise but informative. If the user is asking about services, pricing, or company information, provide accurate details. If it's a general inquiry, offer to help with specific services or provide contact information.
 
-Response should be natural and conversational, not like a robot.
+Response should be natural and conversational, not like a robot. Adjust tone and detail level based on user preferences.
 `;
 
         const result = await model.generateContent(prompt);

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Target, Mail, CheckCircle } from 'lucide-react';
 import Card from '../ui/Card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
@@ -43,11 +43,7 @@ const Dashboard: React.FC = () => {
   const [workloadData, setWorkloadData] = useState<ChartDataPoint[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     try {
       // Fetch stats from various tables
       const [leadsRes, testimonialsRes, projectsRes, usersRes] = await Promise.all([
@@ -85,7 +81,11 @@ const Dashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   const generateChartData = () => {
     // Project timeline data (last 30 days) - mock data

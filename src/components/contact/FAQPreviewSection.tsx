@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, HelpCircle } from 'lucide-react';
+import { useContactBehaviorTracking } from '../../hooks/useContactBehaviorTracking';
+import { usePersonalization } from '../../hooks/usePersonalization';
 
 interface FAQItem {
   id: string;
@@ -16,6 +18,8 @@ interface FAQPreviewSectionProps {
 
 const FAQPreviewSection: React.FC<FAQPreviewSectionProps> = ({ className = '' }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const { trackFAQExpansion } = useContactBehaviorTracking();
+  const { trackInterest } = usePersonalization();
 
   const faqs: FAQItem[] = [
     {
@@ -47,6 +51,23 @@ const FAQPreviewSection: React.FC<FAQPreviewSectionProps> = ({ className = '' })
 
   const toggleExpanded = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
+    if (expandedId !== id) {
+      trackFAQExpansion();
+      
+      // Track interest based on FAQ topic
+      const faq = faqs.find(f => f.id === id);
+      if (faq) {
+        if (faq.question.toLowerCase().includes('pricing') || faq.question.toLowerCase().includes('budget')) {
+          trackInterest('pricing');
+        } else if (faq.question.toLowerCase().includes('timeline') || faq.question.toLowerCase().includes('time')) {
+          trackInterest('timeline');
+        } else if (faq.question.toLowerCase().includes('technology') || faq.question.toLowerCase().includes('tech')) {
+          trackInterest('technology');
+        } else if (faq.question.toLowerCase().includes('support') || faq.question.toLowerCase().includes('maintenance')) {
+          trackInterest('support');
+        }
+      }
+    }
   };
 
   return (

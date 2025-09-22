@@ -4,7 +4,7 @@ import React, { useState, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Pause, Volume2, VolumeX, Maximize, AlertCircle } from 'lucide-react';
 import LazyImage from '../ui/LazyImage';
-import Card from '../ui/Card';
+
 
 interface VideoDemo {
   id: string;

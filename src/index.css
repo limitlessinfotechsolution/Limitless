@@ -16,15 +16,20 @@
   body {
     @apply text-gray-900 bg-white transition-colors duration-300;
   }
+  
+  /* Improved alignment utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-accent hover:bg-accent-dark text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 hover:shadow-lg transform hover:-translate-y-0.5;
+    @apply bg-accent hover:bg-accent-dark text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-opacity-50;
   }
   
   .btn-secondary {
-    @apply bg-transparent border-2 border-accent text-accent hover:bg-accent hover:text-white font-medium py-3 px-6 rounded-lg transition-all duration-300;
+    @apply bg-transparent border-2 border-accent text-accent hover:bg-accent hover:text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-opacity-50;
   }
   
   .section-padding {
@@ -41,6 +46,27 @@
   
   .gradient-text {
     @apply bg-gradient-to-r from-accent to-accent-dark bg-clip-text text-transparent;
+  }
+  
+  /* Enhanced alignment classes */
+  .content-center {
+    @apply flex flex-col items-center justify-center text-center;
+  }
+  
+  .content-start {
+    @apply flex flex-col items-start justify-start text-left;
+  }
+  
+  .align-start {
+    @apply text-left;
+  }
+  
+  .align-center {
+    @apply text-center;
+  }
+  
+  .align-end {
+    @apply text-right;
   }
 }
 
