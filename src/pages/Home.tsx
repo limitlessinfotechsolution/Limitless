@@ -1,26 +1,44 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import HeroSection from '../components/home/HeroSection';
-import SolutionsOverview from '../components/home/SolutionsOverview';
-import CoreServices from '../components/home/CoreServices';
-import WhyLimitless from '../components/home/WhyLimitless';
-
-import TestimonialsCarousel from '../components/home/TestimonialsCarousel';
 import Partners from '../components/home/Partners';
-import Faq from '../components/home/Faq';
-import FinalCta from '../components/home/FinalCta';
+
+// Lazy load components below the fold for better performance
+const SolutionsOverview = React.lazy(() => import('../components/home/SolutionsOverview'));
+const CoreServices = React.lazy(() => import('../components/home/CoreServices'));
+const WhyLimitless = React.lazy(() => import('../components/home/WhyLimitless'));
+const TestimonialsCarousel = React.lazy(() => import('../components/home/TestimonialsCarousel'));
+const Faq = React.lazy(() => import('../components/home/Faq'));
+const FinalCta = React.lazy(() => import('../components/home/FinalCta'));
 
 const Home: React.FC = () => {
   return (
     <>
       <HeroSection />
       <Partners />
-      <SolutionsOverview />
-      <CoreServices />
-      <WhyLimitless />
 
-      <TestimonialsCarousel />
-      <Faq />
-      <FinalCta />
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+        <SolutionsOverview />
+      </Suspense>
+
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+        <CoreServices />
+      </Suspense>
+
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+        <WhyLimitless />
+      </Suspense>
+
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+        <TestimonialsCarousel />
+      </Suspense>
+
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+        <Faq />
+      </Suspense>
+
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+        <FinalCta />
+      </Suspense>
     </>
   );
 };

@@ -20,24 +20,24 @@ const ChatbotAnalytics: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('30d');
 
-  const fetchAnalytics = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`/api/analytics/chatbot?range=${timeRange}`);
-      if (!response.ok) throw new Error('Failed to fetch analytics');
-      const data = await response.json();
-      setStats(data);
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch analytics';
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, [timeRange]);
-
   useEffect(() => {
+    const fetchAnalytics = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`/api/analytics/chatbot?range=${timeRange}`);
+        if (!response.ok) throw new Error('Failed to fetch analytics');
+        const data = await response.json();
+        setStats(data);
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch analytics';
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchAnalytics();
-  }, [fetchAnalytics]);
+  }, [timeRange]);
 
   if (loading) return <LoadingSpinner />;
   if (error) return <div className="text-red-500">Error: {error}</div>;

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -59,15 +58,15 @@ const Navigation: React.FC = () => {
     return (
       <nav className="fixed top-0 left-0 right-0 z-50 bg-transparent" role="navigation" aria-label="Main navigation">
         <div className="container-custom">
-          <div className="flex items-center justify-between h-20">
+          <div className="flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8">
             <Logo />
-            <div className="hidden lg:flex items-center space-x-8">
+            <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
               {/* Placeholder for navigation links */}
               <div className="w-20 h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
               <div className="w-16 h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
               <div className="w-18 h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
               <div className="w-24 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
             </div>
@@ -84,16 +83,16 @@ const Navigation: React.FC = () => {
         : 'bg-transparent'
     }`} role="navigation" aria-label="Main navigation">
       <div className="container-custom">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8">
           <Logo />
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-8">
+          {/* Desktop Navigation - Shows on medium screens and up */}
+          <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 href={link.path}
-                className={`font-medium transition-colors duration-200 hover:text-accent ${
+                className={`font-medium transition-colors duration-200 hover:text-accent whitespace-nowrap ${
                   isActivePath(link.path)
                     ? 'text-accent border-b-2 border-accent'
                     : 'text-gray-700 dark:text-gray-300'
@@ -105,7 +104,7 @@ const Navigation: React.FC = () => {
           </div>
 
           {/* Theme Toggle & CTA */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Theme Toggle */}
             <div className="relative">
               <button
@@ -122,7 +121,7 @@ const Navigation: React.FC = () => {
                     initial={{ opacity: 0, scale: 0.95, y: -10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                    className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1"
+                    className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50"
                   >
                     {themeOptions.map((option) => {
                       const IconComponent = option.icon;
@@ -147,18 +146,18 @@ const Navigation: React.FC = () => {
               </AnimatePresence>
             </div>
 
-            {/* Get Started Button */}
+            {/* Get Started Button - Hidden on mobile, shown on small screens and up */}
             <Link
               href="/contact#get-started"
-              className="hidden sm:inline-block btn-primary"
+              className="hidden sm:inline-block btn-primary whitespace-nowrap"
             >
               Get Started
             </Link>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Button - Shown on mobile and small screens */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               aria-label="Toggle menu"
             >
               {isMenuOpen ? (
@@ -170,16 +169,16 @@ const Navigation: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - Shows on mobile and small screens */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden"
+              className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden"
             >
-              <div className="py-4 space-y-2">
+              <div className="py-4 space-y-2 px-4">
                 {navLinks.map((link) => (
                   <Link
                     key={link.path}

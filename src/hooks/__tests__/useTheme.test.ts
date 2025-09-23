@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { useTheme } from '../useTheme';
 
 // Mock localStorage
@@ -41,12 +41,14 @@ describe('useTheme', () => {
     expect(result.current.theme).toBe('system');
   });
 
-  it('should load theme from localStorage', () => {
-    localStorageMock.getItem.mockReturnValue('dark');
+  it('should load theme from localStorage', async () => {
+    localStorageMock.getItem.mockImplementation((key) => key === 'theme' ? 'dark' : null);
 
     const { result } = renderHook(() => useTheme());
 
-    expect(result.current.theme).toBe('dark');
+    await waitFor(() => {
+      expect(result.current.theme).toBe('dark');
+    });
     expect(localStorageMock.getItem).toHaveBeenCalledWith('theme');
   });
 

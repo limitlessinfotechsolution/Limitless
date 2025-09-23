@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { logger } from '../../../src/lib/logger';
 
 // Helper function to create a Supabase client with user session
 const createSupabaseClient = async () => {
@@ -138,7 +139,7 @@ export async function GET(request: NextRequest) {
       totalPages: Math.ceil(count! / limit)
     });
   } catch (error) {
-    console.error('Error fetching testimonials:', error);
+    logger.error('Error fetching testimonials', { error });
     const errorMessage = error instanceof Error ? error.message : 'Failed to fetch testimonials';
     return NextResponse.json(
       { error: errorMessage },
@@ -189,7 +190,7 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error creating testimonial:', error);
+    logger.error('Error creating testimonial', { error });
     const errorMessage = error instanceof Error ? error.message : 'Failed to create testimonial';
     return NextResponse.json(
       { error: errorMessage },

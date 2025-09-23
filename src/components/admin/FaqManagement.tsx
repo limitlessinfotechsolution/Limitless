@@ -142,7 +142,7 @@ const FaqManagement: React.FC = () => {
   if (error) return <div className="text-red-500">Error: {error}</div>;
 
   return (
-    <div className="p-4">
+    <div className="max-w-7xl mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4">FAQ Management</h2>
 
       {/* FAQ Form */}
