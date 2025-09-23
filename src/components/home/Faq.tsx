@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
+import Image from 'next/image';
 import Card from '../ui/Card';
 
 const faqs = [
@@ -63,9 +64,11 @@ const Faq: React.FC = () => {
             <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
               Have questions? We have answers. If you can't find what you're looking for, feel free to contact us.
             </p>
-            <img 
-              src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800&h=600&fit=crop" 
+            <Image
+              src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800&h=600&fit=crop"
               alt="Abstract colorful background"
+              width={800}
+              height={600}
               className="rounded-xl shadow-lg"
             />
           </div>

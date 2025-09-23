@@ -16,15 +16,11 @@ interface ServicePlan {
   popular?: boolean;
 }
 
-interface ComparisonTableProps {
-  serviceId: string;
-}
-
-const ComparisonTable: React.FC<ComparisonTableProps> = ({ serviceId }) => {
+const ComparisonTable: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
 
-  // Generate comparison data based on serviceId
-  const getComparisonData = (serviceId: string): ServicePlan[] => {
+  // Generate comparison data
+  const getComparisonData = (): ServicePlan[] => {
     const baseFeatures = [
       { name: 'Custom Development', included: true, description: 'Tailored to your specific needs' },
       { name: 'Responsive Design', included: true, description: 'Mobile-first approach' },
@@ -59,7 +55,7 @@ const ComparisonTable: React.FC<ComparisonTableProps> = ({ serviceId }) => {
     ];
   };
 
-  const services = getComparisonData(serviceId);
+  const services = getComparisonData();
 
   return (
     <div className="overflow-x-auto">

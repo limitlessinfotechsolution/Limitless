@@ -73,7 +73,7 @@ const EnhancedFilters: React.FC<EnhancedFiltersProps> = ({
     label: string;
     isActive: boolean;
     onClick: () => void;
-    icon?: React.ComponentType<any>;
+    icon?: React.ComponentType<{ className?: string }>;
   }> = ({ label, isActive, onClick, icon: Icon }) => (
     <motion.button
       onClick={onClick}

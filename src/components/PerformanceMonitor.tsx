@@ -17,6 +17,11 @@ interface PerformanceMonitorProps {
   enableLogging?: boolean;
 }
 
+interface LayoutShiftEntry extends PerformanceEntry {
+  value: number;
+  hadRecentInput: boolean;
+}
+
 declare global {
   interface Window {
     gtag?: (command: string, targetId: string, config?: unknown) => void;
@@ -40,8 +45,6 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
   useEffect(() => {
     // Only run on client side
     if (typeof window === 'undefined') return;
-
-    let clsValue = 0;
 
     const updateMetric = (key: keyof PerformanceMetrics, value: number) => {
       setMetrics(prev => {
@@ -84,9 +87,8 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
           }
 
           case 'layout-shift': {
-            const layoutShiftEntry = entry as any;
+            const layoutShiftEntry = entry as LayoutShiftEntry;
             if (!layoutShiftEntry.hadRecentInput) {
-              clsValue += layoutShiftEntry.value;
               updateMetric('cls', layoutShiftEntry.value);
             }
             break;
@@ -163,7 +165,7 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
       observer.disconnect();
       clearInterval(metricsCheckInterval);
     };
-  }, [metrics.cls, onMetricsUpdate, enableLogging]);
+  }, [metrics, onMetricsUpdate, enableLogging]);
 
   // This component doesn't render anything visible
   return null;

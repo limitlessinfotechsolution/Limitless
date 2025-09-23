@@ -20,11 +20,10 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 interface ServiceRequestFormProps {
-  serviceId?: string;
   serviceName?: string;
 }
 
-const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ serviceId, serviceName }) => {
+const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ serviceName }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
@@ -43,14 +42,14 @@ const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ serviceId, serv
 
   const watchedFields = watch();
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async () => {
     setIsSubmitting(true);
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       setSubmitStatus('success');
       reset();
-    } catch (error) {
+    } catch {
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);

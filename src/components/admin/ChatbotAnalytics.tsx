@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Card from '../ui/Card';
 import LoadingSpinner from '../ui/LoadingSpinner';
-import { Users, MessageSquare, Clock } from 'lucide-react';
+import { Users, MessageSquare, Clock, ThumbsUp } from 'lucide-react';
 
 interface ChatbotStats {
   totalConversations: number;
@@ -20,11 +20,7 @@ const ChatbotAnalytics: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('30d');
 
-  useEffect(() => {
-    fetchAnalytics();
-  }, [timeRange]);
-
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(`/api/analytics/chatbot?range=${timeRange}`);
@@ -37,7 +33,11 @@ const ChatbotAnalytics: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [timeRange]);
+
+  useEffect(() => {
+    fetchAnalytics();
+  }, [fetchAnalytics]);
 
   if (loading) return <LoadingSpinner />;
   if (error) return <div className="text-red-500">Error: {error}</div>;
@@ -49,7 +49,7 @@ const ChatbotAnalytics: React.FC = () => {
         <h2 className="text-2xl font-bold">Chatbot Analytics</h2>
         <select
           value={timeRange}
-          onChange={(e) => setTimeRange(e.target.value as any)}
+          onChange={(e) => setTimeRange(e.target.value as '7d' | '30d' | '90d')}
           className="px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-600"
         >
           <option value="7d">Last 7 days</option>

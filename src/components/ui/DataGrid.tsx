@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -18,7 +18,7 @@ import Checkbox from './Checkbox';
 
 interface DataGridProps<T> {
   baseUrl: string;
-  columns: ColumnDef<T, any>[];
+  columns: ColumnDef<T, unknown>[];
   pageSize?: number;
   className?: string;
 }
@@ -33,7 +33,7 @@ interface SortItem {
   desc?: boolean;
 }
 
-const DataGrid = <T extends Record<string, any>>({
+const DataGrid = <T extends Record<string, unknown>>({
   baseUrl,
   columns,
   pageSize = 10,

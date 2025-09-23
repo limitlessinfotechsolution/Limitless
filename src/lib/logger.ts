@@ -1,145 +1,98 @@
-type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+import winston from 'winston';
 
-interface LogEntry {
-  level: LogLevel;
-  message: string;
-  data?: unknown;
-  timestamp: string;
-  userId?: string;
-  sessionId?: string;
-  url?: string;
-  userAgent?: string;
-}
+const isDevelopment = process.env.NODE_ENV === 'development';
+const isClient = typeof window !== 'undefined';
 
-class Logger {
-  private isDevelopment = process.env.NODE_ENV === 'development';
-  private logQueue: LogEntry[] = [];
-  private batchSize = 10;
-  private flushInterval = 30000; // 30 seconds
+// For server-side logging with Winston
+let winstonLogger: winston.Logger | null = null;
 
-  constructor() {
-    // Flush logs periodically
-    if (typeof window !== 'undefined') {
-      setInterval(() => this.flush(), this.flushInterval);
-    }
-  }
+if (!isClient) {
+  // Define log levels
+  const levels = {
+    error: 0,
+    warn: 1,
+    info: 2,
+    debug: 3,
+  };
 
-  private createLogEntry(level: LogLevel, message: string, data?: unknown): LogEntry {
-    return {
-      level,
-      message,
-      data,
-      timestamp: new Date().toISOString(),
-      userId: this.getUserId(),
-      sessionId: this.getSessionId(),
-      url: typeof window !== 'undefined' ? window.location.href : undefined,
-      userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : undefined,
-    };
-  }
+  // Define colors for each level
+  const colors = {
+    error: 'red',
+    warn: 'yellow',
+    info: 'green',
+    debug: 'blue',
+  };
 
-  private getUserId(): string | undefined {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('user_id') || undefined;
-    }
-    return undefined;
-  }
+  winston.addColors(colors);
 
-  private getSessionId(): string | undefined {
-    if (typeof window !== 'undefined') {
-      let sessionId = sessionStorage.getItem('session_id');
-      if (!sessionId) {
-        sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        sessionStorage.setItem('session_id', sessionId);
-      }
-      return sessionId;
-    }
-    return undefined;
-  }
+  // Create the Winston logger for server
+  winstonLogger = winston.createLogger({
+    level: isDevelopment ? 'debug' : 'info',
+    levels,
+    format: winston.format.combine(
+      winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+      winston.format.errors({ stack: true }),
+      winston.format.json()
+    ),
+    defaultMeta: { service: 'limitlessinfotech' },
+    transports: [
+      // Write all logs with importance level of `error` or less to `error.log`
+      new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
+      // Write all logs with importance level of `info` or less to `combined.log`
+      new winston.transports.File({ filename: 'logs/combined.log' }),
+    ],
+  });
 
-  private async sendToServer(logEntry: LogEntry) {
-    try {
-      await fetch('/api/analytics', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          event_type: `log_${logEntry.level}`,
-          event_data: {
-            message: logEntry.message,
-            data: logEntry.data,
-            url: logEntry.url,
-            userAgent: logEntry.userAgent,
-          },
-          session_id: logEntry.sessionId,
-        }),
-      });
-    } catch (error) {
-      if (this.isDevelopment) {
-        console.error('Failed to send log to server:', error);
-      }
-    }
-  }
-
-  private async flush() {
-    if (this.logQueue.length === 0) return;
-
-    const logsToSend = this.logQueue.splice(0);
-    await Promise.all(logsToSend.map(log => this.sendToServer(log)));
-  }
-
-  debug(message: string, data?: unknown) {
-    const entry = this.createLogEntry('debug', message, data);
-    if (this.isDevelopment) {
-      console.debug(`[${entry.timestamp}] DEBUG:`, message, data);
-    }
-    this.logQueue.push(entry);
-    if (this.logQueue.length >= this.batchSize) {
-      this.flush();
-    }
-  }
-
-  info(message: string, data?: unknown) {
-    const entry = this.createLogEntry('info', message, data);
-    if (this.isDevelopment) {
-      console.info(`[${entry.timestamp}] INFO:`, message, data);
-    }
-    this.logQueue.push(entry);
-    if (this.logQueue.length >= this.batchSize) {
-      this.flush();
-    }
-  }
-
-  warn(message: string, data?: unknown) {
-    const entry = this.createLogEntry('warn', message, data);
-    console.warn(`[${entry.timestamp}] WARN:`, message, data);
-    this.logQueue.push(entry);
-    this.flush();
-  }
-
-  error(message: string, error?: Error | any) {
-    const entry = this.createLogEntry('error', message, {
-      error: error?.message || error,
-      stack: error?.stack,
-    });
-    console.error(`[${entry.timestamp}] ERROR:`, message, error);
-    this.logQueue.push(entry);
-    this.flush();
-  }
-
-  trackEvent(eventType: string, data?: unknown) {
-    const entry = this.createLogEntry('info', `Event: ${eventType}`, data);
-    this.logQueue.push(entry);
-    if (this.logQueue.length >= this.batchSize) {
-      this.flush();
-    }
+  // If we're not in production then log to the `console` with the format:
+  if (isDevelopment) {
+    winstonLogger.add(new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize({ all: true }),
+        winston.format.simple()
+      )
+    }));
   }
 }
 
-export const logger = new Logger();
+// Logger interface
+interface Logger {
+  error(message: string, meta?: unknown): void;
+  warn(message: string, meta?: unknown): void;
+  info(message: string, meta?: unknown): void;
+  debug(message: string, meta?: unknown): void;
+}
 
-// Global error handler
-if (typeof window !== 'undefined') {
+// Client-side logger using console
+const clientLogger: Logger = {
+  error: (message: string, meta?: unknown) => {
+    console.error(`[${new Date().toISOString()}] ERROR:`, message, meta);
+  },
+  warn: (message: string, meta?: unknown) => {
+    console.warn(`[${new Date().toISOString()}] WARN:`, message, meta);
+  },
+  info: (message: string, meta?: unknown) => {
+    console.info(`[${new Date().toISOString()}] INFO:`, message, meta);
+  },
+  debug: (message: string, meta?: unknown) => {
+    if (isDevelopment) {
+      console.debug(`[${new Date().toISOString()}] DEBUG:`, message, meta);
+    }
+  },
+};
+
+// Server-side logger using Winston
+const serverLogger: Logger = {
+  error: (message: string, meta?: unknown) => winstonLogger?.error(message, meta),
+  warn: (message: string, meta?: unknown) => winstonLogger?.warn(message, meta),
+  info: (message: string, meta?: unknown) => winstonLogger?.info(message, meta),
+  debug: (message: string, meta?: unknown) => winstonLogger?.debug(message, meta),
+};
+
+// Export the appropriate logger
+export const logger = isClient ? clientLogger : serverLogger;
+
+// Global error handler (client-side only)
+if (isClient) {
   window.addEventListener('error', (event) => {
     logger.error('Global error', {
       message: event.message,
