@@ -74,15 +74,7 @@ const FaqPage: React.FC = () => {
       .slice(0, 5);
   }, [faqs]);
 
-  // Function to highlight search term
-  const highlightText = (text: string, term: string) => {
-    if (!term) return text;
-    const regex = new RegExp(`(${term})`, 'gi');
-    const parts = text.split(regex);
-    return parts.map((part, index) =>
-      regex.test(part) ? <mark key={index} className="bg-yellow-200">{part}</mark> : part
-    );
-  };
+
 
   if (loading) {
     return (
@@ -101,7 +93,7 @@ const FaqPage: React.FC = () => {
         {/* Enhanced Search Functionality */}
         <SearchFunctionality
           faqs={faqs}
-          onSearchResults={(results) => {
+          onSearchResults={() => {
             // Handle search results if needed
           }}
           className="mb-8"

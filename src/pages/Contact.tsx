@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin } from 'lucide-react';
@@ -17,7 +19,7 @@ const Contact: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'inquiry' | 'project'>('inquiry');
   const { trackTabSwitch } = useContactBehaviorTracking();
   const personalizationHook = usePersonalization();
-  const { personalizedContent, trackInterest } = personalizationHook || {};
+  const { personalizedContent, trackInterest } = personalizationHook || { personalizedContent: null, trackInterest: null };
   
   // Default content as fallback
   const defaultContent = {
@@ -302,4 +304,20 @@ const Contact: React.FC = () => {
   );
 };
 
-export default Contact;
+export default Contact;//
+Prevent
+static
+generation
+for
+this
+page
+to
+avoid
+SSR
+issues
+with
+hooks
+// Prevent static generation for this page to avoid SSR issues with hooks
+export const getServerSideProps = () => {
+  return { props: {} };
+};

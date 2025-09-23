@@ -1,6 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
 import { ChatContext, IntentDetection, EscalationData } from '../types/chat';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Initialize Supabase client if environment variables are available
 const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -9,9 +8,6 @@ const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SE
       process.env.SUPABASE_SERVICE_ROLE_KEY
     )
   : null;
-
-// Initialize Google AI
-const genAI = process.env.GOOGLE_AI_API_KEY ? new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY) : null;
 
 interface KnowledgeItem {
   content: string;
@@ -144,7 +140,7 @@ export class AuralisAI {
       { keywords: ['demo', 'trial', 'test', 'try', 'show me', 'see'], intent: 'demo', actions: ['Schedule demo', 'Request trial', 'View product tour'] },
       { keywords: ['integration', 'api', 'connect', 'sync', 'third party', 'external'], intent: 'integration', actions: ['View integrations', 'API documentation', 'Setup guide'] },
       { keywords: ['web', 'website', 'site', 'online presence'], intent: 'web_development', actions: ['View web services', 'See examples', 'Get quote'] },
-      { keywords: ['mobile', 'app', 'ios', 'android', 'application'], intent: 'mobile_development', actions: ['View mobile services', 'See app examples', 'Get quote'] },
+      { keywords: ['mobile', 'app', 'ios', 'android', 'application'], intent: 'mobile_development', actions: ['View mobile apps', 'See app examples', 'Get quote'] },
       { keywords: ['ai', 'artificial intelligence', 'automation', 'chatbot', 'machine learning'], intent: 'ai_solutions', actions: ['Learn about AI services', 'See AI examples', 'Discuss automation'] },
       { keywords: ['hire', 'work with', 'partner', 'collaboration', 'employment'], intent: 'partnership', actions: ['View partnership options', 'Schedule meeting', 'Discuss opportunities'] },
     ];
@@ -214,65 +210,10 @@ export class AuralisAI {
     };
   }
 
-  // Phase 3: Enhanced Response Generation with Google AI
-  async generateResponse(message: string, intent: IntentDetection, preferences?: { preferredTopics: string[]; interactionCount: number; responsePreferences: { formal: boolean; detailed: boolean } }): Promise<string> {
+  // Phase 3: Enhanced Response Generation
+  async generateResponse(message: string, intent: IntentDetection): Promise<string> {
     await this.loadKnowledgeBase();
 
-    // If Google AI is available, use it for generating responses
-    if (genAI) {
-      try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-
-        // Prepare context from knowledge base
-        const knowledgeContext = this.knowledgeBase.map(item =>
-          `${item.category}: ${item.content}`
-        ).join('\n');
-
-        // Build user context from preferences
-        let userContext = '';
-        if (preferences) {
-          userContext = `User Context:
-- Interaction Count: ${preferences.interactionCount}
-- Preferred Topics: ${preferences.preferredTopics.join(', ') || 'None'}
-- Response Style: ${preferences.responsePreferences.formal ? 'Formal' : 'Casual'}, ${preferences.responsePreferences.detailed ? 'Detailed' : 'Concise'}
-`;
-        }
-
-        const prompt = `
-You are Auralis, an AI assistant for Limitless Infotech, a technology company specializing in web development, mobile applications, AI automation, and custom software solutions.
-
-Company Information:
-- We offer web development, mobile apps, custom software, CRM, AI automation
-- Technologies: React, Next.js, Node.js, Python, AI/ML, cloud services
-- We've delivered 120+ projects across education, finance, healthcare, and technology
-- 98% client retention rate
-
-Knowledge Base:
-${knowledgeContext}
-
-${userContext}
-User Message: "${message}"
-Detected Intent: ${intent.intent}
-Confidence: ${intent.confidence}
-
-Please provide a helpful, professional response as Auralis. Keep responses concise but informative. If the user is asking about services, pricing, or company information, provide accurate details. If it's a general inquiry, offer to help with specific services or provide contact information.
-
-Response should be natural and conversational, not like a robot. Adjust tone and detail level based on user preferences.
-`;
-
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
-
-        if (text && text.trim().length > 0) {
-          return text.trim();
-        }
-      } catch (error) {
-        console.warn('Google AI generation failed, falling back to predefined responses:', error);
-      }
-    }
-
-    // Fallback to predefined responses if Google AI is not available or fails
     const lowerMessage = message.toLowerCase();
 
     // Handle specific intents with enhanced responses
@@ -428,12 +369,10 @@ Response should be natural and conversational, not like a robot. Adjust tone and
 
         if (lowerMessage.includes('support') || lowerMessage.includes('maintenance')) {
           return "We provide comprehensive post-launch support including bug fixes, updates, performance monitoring, and feature enhancements. Our support packages range from basic maintenance to 24/7 dedicated support.";
-
         }
 
         if (lowerMessage.includes('security') || lowerMessage.includes('secure')) {
           return "Security is paramount in our development process. We implement industry-standard security practices including SSL/TLS encryption, secure authentication, data validation, and regular security audits. All our solutions comply with GDPR and other regulations.";
-
         }
 
         // Fallback to knowledge base search
@@ -553,5 +492,19 @@ Response should be natural and conversational, not like a robot. Adjust tone and
     }
 
     return suggestions.slice(0, 6); // Limit to 6 suggestions
+  }
+
+  // Phase 3.5: Enhanced Response with Suggestions
+  async generateResponseWithSuggestions(message: string): Promise<{ response: string; suggestions: string[] }> {
+    const intent = this.detectIntent(message);
+    const response = await this.generateResponse(message, intent);
+    const suggestions = this.generateProactiveSuggestions(intent, this.context || {
+      currentPage: '/',
+      userAgent: '',
+      sessionStartTime: '',
+      messageCount: 0,
+      lastActivity: ''
+    });
+    return { response, suggestions };
   }
 }
