@@ -304,20 +304,4 @@ const Contact: React.FC = () => {
   );
 };
 
-export default Contact;//
-Prevent
-static
-generation
-for
-this
-page
-to
-avoid
-SSR
-issues
-with
-hooks
-// Prevent static generation for this page to avoid SSR issues with hooks
-export const getServerSideProps = () => {
-  return { props: {} };
-};
+export default Contact;
