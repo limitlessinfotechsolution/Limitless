@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { Users, Award, Target } from 'lucide-react';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
+import CardEnhanced from '@/components/ui/Card-enhanced';
+import { Button } from '@/components/ui/Button';
 
 export default function TeamPage() {
   const teamMembers = [
@@ -88,15 +88,15 @@ export default function TeamPage() {
 
       {/* Company Values */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-        {values.map((value, index) => (
-          <Card key={index} variant="elevated" className="text-center p-8">
-            <div className="flex justify-center mb-4">
-              {value.icon}
-            </div>
-            <h3 className="heading-sm mb-2">{value.title}</h3>
-            <p className="text-gray-600 dark:text-gray-400">{value.description}</p>
-          </Card>
-        ))}
+          {values.map((value, index) => (
+            <CardEnhanced key={index} variant="elevated" className="text-center p-8">
+              <div className="flex justify-center mb-4">
+                {value.icon}
+              </div>
+              <h3 className="heading-sm mb-2">{value.title}</h3>
+              <p className="text-gray-600 dark:text-gray-400">{value.description}</p>
+            </CardEnhanced>
+          ))}
       </div>
 
       {/* Team Members */}
@@ -104,7 +104,7 @@ export default function TeamPage() {
         <h2 className="heading-lg text-center mb-12">Meet Our Experts</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {teamMembers.map((member) => (
-            <Card key={member.id} variant="outlined" className="text-center">
+            <CardEnhanced key={member.id} variant="outlined" className="text-center">
               <div className="flex justify-center mb-4">
                 <div className="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                   <Users className="w-12 h-12 text-gray-500 dark:text-gray-400" />
@@ -114,22 +114,22 @@ export default function TeamPage() {
               <p className="text-accent font-medium mb-3">{member.role}</p>
               <p className="text-gray-600 dark:text-gray-400 mb-4">{member.bio}</p>
               <Button variant="outline" size="sm">View Profile</Button>
-            </Card>
+            </CardEnhanced>
           ))}
         </div>
       </div>
 
       {/* CTA Section */}
-      <Card variant="gradient" className="text-center p-12">
+      <CardEnhanced variant="gradient" className="text-center p-12">
         <h2 className="heading-lg mb-4">Join Our Team</h2>
         <p className="text-xl text-gray-700 dark:text-gray-300 mb-6 max-w-2xl mx-auto">
-          We're always looking for talented individuals to join our growing team. 
+          We're always looking for talented individuals to join our growing team.
           Check out our career opportunities and become part of something amazing.
         </p>
         <Button variant="primary" size="lg">
           View Career Opportunities
         </Button>
-      </Card>
+      </CardEnhanced>
     </div>
   );
 }

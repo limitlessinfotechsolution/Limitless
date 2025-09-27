@@ -21,16 +21,8 @@ const createSupabaseClient = async () => {
 // GET: Fetch all categories
 export async function GET() {
   try {
-    const supabase = await createSupabaseClient();
-    
-    const { data, error } = await supabase
-      .from('testimonial_categories')
-      .select('*')
-      .order('name');
-
-    if (error) throw error;
-
-    return NextResponse.json(data);
+    // Return empty array as testimonial_categories table doesn't exist in current schema
+    return NextResponse.json([]);
   } catch (error) {
     console.error('Error fetching categories:', error);
     const errorMessage = error instanceof Error ? error.message : 'Failed to fetch categories';

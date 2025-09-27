@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { Briefcase, TrendingUp, Calendar, DollarSign } from 'lucide-react';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 
 export default function CareersPage() {
   const benefits = [

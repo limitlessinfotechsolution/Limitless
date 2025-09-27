@@ -136,7 +136,7 @@ The previous implementation had several issues that contributed to the messy app
 **After:**
 - Added SVG placeholder images for both office locations
 - Created `public/images/` directory
-- Added `office-mumbai.jpg` and `office-delhi.jpg` placeholder images
+- Added `office-mumbai.jpg` placeholder image
 
 ### 10. Animation and Interaction
 

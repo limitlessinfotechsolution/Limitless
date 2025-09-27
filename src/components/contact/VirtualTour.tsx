@@ -19,15 +19,6 @@ const VirtualTour: React.FC<VirtualTourProps> = ({ className = '' }) => {
       image: '/images/office-mumbai.jpg',
       virtualTourUrl: 'https://example.com/virtual-tour-mumbai',
       mapUrl: 'https://maps.google.com/?q=123+Business+Park+Mumbai+India'
-    },
-    {
-      id: 'delhi-office',
-      name: 'Delhi Branch Office',
-      address: '456 Tech Hub, Connaught Place, Delhi, India',
-      description: 'Strategic location in the heart of Delhi, perfect for client meetings and team collaborations.',
-      image: '/images/office-delhi.jpg',
-      virtualTourUrl: 'https://example.com/virtual-tour-delhi',
-      mapUrl: 'https://maps.google.com/?q=456+Tech+Hub+Delhi+India'
     }
   ];
 

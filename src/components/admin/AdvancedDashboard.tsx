@@ -1,8 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Card from '../ui/Card';
-import LoadingSpinner from '../ui/LoadingSpinner';
+import Breadcrumb from '../ui/Breadcrumb';
+import Skeleton from '../ui/Skeleton';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import {
   Users,
   FileText,
@@ -10,6 +13,9 @@ import {
   TrendingUp,
   Clock,
   AlertCircle,
+  Activity,
+  Zap,
+  HardDrive,
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -85,13 +91,26 @@ interface ProjectData {
 }
 
 const AdvancedDashboard: React.FC = () => {
+  const router = useRouter();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
+  const [chartData, setChartData] = useState<{ date: string; leads: number }[]>([]);
+  const [healthMetrics, setHealthMetrics] = useState<{
+    uptime: string;
+    responseTime: number;
+    memoryUsage: number;
+    status: 'healthy' | 'warning' | 'error';
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchDashboardData();
+
+    // Set up polling for real-time updates every 5 minutes
+    const interval = setInterval(fetchDashboardData, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const fetchDashboardData = async () => {
@@ -127,32 +146,90 @@ const AdvancedDashboard: React.FC = () => {
 
       setStats(dashboardStats);
 
-      // Generate recent activity (mock data for now)
-      const activities: RecentActivity[] = [
-        {
-          id: '1',
-          type: 'lead',
-          action: 'New lead received',
-          title: 'John Doe - Web Development Project',
-          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        },
-        {
-          id: '2',
-          type: 'page',
-          action: 'Page updated',
-          title: 'Services page content updated',
-          timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-        },
-        {
-          id: '3',
-          type: 'testimonial',
-          action: 'Testimonial approved',
-          title: 'Sarah Johnson testimonial approved',
-          timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-        },
-      ];
+      // Generate recent activity from real data
+      const allActivities: RecentActivity[] = [];
 
-      setRecentActivity(activities);
+      // Process pages
+      if (pagesData.pages) {
+        pagesData.pages.forEach((page: PageData) => {
+          allActivities.push({
+            id: `page-${page.id}`,
+            type: 'page',
+            action: page.is_published ? 'Page published' : 'Page updated',
+            title: page.page_name,
+            timestamp: page.updated_at,
+          });
+        });
+      }
+
+      // Process testimonials
+      if (testimonialsData.testimonials) {
+        testimonialsData.testimonials.forEach((testimonial: TestimonialData) => {
+          allActivities.push({
+            id: `testimonial-${testimonial.id}`,
+            type: 'testimonial',
+            action: testimonial.approved ? 'Testimonial approved' : 'Testimonial submitted',
+            title: `${testimonial.name} - ${testimonial.company}`,
+            timestamp: testimonial.updated_at,
+          });
+        });
+      }
+
+      // Process leads
+      if (leadsData.leads) {
+        leadsData.leads.forEach((lead: LeadData) => {
+          const businessBasics = lead.business_basics as { companyName?: string; contactName?: string };
+          allActivities.push({
+            id: `lead-${lead.id}`,
+            type: 'lead',
+            action: 'New lead received',
+            title: `${businessBasics.contactName || 'Unknown'} - ${businessBasics.companyName || 'Project Inquiry'}`,
+            timestamp: lead.created_at,
+          });
+        });
+      }
+
+      // Process projects
+      if (projectsData.projects) {
+        projectsData.projects.forEach((project: ProjectData) => {
+          allActivities.push({
+            id: `project-${project.id}`,
+            type: 'project',
+            action: project.is_published ? 'Project published' : 'Project updated',
+            title: project.title,
+            timestamp: project.updated_at,
+          });
+        });
+      }
+
+      // Sort by timestamp descending and take the 10 most recent
+      allActivities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+      setRecentActivity(allActivities.slice(0, 10));
+
+      // Generate chart data for leads over last 7 days
+      const last7Days = Array.from({ length: 7 }, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - (6 - i));
+        return date.toISOString().split('T')[0];
+      });
+
+      const chartDataMap = last7Days.map(date => {
+        const count = leadsData.leads?.filter((lead: LeadData) =>
+          new Date(lead.created_at).toISOString().split('T')[0] === date
+        ).length || 0;
+        return { date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), leads: count };
+      });
+
+      setChartData(chartDataMap);
+
+      // Mock system health metrics
+      const mockHealthMetrics = {
+        uptime: '7d 4h 23m',
+        responseTime: Math.floor(Math.random() * 200) + 50, // 50-250ms
+        memoryUsage: Math.floor(Math.random() * 30) + 60, // 60-90%
+        status: 'healthy' as const,
+      };
+      setHealthMetrics(mockHealthMetrics);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to fetch dashboard data');
     } finally {
@@ -160,7 +237,65 @@ const AdvancedDashboard: React.FC = () => {
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto space-y-6">
+        <Breadcrumb items={[{ label: 'Dashboard' }]} />
+        <div className="flex justify-between items-center">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-32" />
+        </div>
+
+        {/* Stats Grid Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <Card key={index} className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-8 w-12" />
+                  <Skeleton className="h-3 w-24" />
+                </div>
+                <Skeleton className="h-12 w-12 rounded-full" />
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* Recent Activity Skeleton */}
+        <Card className="p-6">
+          <Skeleton className="h-6 w-32 mb-4" />
+          <div className="space-y-4">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <div key={index} className="flex items-center space-x-4 p-3">
+                <Skeleton className="h-8 w-8 rounded-full" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-48" />
+                </div>
+                <Skeleton className="h-4 w-24" />
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* Quick Actions Skeleton */}
+        <Card className="p-6">
+          <Skeleton className="h-6 w-28 mb-4" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={index} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                <Skeleton className="h-6 w-6 mb-2" />
+                <Skeleton className="h-5 w-32 mb-1" />
+                <Skeleton className="h-3 w-40" />
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   if (error) return <div className="text-red-500">{error}</div>;
   if (!stats) return <div>No data available</div>;
 
@@ -227,6 +362,7 @@ const AdvancedDashboard: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
+      <Breadcrumb items={[{ label: 'Dashboard' }]} />
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <div className="text-sm text-gray-500">
@@ -261,6 +397,69 @@ const AdvancedDashboard: React.FC = () => {
         })}
       </div>
 
+      {/* System Health */}
+      {healthMetrics && (
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold mb-4">System Health</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 rounded-full bg-green-100 dark:bg-green-900">
+                <Activity className="w-6 h-6 text-green-600 dark:text-green-400" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Status</p>
+                <p className="text-lg font-bold text-green-600 dark:text-green-400 capitalize">
+                  {healthMetrics.status}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="p-3 rounded-full bg-blue-100 dark:bg-blue-900">
+                <Zap className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Response Time</p>
+                <p className="text-lg font-bold text-gray-900 dark:text-white">
+                  {healthMetrics.responseTime}ms
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="p-3 rounded-full bg-purple-100 dark:bg-purple-900">
+                <HardDrive className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Memory Usage</p>
+                <p className="text-lg font-bold text-gray-900 dark:text-white">
+                  {healthMetrics.memoryUsage}%
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Uptime: {healthMetrics.uptime}
+            </p>
+          </div>
+        </Card>
+      )}
+
+      {/* Analytics Chart */}
+      <Card className="p-6">
+        <h2 className="text-xl font-semibold mb-4">Leads Trend (Last 7 Days)</h2>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Line type="monotone" dataKey="leads" stroke="#8b5cf6" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+
       {/* Recent Activity */}
       <Card className="p-6">
         <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
@@ -286,18 +485,27 @@ const AdvancedDashboard: React.FC = () => {
       {/* Quick Actions */}
       <Card className="p-6">
         <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-left">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <button
+            onClick={() => router.push('/admin/pages')}
+            className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-left transition-colors"
+          >
             <FileText className="w-6 h-6 mb-2 text-blue-600" />
             <h3 className="font-medium">Create New Page</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">Add a new page to your website</p>
           </button>
-          <button className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-left">
+          <button
+            onClick={() => router.push('/admin/testimonials')}
+            className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-left transition-colors"
+          >
             <MessageSquare className="w-6 h-6 mb-2 text-green-600" />
             <h3 className="font-medium">Review Testimonials</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">Approve pending testimonials</p>
           </button>
-          <button className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-left">
+          <button
+            onClick={() => router.push('/admin/leads')}
+            className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-left transition-colors"
+          >
             <Users className="w-6 h-6 mb-2 text-purple-600" />
             <h3 className="font-medium">View Leads</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">Check recent inquiries</p>

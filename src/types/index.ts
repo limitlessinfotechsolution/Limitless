@@ -1,11 +1,67 @@
-export interface Service {
+export interface AuditLogDetails {
+  [key: string]: string | number | boolean | object | null;
+}
+
+export interface AuditLogEntry {
+  action: string;
+  entity: string;
+  entityId?: string;
+  userId?: string;
+  details?: AuditLogDetails;
+  ipAddress?: string;
+  userAgent?: string;
+  timestamp?: string;
+}
+
+export interface AuditLogQuery {
+  filters: {
+    action?: string;
+    entity?: string;
+    dateFrom?: Date;
+    dateTo?: Date;
+  };
+  pagination: {
+    page: number;
+    limit: number;
+  };
+  sort: {
+    field: string;
+    direction: 'asc' | 'desc';
+  };
+}
+
+export enum ExportFormat {
+  CSV = 'csv',
+  PDF = 'pdf',
+  JSON = 'json',
+}
+
+// Extend existing interfaces if needed
+export interface ExtendedLeadData {
   id: string;
-  title: string;
-  description: string;
-  icon: string;
-  features: string[];
-  benefits: string;
-  link: string;
+  business_basics: Record<string, unknown>;
+  project_details: Record<string, unknown>;
+  timeline_budget: Record<string, unknown>;
+  source_page: string;
+  lead_score: number;
+  created_at: string;
+  updated_at: string;
+  selected?: boolean; // For bulk actions
+}
+
+export interface ExtendedTestimonialData {
+  id: string;
+  name: string;
+  role: string;
+  company: string;
+  content: string;
+  rating: number;
+  image?: string;
+  approved: boolean;
+  page_id?: string;
+  created_at: string;
+  updated_at: string;
+  selected?: boolean; // For bulk actions
 }
 
 export interface Testimonial {
@@ -16,77 +72,15 @@ export interface Testimonial {
   content: string;
   rating: number;
   image?: string;
-  service?: string;
-  industry?: string;
+  approved: boolean;
+  page_id?: string;
+  created_at: string;
+  updated_at: string;
 }
 
-export interface Project {
-  id: string;
-  title: string;
-  description: string;
-  industry: string;
-  serviceType: string;
-  projectSize: string;
-  image: string;
-  challenge: string;
-  solution: string;
-  techStack: string[];
-  results: string[];
-  clientReview?: {
-    content: string;
-    author: string;
-    rating: number;
-  };
-}
-
-export interface TeamMember {
-  id: string;
-  name: string;
-  role: string;
-  bio: string;
-  image: string;
-}
-
-export interface ContactFormData {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-}
-
-export interface AdvancedFormData {
-  // Step 1: Business Basics
-  companyName: string;
-  industry: string;
-  businessStage: string;
-  currentChallenges: string;
-  
-  // Step 2: Project Details
-  serviceType: string;
-  desiredFeatures: string;
-  techPreferences: string;
-  
-  // Step 3: Timeline & Budget
-  preferredStartDate: string;
-  targetCompletionDate: string;
-  budgetRange: string;
-  additionalNotes: string;
-}
-
-export type Theme = 'light' | 'dark' | 'system';
-
-export interface ChatMessage {
-  id: string;
-  sender: 'user' | 'bot';
-  content: string;
-  timestamp: string;
-  suggestions?: string[];
-  structuredData?: {
-    type: 'serviceList';
-    items: { title: string; link: string }[];
-  } | {
-    type: 'faq';
-    items: { question: string }[];
-  };
-  feedback?: 'positive' | 'negative' | null;
+export interface SecurityMetric {
+  threatLevel: 'low' | 'medium' | 'high';
+  loginAttempts: number;
+  suspiciousIPs: string[];
+  timestamp: Date;
 }

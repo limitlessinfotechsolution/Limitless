@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { supabase } from '../lib/supabaseClient';
 import { Testimonial } from '../types';
 import { Tables } from '../types/supabase';
-import Card from '../components/ui/Card';
+import { Card } from '../components/ui/Card';
 import CardEnhanced from '../components/ui/Card-enhanced';
 import StarRating from '../components/ui/StarRating';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
@@ -40,34 +39,30 @@ const Testimonials: React.FC = () => {
   const fetchTestimonials = useCallback(async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('testimonials')
-        .select('*')
-        .eq('approved', true)
-        .order('created_at', { ascending: false });
-      
-      if (error) {
-        setError(error.message);
-        console.error('Error fetching testimonials:', error);
-      } else if (data) {
-        // Use the data as-is since there are no category/tag relationships
-        setReviews(data);
-        
-        // Calculate stats
-        const total = data.length;
-        const featured = data.filter((t: TestimonialRow) => t.rating >= 5).length;
-        const avgRating = total > 0 
-          ? data.reduce((sum: number, t: TestimonialRow) => sum + t.rating, 0) / total 
-          : 0;
-          
-        setStats({
-          total,
-          averageRating: parseFloat(avgRating.toFixed(1)),
-          featured
-        });
+      const response = await fetch('/api/testimonials');
+      if (!response.ok) {
+        throw new Error('Failed to fetch testimonials');
       }
+      const data = await response.json();
+      const testimonials = data.testimonials || [];
+
+      setReviews(testimonials);
+
+      // Calculate stats
+      const total = testimonials.length;
+      const featured = testimonials.filter((t: TestimonialRow) => t.rating >= 5).length;
+      const avgRating = total > 0
+        ? testimonials.reduce((sum: number, t: TestimonialRow) => sum + t.rating, 0) / total
+        : 0;
+
+      setStats({
+        total,
+        averageRating: parseFloat(avgRating.toFixed(1)),
+        featured
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch testimonials');
+      console.error('Error fetching testimonials:', err);
     } finally {
       setLoading(false);
     }
@@ -405,20 +400,25 @@ const Testimonials: React.FC = () => {
             <ReviewSubmission
               onSubmit={async (data) => {
                 try {
-                  const { error } = await supabase.from('testimonials').insert([
-                    {
+                  const response = await fetch('/api/testimonials', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
                       ...data,
                       approved: false,
                       industry: (data as unknown as EnhancedTestimonial).industry,
                       service: (data as unknown as EnhancedTestimonial).service,
                       // Note: attachments and projectSnippet are handled in ReviewSubmission component
-                    }
-                  ]);
+                    }),
+                  });
 
-                  if (error) {
-                    throw new Error(error.message);
+                  if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to submit review');
                   }
-                  
+
                   // Refresh testimonials after submission
                   fetchTestimonials();
                 } catch (err) {

@@ -21,16 +21,8 @@ const createSupabaseClient = async () => {
 // GET: Fetch all tags
 export async function GET() {
   try {
-    const supabase = await createSupabaseClient();
-    
-    const { data, error } = await supabase
-      .from('testimonial_tags')
-      .select('*')
-      .order('name');
-
-    if (error) throw error;
-
-    return NextResponse.json(data);
+    // Return empty array as testimonial_tags table doesn't exist in current schema
+    return NextResponse.json([]);
   } catch (error) {
     console.error('Error fetching tags:', error);
     const errorMessage = error instanceof Error ? error.message : 'Failed to fetch tags';

@@ -34,21 +34,11 @@ export async function GET(request: NextRequest) {
     const industry = searchParams.get('industry');
     const service = searchParams.get('service');
     const rating = searchParams.get('rating');
-    const categoryId = searchParams.get('category');
-    const tagId = searchParams.get('tag');
     
     // Build the base query
     let query = supabase
       .from('testimonials')
-      .select(`
-        *,
-        testimonial_category_assignments(
-          testimonial_categories(name, description)
-        ),
-        testimonial_tag_assignments(
-          testimonial_tags(name, color)
-        )
-      `)
+      .select('*')
       .eq('approved', true)
       .order('created_at', { ascending: false });
     
@@ -72,33 +62,7 @@ export async function GET(request: NextRequest) {
       query = query.eq('rating', parseInt(rating));
     }
     
-    // Apply category filter if provided
-    if (categoryId && categoryId !== 'all') {
-      // First get testimonial IDs that belong to this category
-      const { data: categoryAssignments, error: categoryError } = await supabase
-        .from('testimonial_category_assignments')
-        .select('testimonial_id')
-        .eq('category_id', categoryId);
-      
-      if (categoryError) throw categoryError;
-      
-      const testimonialIds = categoryAssignments.map((assignment: { testimonial_id: string }) => assignment.testimonial_id);
-      query = query.in('id', testimonialIds);
-    }
-    
-    // Apply tag filter if provided
-    if (tagId && tagId !== 'all') {
-      // First get testimonial IDs that have this tag
-      const { data: tagAssignments, error: tagError } = await supabase
-        .from('testimonial_tag_assignments')
-        .select('testimonial_id')
-        .eq('tag_id', tagId);
-      
-      if (tagError) throw tagError;
-      
-      const testimonialIds = tagAssignments.map((assignment: { testimonial_id: string }) => assignment.testimonial_id);
-      query = query.in('id', testimonialIds);
-    }
+    // Note: Category and tag filters disabled as tables don't exist in current schema
     
     // Apply pagination
     const { data, error, count } = await query
@@ -108,29 +72,8 @@ export async function GET(request: NextRequest) {
       throw new Error(error.message);
     }
     
-    // Transform the data to include flattened categories and tags
-    const testimonials = data.map((testimonial) => {
-       
-      const categories = testimonial.testimonial_category_assignments
-        ? (testimonial.testimonial_category_assignments as Array<{ testimonial_categories: unknown }>)
-          .map(assignment => assignment.testimonial_categories)
-        : [];
-      
-       
-      const tags = testimonial.testimonial_tag_assignments
-        ? (testimonial.testimonial_tag_assignments as Array<{ testimonial_tags: unknown }>)
-          .map(assignment => assignment.testimonial_tags)
-        : [];
-      
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { testimonial_category_assignments, testimonial_tag_assignments, ...rest } = testimonial;
-      
-      return {
-        ...rest,
-        categories,
-        tags
-      };
-    });
+    // Return testimonials as is (categories and tags not implemented in current schema)
+    const testimonials = data;
     
     return NextResponse.json({
       testimonials,
