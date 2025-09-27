@@ -15,6 +15,14 @@ export const UI_CONFIG = {
       light: '#1F2937',
       dark: '#F9FAFB',
     },
+    professional: {
+      shadow: 'shadow-lg',
+      border: 'border-gray-200 dark:border-gray-700',
+    },
+    innovative: {
+      primary: '#6366f1',
+      glow: 'shadow-indigo-500/25',
+    },
   },
 
   // Animations
@@ -25,6 +33,9 @@ export const UI_CONFIG = {
       slow: 500,
     },
     easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+    professional: {
+      smooth: 'cubic-bezier(0.4, 0, 0.2, 1)',
+    },
   },
 
   // Breakpoints (Tailwind defaults)

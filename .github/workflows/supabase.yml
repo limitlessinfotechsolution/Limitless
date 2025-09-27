@@ -1,0 +1,62 @@
+name: Supabase CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'supabase/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'supabase/**'
+
+env:
+  SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+  SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+
+jobs:
+  supabase-lint:
+    name: Supabase Lint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Supabase CLI
+      uses: supabase/setup-cli@v1
+      with:
+        version: latest
+    - name: Lint migrations
+      run: supabase db lint --db-url "$DATABASE_URL"
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+  supabase-test:
+    name: Supabase Tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Supabase CLI
+      uses: supabase/setup-cli@v1
+      with:
+        version: latest
+    - name: Start Supabase local
+      run: supabase start
+    - name: Run tests
+      run: supabase test db
+    - name: Stop Supabase local
+      run: supabase stop
+
+  supabase-deploy:
+    name: Supabase Deploy
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [supabase-lint, supabase-test]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Supabase CLI
+      uses: supabase/setup-cli@v1
+      with:
+        version: latest
+    - name: Deploy migrations
+      run: supabase db push --include-all
+    - name: Deploy functions
+      run: supabase functions deploy

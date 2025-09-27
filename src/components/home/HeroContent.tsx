@@ -84,7 +84,7 @@ const HeroContent: React.FC = React.memo(() => {
           className="px-8 py-4 text-lg font-bold"
         >
           Start Your Project
-          <span className="ml-2">→</span>
+          <span className="ml-2" aria-hidden="true">→</span>
         </EnhancedCTA>
         <EnhancedCTA
           href="/portfolio"
@@ -105,7 +105,7 @@ const HeroContent: React.FC = React.memo(() => {
       >
         {trustIndicators.map((indicator, index) => (
           <div key={index} className="flex items-center text-gray-600 dark:text-gray-400">
-            <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
+            <CheckCircle className="w-5 h-5 text-green-500 mr-2" data-testid="checkmark-icon" />
             <span>{indicator.text}</span>
           </div>
         ))}

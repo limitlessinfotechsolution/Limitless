@@ -96,7 +96,7 @@ const ProfessionalLoader: React.FC<ProfessionalLoaderProps> = ({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center" role="status">
       {renderLoader()}
       {message && (
         <motion.p

@@ -131,7 +131,7 @@ const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project }) => {
               className="mb-16"
             >
               <div className="grid lg:grid-cols-2 gap-12 items-center">
-                <div className="order-2 lg:order-1">
+                <div className="order-2 lg:order-1 relative">
                   <LazyImage
                     src={project.screenshots[0] || project.image}
                     alt={`${project.title} - Solution`}

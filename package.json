@@ -7,10 +7,16 @@
     "dev": "next dev",
     "build": "next build",
     "build:prod": "next build --no-lint",
+    "build:analyze": "ANALYZE=true next build",
     "start": "next start",
+    "start:test": "next start -p 3001",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "jest --watchAll",
+    "test:unit": "jest --passWithNoTests",
+    "test:integration": "jest --testPathPattern=integration",
+    "test:e2e": "playwright test",
+    "test:coverage": "jest --coverage --coverageReporters=lcov --collectCoverageFrom='src/**/*.{ts,tsx}' --coverageDirectory=coverage",
     "prepare": "husky"
   },
   "dependencies": {

@@ -24,7 +24,7 @@ export const useTheme = () => {
       }
 
       // Fallback to localStorage
-      const stored = localStorage.getItem('theme') as Theme;
+      const stored = window.localStorage.getItem('theme') as Theme;
       if (stored && ['light', 'dark', 'system'].includes(stored)) {
         return stored;
       }

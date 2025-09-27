@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import Toast from '../Toast';
 
 describe('Toast', () => {
@@ -34,7 +34,9 @@ describe('Toast', () => {
     render(<Toast {...defaultProps} />);
 
     const closeButton = screen.getByRole('button');
-    fireEvent.click(closeButton);
+    act(() => {
+      fireEvent.click(closeButton);
+    });
 
     expect(defaultProps.onClose).toHaveBeenCalledWith('test-toast');
   });

@@ -43,6 +43,9 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['react', 'react-dom', 'lucide-react'],
   },
+  env: {
+    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'https://limitlessinfotech.com',
+  },
   images: {
     remotePatterns: [
       {

@@ -2,6 +2,17 @@ import { NextRequest } from 'next/server';
 import { GET, POST } from '../pages/route';
 import { createServerClient } from '@supabase/ssr';
 
+// Mock NextResponse
+jest.mock('next/server', () => ({
+  NextRequest: jest.fn(),
+  NextResponse: {
+    json: jest.fn((data, options) => ({
+      status: options?.status || 200,
+      json: () => Promise.resolve(data),
+    })),
+  },
+}));
+
 // Mock the createServerClient and cookies
 jest.mock('@supabase/ssr', () => ({
   createServerClient: jest.fn(),

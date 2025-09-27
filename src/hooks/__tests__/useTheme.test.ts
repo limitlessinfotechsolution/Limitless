@@ -1,20 +1,26 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useTheme } from '../useTheme';
 
+// Mock document.cookie
+Object.defineProperty(document, 'cookie', {
+  value: '',
+  writable: true,
+});
+
 // Mock localStorage
 const localStorageMock = {
   getItem: jest.fn(),
   setItem: jest.fn(),
   removeItem: jest.fn(),
-  clear: jest.fn(),
 };
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
+  writable: true,
 });
 
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
-  value: jest.fn().mockImplementation(query => ({
+  value: jest.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -76,7 +82,7 @@ describe('useTheme', () => {
 
   it('should handle system theme preference', () => {
     // Mock system prefers dark
-    window.matchMedia.mockImplementation(query => ({
+    (window.matchMedia as any).mockImplementation((query: string) => ({
       matches: query === '(prefers-color-scheme: dark)',
       media: query,
       onchange: null,

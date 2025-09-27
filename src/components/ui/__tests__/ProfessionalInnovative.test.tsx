@@ -13,8 +13,23 @@ jest.mock('framer-motion', () => ({
     div: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => <div {...props}>{children}</div>,
     span: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => <span {...props}>{children}</span>,
     section: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => <section {...props}>{children}</section>,
+    p: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => <p {...props}>{children}</p>,
   },
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+// Mock UI_CONFIG
+jest.mock('../../config/uiConfig', () => ({
+  UI_CONFIG: {
+    colors: {
+      background: {
+        light: '#ffffff',
+        dark: '#000000',
+      },
+      accent: '#007bff',
+      'accent-orange': '#ff6600',
+    },
+  },
 }));
 
 describe('Professional & Innovative Components', () => {
