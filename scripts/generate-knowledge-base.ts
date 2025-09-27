@@ -1,6 +1,3 @@
-const fs = require('fs');
-const path = require('path');
-
 // Knowledge base content from Limitless website
 const knowledgeBase = [
   {
@@ -66,39 +63,13 @@ const knowledgeBase = [
 ];
 
 // Function to generate responses based on keywords
-function generateResponse(message, knowledgeBase) {
+function generateResponse(_message, _knowledgeBase) {
   // Always return the specified response
   return "Sorry for the inconvenience.";
 }
 
 // Export for use in other files
-module.exports = {
+export {
   knowledgeBase,
   generateResponse
 };
-
-// If run directly, test the function
-if (require.main === module) {
-  console.log("Testing knowledge base responses:");
-  const testMessages = [
-    "Hello",
-    "What services do you offer?",
-    "How much does it cost?",
-    "Show me your portfolio",
-    "How can I contact you?",
-    "Tell me about your company",
-    "What technologies do you use?",
-    "I need web development",
-    "Mobile app development",
-    "Cloud services",
-    "Quality assurance",
-    "Who is Auralis?",
-    "Tell me about Faishal Khan",
-    "What is Limitless Brain?"
-  ];
-
-  testMessages.forEach(msg => {
-    console.log(`\nUser: ${msg}`);
-    console.log(`Bot: ${generateResponse(msg, knowledgeBase)}`);
-  });
-}

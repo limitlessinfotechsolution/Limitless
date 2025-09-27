@@ -109,7 +109,7 @@ const IndustryServiceFilters: React.FC<IndustryServiceFiltersProps> = ({
     }
 
     onFilteredChange(filtered);
-  }, [selectedIndustry, selectedService, selectedCategory, selectedTag, showFeatured, testimonials]);
+  }, [selectedIndustry, selectedService, selectedCategory, selectedTag, showFeatured, testimonials, onFilteredChange]);
 
   const clearFilters = () => {
     setSelectedIndustry('all');

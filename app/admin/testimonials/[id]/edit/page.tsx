@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Card from '../../../../../src/components/ui/Card';
 import LoadingSpinner from '../../../../../src/components/ui/LoadingSpinner';
@@ -46,22 +46,15 @@ const EditTestimonialPage: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (id) {
-      fetchTestimonial();
-      fetchCategoriesAndTags();
-    }
-  }, [id]);
-
-  const fetchTestimonial = async () => {
+  const fetchTestimonial = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/testimonials/${id}`);
       if (!response.ok) throw new Error('Failed to fetch testimonial');
-      
+
       const data: Testimonial = await response.json();
       setTestimonial(data);
-      
+
       // Set initial selected categories and tags
       if (data.categories) {
         setSelectedCategories(data.categories.map(cat => cat.id));
@@ -74,7 +67,14 @@ const EditTestimonialPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      fetchTestimonial();
+      fetchCategoriesAndTags();
+    }
+  }, [id, fetchTestimonial]);
 
   const fetchCategoriesAndTags = async () => {
     try {

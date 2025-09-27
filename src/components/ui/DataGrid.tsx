@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -47,7 +47,7 @@ const DataGrid = <T extends Record<string, unknown>>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pageIndex, setPageIndex] = useState(0);
 
-  const fetchData = async (page: number, sort: SortingState) => {
+  const fetchData = useCallback(async (page: number, sort: SortingState) => {
     setLoading(true);
     try {
       // Build sort parameter
@@ -94,11 +94,11 @@ const DataGrid = <T extends Record<string, unknown>>({
     } finally {
       setLoading(false);
     }
-  };
+  }, [baseUrl, pageSize]);
 
   useEffect(() => {
     fetchData(pageIndex, sorting);
-  }, [pageIndex, sorting]);
+  }, [pageIndex, sorting, fetchData]);
 
   const table = useReactTable({
     data,

@@ -3,9 +3,6 @@ import RootHtml from '../src/components/RootHtml';
 import ClientLayout from '../src/components/ClientLayout';
 import ErrorBoundary from '../src/components/ErrorBoundary';
 import '../src/index.css';
-import { metadata } from './metadata';
-
-export { metadata };
 
 export default function RootLayout({
   children,

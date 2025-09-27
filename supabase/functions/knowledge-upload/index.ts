@@ -67,8 +67,8 @@ serve(async (req) => {
         },
         body: JSON.stringify({ ids: insertedIds }),
       })
-    } catch (error) {
-      console.error('Error triggering embedding generation:', error)
+    } catch (_error) {
+      console.error('Error triggering embedding generation:', _error)
     }
   }
 
