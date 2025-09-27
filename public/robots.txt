@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# Block admin areas
+Disallow: /admin/
+Disallow: /api/
+
+# Allow important pages
+Allow: /services
+Allow: /portfolio
+Allow: /testimonials
+Allow: /about
+Allow: /contact
+Allow: /docs
+
+# Sitemap
+Sitemap: https://limitlessinfotech.com/sitemap.xml
+
+# Crawl delay (optional)
+Crawl-delay: 1

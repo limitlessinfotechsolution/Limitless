@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import * as Icons from 'lucide-react';
+
+// Add missing icons
+const { Shield, HeadphonesIcon, Wifi, Clock, Link, DollarSign, BarChart, Brain, ArrowUpDown, Layers, Eye } = Icons;
 import CardEnhanced from '../components/ui/Card-enhanced';
 import InteractiveParticleBackground from '../components/ui/InteractiveParticleBackground';
+import TestimonialsCarousel from '../components/home/TestimonialsCarousel';
+import ClientLogos from '../components/home/ClientLogos';
 
 interface ServiceItem {
   id: string;
@@ -25,6 +30,84 @@ interface ServiceCategory {
   description: string;
   services: ServiceItem[];
 }
+
+// Helper functions for dynamic content
+const getWhyChooseUsPoints = (categoryId: string) => {
+  const pointsMap: { [key: string]: { title: string; description: string; icon: React.ReactNode }[] } = {
+    web: [
+      { title: 'Enterprise-Grade Security', description: 'Bank-level security with SSL, encryption, and compliance standards', icon: <Icons.Shield className="w-6 h-6" /> },
+      { title: 'Scalable Architecture', description: 'Built to grow with your business from day one', icon: <Icons.TrendingUp className="w-6 h-6" /> },
+      { title: 'Modern Tech Stack', description: 'Latest frameworks and technologies for optimal performance', icon: <Icons.Code className="w-6 h-6" /> },
+      { title: '24/7 Support', description: 'Round-the-clock technical support and maintenance', icon: <Icons.HeadphonesIcon className="w-6 h-6" /> }
+    ],
+    mobile: [
+      { title: 'Cross-Platform Expertise', description: 'Native iOS, Android, and cross-platform solutions', icon: <Icons.Smartphone className="w-6 h-6" /> },
+      { title: 'App Store Optimization', description: 'Maximize visibility and downloads in app stores', icon: <Icons.Star className="w-6 h-6" /> },
+      { title: 'Offline-First Design', description: 'Apps that work seamlessly with or without internet', icon: <Icons.Wifi className="w-6 h-6" /> },
+      { title: 'Performance Focused', description: 'Lightning-fast apps with smooth user experiences', icon: <Icons.Zap className="w-6 h-6" /> }
+    ],
+    business: [
+      { title: 'Industry Expertise', description: 'Deep understanding of business processes and workflows', icon: <Icons.Building className="w-6 h-6" /> },
+      { title: 'Rapid Implementation', description: 'Quick deployment with minimal business disruption', icon: <Icons.Clock className="w-6 h-6" /> },
+      { title: 'Integration Ready', description: 'Seamless connection with existing business systems', icon: <Icons.Link className="w-6 h-6" /> },
+      { title: 'ROI Focused', description: 'Solutions designed to deliver measurable business value', icon: <Icons.DollarSign className="w-6 h-6" /> }
+    ],
+    ai: [
+      { title: 'Cutting-Edge AI', description: 'Latest machine learning and AI technologies', icon: <Icons.Bot className="w-6 h-6" /> },
+      { title: 'Data-Driven Insights', description: 'Transform raw data into actionable business intelligence', icon: <Icons.BarChart className="w-6 h-6" /> },
+      { title: 'Custom AI Models', description: 'Tailored AI solutions for your specific business needs', icon: <Icons.Brain className="w-6 h-6" /> },
+      { title: 'Ethical AI', description: 'Responsible AI development with transparency and fairness', icon: <Icons.CheckCircle className="w-6 h-6" /> }
+    ],
+    cloud: [
+      { title: '99.9% Uptime SLA', description: 'Guaranteed high availability for critical business operations', icon: <Icons.Cloud className="w-6 h-6" /> },
+      { title: 'Auto-Scaling', description: 'Automatically adjust resources based on demand', icon: <Icons.ArrowUpDown className="w-6 h-6" /> },
+      { title: 'Multi-Cloud Strategy', description: 'Avoid vendor lock-in with flexible cloud architecture', icon: <Icons.Layers className="w-6 h-6" /> },
+      { title: '24/7 Monitoring', description: 'Proactive monitoring and instant issue resolution', icon: <Icons.Eye className="w-6 h-6" /> }
+    ]
+  };
+  return pointsMap[categoryId] || pointsMap.web;
+};
+
+const getProcessSteps = (categoryId: string) => {
+  const processMap: { [key: string]: { title: string; description: string }[] } = {
+    web: [
+      { title: 'Discovery & Planning', description: 'Requirements gathering, technical analysis, and project roadmap creation' },
+      { title: 'Design & Architecture', description: 'UI/UX design, system architecture, and technology stack selection' },
+      { title: 'Development', description: 'Agile development with regular reviews and quality assurance' },
+      { title: 'Testing & QA', description: 'Comprehensive testing, security audits, and performance optimization' },
+      { title: 'Deployment & Support', description: 'Production deployment, training, and ongoing maintenance' }
+    ],
+    mobile: [
+      { title: 'Market Research', description: 'User research, competitor analysis, and feature prioritization' },
+      { title: 'UI/UX Design', description: 'Mobile-first design, prototyping, and user testing' },
+      { title: 'Development', description: 'Native or cross-platform development with regular iterations' },
+      { title: 'Testing', description: 'Device testing, performance optimization, and app store preparation' },
+      { title: 'Launch & Growth', description: 'App store submission, marketing, and user acquisition' }
+    ],
+    business: [
+      { title: 'Business Analysis', description: 'Process mapping, requirements gathering, and solution design' },
+      { title: 'System Design', description: 'Architecture planning, integration design, and data modeling' },
+      { title: 'Implementation', description: 'Development, testing, and user acceptance testing' },
+      { title: 'Training & Change Management', description: 'User training, documentation, and organizational change support' },
+      { title: 'Go-Live & Optimization', description: 'Production deployment, monitoring, and continuous improvement' }
+    ],
+    ai: [
+      { title: 'Data Assessment', description: 'Data quality analysis, availability assessment, and requirements gathering' },
+      { title: 'Model Design', description: 'AI/ML model selection, architecture design, and feasibility analysis' },
+      { title: 'Development & Training', description: 'Model development, training, validation, and optimization' },
+      { title: 'Integration & Testing', description: 'System integration, performance testing, and validation' },
+      { title: 'Deployment & Monitoring', description: 'Production deployment, monitoring, and model maintenance' }
+    ],
+    cloud: [
+      { title: 'Assessment & Planning', description: 'Current infrastructure analysis and migration strategy development' },
+      { title: 'Architecture Design', description: 'Cloud architecture design, security planning, and cost optimization' },
+      { title: 'Migration Execution', description: 'Data migration, application deployment, and testing' },
+      { title: 'Optimization', description: 'Performance tuning, cost optimization, and monitoring setup' },
+      { title: 'Management & Support', description: 'Ongoing management, updates, and technical support' }
+    ]
+  };
+  return processMap[categoryId] || processMap.web;
+};
 
 const Services: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState('web');
@@ -515,6 +598,96 @@ const Services: React.FC = () => {
                 </CardEnhanced>
               </motion.div>
             ))}
+          </div>
+
+          {/* Why Choose Us Section */}
+          <div className="mt-20">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+                Why Choose Limitless Infotech?
+              </h2>
+              <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                What sets us apart in delivering exceptional {currentCategory.name.toLowerCase()} solutions
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {getWhyChooseUsPoints(activeCategory).map((point, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                >
+                  <CardEnhanced variant="elevated" className="text-center p-6 h-full">
+                    <div className="w-12 h-12 bg-gradient-to-br from-accent to-accent-orange rounded-lg flex items-center justify-center mx-auto mb-4">
+                      {point.icon}
+                    </div>
+                    <h3 className="font-bold text-gray-900 dark:text-white mb-2">{point.title}</h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm">{point.description}</p>
+                  </CardEnhanced>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* Process Section */}
+          <div className="mt-20">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+                Our Proven Process
+              </h2>
+              <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                A systematic approach that ensures quality, efficiency, and successful outcomes
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+              {getProcessSteps(activeCategory).map((step, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="text-center"
+                >
+                  <div className="relative">
+                    <div className="w-16 h-16 bg-gradient-to-br from-accent to-accent-orange rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-lg">
+                      {index + 1}
+                    </div>
+                    {index < getProcessSteps(activeCategory).length - 1 && (
+                      <div className="hidden lg:block absolute top-8 left-full w-full h-0.5 bg-gradient-to-r from-accent to-accent-orange transform -translate-x-8"></div>
+                    )}
+                  </div>
+                  <h3 className="font-bold text-gray-900 dark:text-white mb-2">{step.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">{step.description}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* Testimonials Section */}
+          <div className="mt-20">
+            <TestimonialsCarousel />
+          </div>
+
+          {/* Client Logos Section */}
+          <div className="mt-20">
+            <ClientLogos />
           </div>
         </div>
       </section>

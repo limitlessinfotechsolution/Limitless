@@ -11,11 +11,11 @@ const Footer: React.FC = () => {
 
   const footerLinks = {
     services: [
-      { name: 'Web Development', path: '/services#web-development' },
-      { name: 'Mobile App Development', path: '/services#mobile-app' },
-      { name: 'Custom Software', path: '/services#custom-software' },
-      { name: 'CRM Solutions', path: '/services#crm-apps' },
-      { name: 'AI Integration', path: '/services#automation-ai' },
+      { name: 'Web Development', path: '/services#web' },
+      { name: 'Mobile App Development', path: '/services#mobile' },
+      { name: 'Custom Software', path: '/services#business' },
+      { name: 'CRM Solutions', path: '/services#business' },
+      { name: 'AI Integration', path: '/services#ai' },
     ],
     company: [
       { name: 'About Us', path: '/about' },
@@ -25,7 +25,7 @@ const Footer: React.FC = () => {
     ],
     support: [
       { name: 'Documentation', path: '#' },
-      { name: 'Help Centre', path: '#' },
+      { name: 'Help Centre', path: '/faq' },
       { name: 'Privacy Policy', path: '#' },
       { name: 'Terms of Service', path: '#' },
     ],
@@ -151,13 +151,13 @@ const Footer: React.FC = () => {
               © {currentYear} Limitless Infotech Solution. All rights reserved.
             </div>
             <div className="flex space-x-6 text-sm">
-              <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+              <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
                 Privacy Policy
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+              <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
                 Terms of Service
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+              <Link href="/cookies" className="text-gray-400 hover:text-white transition-colors">
                 Cookie Policy
               </Link>
             </div>

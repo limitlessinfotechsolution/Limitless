@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as Icons from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '../lib/supabaseClient';
 import { Project } from '../types';
 import Card from '../components/ui/Card';
@@ -10,18 +11,16 @@ import LazyImage from '../components/ui/LazyImage';
 import InteractiveParticleBackground from '../components/ui/InteractiveParticleBackground';
 
 import ProjectTimeline from '../components/portfolio/ProjectTimeline';
-import EnhancedModal from '../components/portfolio/EnhancedModal';
 import EnhancedFilters from '../components/portfolio/EnhancedFilters';
 
 const PortfolioFixed: React.FC = () => {
+  const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [filters, setFilters] = useState({ industry: 'All', serviceType: 'All', projectSize: 'All' });
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [showModal, setShowModal] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
   // Animated counters
@@ -313,10 +312,7 @@ const PortfolioFixed: React.FC = () => {
                       layout: { duration: 0.3 }
                     }}
                     whileHover={{ y: -5 }}
-                    onClick={() => {
-                      setSelectedProject(project);
-                      setShowModal(true);
-                    }}
+                    onClick={() => router.push(`/portfolio/${project.id}`)}
                     className="group cursor-pointer"
                   >
                     <CardEnhanced
@@ -393,13 +389,13 @@ const PortfolioFixed: React.FC = () => {
                             )}
                           </div>
 
-                          <motion.button
-                            whileHover={{ x: 4 }}
+                          <Link
+                            href={`/portfolio/${project.id}`}
                             className="font-medium text-accent hover:text-accent-orange transition-colors flex items-center gap-1"
                           >
                             View Case Study
                             <Icons.ArrowRight className="w-4 h-4" />
-                          </motion.button>
+                          </Link>
                         </div>
                       </div>
                     </CardEnhanced>
@@ -496,34 +492,7 @@ const PortfolioFixed: React.FC = () => {
         </div>
       </div>
 
-      {/* Enhanced Modal */}
-      <AnimatePresence>
-        {selectedProject && showModal && (
-          <EnhancedModal
-            isOpen={showModal}
-            onClose={() => {
-              setShowModal(false);
-              setSelectedProject(null);
-            }}
-            project={{
-              id: selectedProject.id,
-              title: selectedProject.title,
-              description: selectedProject.description,
-              beforeImage: selectedProject.image,
-              afterImage: selectedProject.image,
-              techStack: selectedProject.techStack.map(tech => ({
-                name: tech,
-                icon: 'code',
-                category: 'frontend' as const
-              })),
-              challenge: selectedProject.challenge,
-              solution: selectedProject.solution,
-              results: selectedProject.results,
-              caseStudyUrl: `/portfolio/case-study-${selectedProject.id}`
-            }}
-          />
-        )}
-      </AnimatePresence>
+
     </div>
   );
 };

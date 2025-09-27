@@ -27,7 +27,7 @@ const securityHeaders = [
   },
   {
     key: 'Content-Security-Policy',
-    value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.googleapis.com *.googletagmanager.com; style-src 'self' 'unsafe-inline' *.googleapis.com; img-src 'self' data: https: *.unsplash.com *.pravatar.cc; font-src 'self' *.googleapis.com *.gstatic.com; connect-src 'self' *.supabase.co *.supabase.com; frame-src 'self';",
+    value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: *.googleapis.com *.googletagmanager.com; style-src 'self' 'unsafe-inline' *.googleapis.com; img-src 'self' data: https: *.unsplash.com *.pravatar.cc; font-src 'self' *.googleapis.com *.gstatic.com; connect-src 'self' *.supabase.co *.supabase.com fonts.googleapis.com *.gstatic.com overbridgenet.com; frame-src 'self';",
   },
   {
     key: 'Permissions-Policy',
@@ -95,7 +95,7 @@ const nextConfig = {
           ...securityHeaders,
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.googleapis.com *.googletagmanager.com; style-src 'self' 'unsafe-inline' *.googleapis.com; img-src 'self' data: https: *.unsplash.com *.pravatar.cc *.cdn.unsplash.com; font-src 'self' *.googleapis.com *.gstatic.com; connect-src 'self' *.supabase.co *.supabase.com *.google-analytics.com; frame-src 'self';",
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: *.googleapis.com *.googletagmanager.com; style-src 'self' 'unsafe-inline' *.googleapis.com; img-src 'self' data: https: *.unsplash.com *.pravatar.cc *.cdn.unsplash.com; font-src 'self' *.googleapis.com *.gstatic.com; connect-src 'self' *.supabase.co *.supabase.com *.google-analytics.com fonts.googleapis.com *.gstatic.com overbridgenet.com; frame-src 'self';",
           },
         ],
       },

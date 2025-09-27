@@ -242,6 +242,82 @@ async function seedDatabase() {
       console.log(`✅ Seeded ${kbData?.length || 0} knowledge base entries`)
     }
 
+    // Seed projects
+    console.log('📁 Seeding projects...')
+    const projects = [
+      {
+        title: 'E-Commerce Platform for Retail Chain',
+        description: 'A comprehensive e-commerce solution with inventory management, payment processing, and customer analytics for a growing retail business.',
+        industry: 'Retail',
+        service_type: 'Web Development',
+        project_size: 'Large',
+        image: '/images/project-ecommerce.jpg',
+        challenge: 'The client needed a scalable e-commerce platform that could handle high traffic, integrate with their existing inventory system, and provide real-time analytics.',
+        solution: 'We built a custom e-commerce platform using Next.js, Stripe for payments, and Supabase for database management. The solution includes real-time inventory tracking, automated order processing, and comprehensive analytics dashboard.',
+        tech_stack: ['Next.js', 'TypeScript', 'Stripe', 'Supabase', 'Tailwind CSS', 'Framer Motion'],
+        results: ['300% increase in online sales', '50% reduction in order processing time', 'Real-time inventory accuracy', 'Mobile-responsive design'],
+        client_review: 'The new platform has transformed our business. Sales have increased significantly and our customers love the smooth shopping experience.',
+        architecture_diagram: '/images/architecture-ecommerce.svg',
+        screenshots: ['/images/ecommerce-home.jpg', '/images/ecommerce-product.jpg', '/images/ecommerce-cart.jpg'],
+        timeline: '4 months',
+        team_size: '6 developers',
+        budget: 'Contact for details',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      {
+        title: 'Healthcare Management System',
+        description: 'A secure patient management system with appointment scheduling, medical records, and telemedicine capabilities for a medical practice.',
+        industry: 'Healthcare',
+        service_type: 'Custom Software',
+        project_size: 'Medium',
+        image: '/images/project-healthcare.jpg',
+        challenge: 'The medical practice needed a HIPAA-compliant system to manage patient records, appointments, and telemedicine consultations securely.',
+        solution: 'Developed a comprehensive healthcare management system with encrypted data storage, role-based access control, and integrated telemedicine features using React, Node.js, and PostgreSQL.',
+        tech_stack: ['React', 'Node.js', 'PostgreSQL', 'Socket.io', 'JWT', 'AWS'],
+        results: ['100% HIPAA compliance', '60% reduction in administrative time', 'Improved patient satisfaction', 'Secure telemedicine integration'],
+        client_review: 'This system has revolutionized how we manage patient care. The telemedicine feature has been especially valuable during the pandemic.',
+        architecture_diagram: '/images/architecture-healthcare.svg',
+        screenshots: ['/images/healthcare-dashboard.jpg', '/images/healthcare-appointments.jpg', '/images/healthcare-records.jpg'],
+        timeline: '6 months',
+        team_size: '8 developers',
+        budget: 'Contact for details',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      {
+        title: 'AI-Powered Logistics Optimization',
+        description: 'An intelligent logistics platform using machine learning to optimize delivery routes and predict demand for a transportation company.',
+        industry: 'Logistics',
+        service_type: 'AI Integration',
+        project_size: 'Large',
+        image: '/images/project-logistics.jpg',
+        challenge: 'The logistics company faced inefficiencies in route planning and struggled with demand forecasting, leading to increased costs and delayed deliveries.',
+        solution: 'Implemented an AI-powered platform using Python, TensorFlow, and React. The system uses machine learning algorithms to optimize routes in real-time and predict demand patterns.',
+        tech_stack: ['Python', 'TensorFlow', 'React', 'FastAPI', 'PostgreSQL', 'Docker'],
+        results: ['25% reduction in fuel costs', '40% improvement in delivery times', 'AI-driven demand forecasting', 'Real-time route optimization'],
+        client_review: 'The AI system has transformed our operations. We\'re now more efficient and can better serve our customers with accurate delivery times.',
+        architecture_diagram: '/images/architecture-logistics.svg',
+        screenshots: ['/images/logistics-dashboard.jpg', '/images/logistics-routes.jpg', '/images/logistics-analytics.jpg'],
+        timeline: '8 months',
+        team_size: '10 developers',
+        budget: 'Contact for details',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
+    ]
+
+    const { data: projectsData, error: projectsError } = await supabase
+      .from('projects')
+      .upsert(projects, { onConflict: 'title' })
+      .select()
+
+    if (projectsError) {
+      console.error('❌ Error seeding projects:', projectsError)
+    } else {
+      console.log(`✅ Seeded ${projectsData?.length || 0} projects`)
+    }
+
     // Seed FAQ
     console.log('❓ Seeding FAQ...')
     const faqs = [
