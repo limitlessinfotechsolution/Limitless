@@ -1,7 +1,8 @@
 [build]
   command = "npm install && npm run build"
-  publish = "dist"
+  publish = ".next"
   base = "/"
+  
   ignore = "false"  # Never skip build
   force = "true"    # Force build even if no changes detected
 

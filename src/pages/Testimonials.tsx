@@ -99,7 +99,7 @@ const Testimonials: React.FC = () => {
 
   useEffect(() => {
     setFilteredReviews(enhancedReviews as EnhancedTestimonial[]);
-  }, [reviews]);
+  }, [reviews, enhancedReviews]);
 
   return (
     <div className="pt-20">
