@@ -17,11 +17,16 @@ const About: React.FC = () => {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
+useEffect(() => {
     const fetchTeam = async () => {
+      if (!supabase) {
+        setError('Supabase not configured');
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase.from('team_members').select('*').order('id');
-      
+
       if (error) {
         setError(error.message);
       } else if (data) {
