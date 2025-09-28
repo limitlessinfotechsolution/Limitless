@@ -26,7 +26,6 @@ const DemoRequestForm: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [submissionStartTime] = useState(Date.now());
   const { trackFormInteraction } = useContactBehaviorTracking();
 
   const watchedFields = watch();

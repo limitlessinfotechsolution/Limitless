@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, Clock, User, Share2, Bookmark, ThumbsUp, MessageCircle, Twitter, Facebook, Linkedin, Link2 } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Bookmark, ThumbsUp, MessageCircle, Twitter, Facebook, Linkedin, Link2 } from 'lucide-react';
 import SEOHead from '../../../src/components/SEOHead';
 import { generateArticleSchema, generateBreadcrumbSchema } from '../../../src/lib/seoSchemas';
 
@@ -201,12 +201,14 @@ const BlogPost: React.FC = () => {
         canonical={`/blog/${post.id}`}
         ogImage={post.image}
         structuredData={structuredData}
-        article={{
-          publishedTime: post.publishedAt,
-          modifiedTime: post.publishedAt,
+        articleData={{
+          headline: post.title,
+          description: post.excerpt,
           author: post.author,
-          section: post.category,
-          tags: post.tags
+          datePublished: post.publishedAt,
+          dateModified: post.publishedAt,
+          url: `/blog/${post.id}`,
+          image: post.image
         }}
       />
 

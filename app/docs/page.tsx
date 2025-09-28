@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   BookOpen,
-  Code,
   Database,
   Shield,
   Zap,
@@ -36,7 +35,6 @@ interface DocArticle {
 
 const DocumentationPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const docSections: DocSection[] = [
     {

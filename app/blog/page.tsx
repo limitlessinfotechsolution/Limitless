@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, User, Tag, Search, Filter, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, Search, Filter, ArrowRight } from 'lucide-react';
 import SEOHead from '../../src/components/SEOHead';
 import { generateWebPageSchema, generateArticleSchema, generateBreadcrumbSchema } from '../../src/lib/seoSchemas';
 
@@ -109,7 +109,7 @@ const Blog: React.FC = () => {
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'popular'>('newest');
 
   const filteredAndSortedPosts = useMemo(() => {
-    let filtered = blogPosts.filter(post => {
+    const filtered = blogPosts.filter(post => {
       const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));

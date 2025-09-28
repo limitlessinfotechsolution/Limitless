@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import * as Icons from 'lucide-react';
-
-// Add missing icons
-const { Shield, HeadphonesIcon, Wifi, Clock, Link, DollarSign, BarChart, Brain, ArrowUpDown, Layers, Eye } = Icons;
 import CardEnhanced from '../components/ui/Card-enhanced';
 import InteractiveParticleBackground from '../components/ui/InteractiveParticleBackground';
 import TestimonialsCarousel from '../components/home/TestimonialsCarousel';

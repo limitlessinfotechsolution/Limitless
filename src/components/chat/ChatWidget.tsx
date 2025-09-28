@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Minimize2, Maximize2 } from 'lucide-react';
+import { MessageCircle, X, Minimize2, Maximize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
@@ -24,8 +24,7 @@ interface ChatWidgetProps {
 
 const ChatWidget: React.FC<ChatWidgetProps> = ({
   position = 'bottom-right',
-  primaryColor = '#3B82F6',
-  secondaryColor = '#1E40AF'
+  primaryColor = '#3B82F6'
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -61,7 +60,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({
     try {
       const botResponse = await sendMessage(content);
       setMessages(prev => [...prev, botResponse]);
-    } catch (error) {
+    } catch {
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         content: "I'm sorry, I'm having trouble connecting right now. Please try again later or contact us directly.",
