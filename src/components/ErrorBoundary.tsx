@@ -15,6 +15,12 @@ interface State {
   errorInfo?: ErrorInfo;
   errorId?: string;
   retryCount: number;
+  errorType: string;
+  isRetrying: boolean;
+  isSubmitting: boolean;
+  formName: string;
+  formEmail: string;
+  formMessage: string;
 }
 
 class ErrorBoundary extends Component<Props, State> {
@@ -22,7 +28,16 @@ class ErrorBoundary extends Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false, retryCount: 0 };
+    this.state = {
+      hasError: false,
+      retryCount: 0,
+      errorType: 'general',
+      isRetrying: false,
+      isSubmitting: false,
+      formName: '',
+      formEmail: '',
+      formMessage: ''
+    };
   }
 
   static getDerivedStateFromError(error: Error): Partial<State> {
@@ -42,7 +57,8 @@ class ErrorBoundary extends Component<Props, State> {
 
     this.setState({
       error,
-      errorInfo
+      errorInfo,
+      errorType: this.categorizeError(error)
     });
 
     // Call custom error handler if provided
@@ -111,6 +127,43 @@ Please describe what you were doing when this error occurred:
     window.open(`mailto:support@limitlessinfotech.com?subject=${subject}&body=${body}`);
   };
 
+  categorizeError = (error: Error): string => {
+    const message = error.message.toLowerCase();
+    if (message.includes('network') || message.includes('fetch') || message.includes('connection')) {
+      return 'network';
+    }
+    if (message.includes('auth') || message.includes('unauthorized') || message.includes('forbidden')) {
+      return 'auth';
+    }
+    return 'general';
+  };
+
+  getRecoverySuggestions = (errorType: string): string[] => {
+    switch (errorType) {
+      case 'network':
+        return ['Check your internet connection', 'Try refreshing the page', 'Contact support if the issue persists'];
+      case 'auth':
+        return ['Try logging in again', 'Clear your browser cache', 'Contact support for account issues'];
+      default:
+        return ['Try refreshing the page', 'Clear your browser cache and cookies', 'Contact support for assistance'];
+    }
+  };
+
+  handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    this.setState({ [name as 'formName' | 'formEmail' | 'formMessage']: value } as Pick<State, 'formName' | 'formEmail' | 'formMessage'>);
+  };
+
+  handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    this.setState({ isSubmitting: true });
+    const { formName, formEmail, formMessage, errorId } = this.state;
+    const subject = `Error Report: ${errorId} - Contact Form`;
+    const body = `Name: ${formName}\nEmail: ${formEmail}\nMessage: ${formMessage}\nError ID: ${errorId}`;
+    window.open(`mailto:support@limitlessinfotech.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+    this.setState({ isSubmitting: false, formName: '', formEmail: '', formMessage: '' });
+  };
+
   render() {
     if (this.state.hasError) {
       // Custom fallback UI
@@ -121,7 +174,7 @@ Please describe what you were doing when this error occurred:
       const canRetry = this.state.retryCount < this.maxRetries;
 
       return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4" role="alert" aria-live="assertive">
           <div className="max-w-2xl w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 text-center">
             {/* Error Icon */}
             <div className="w-20 h-20 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -137,6 +190,16 @@ Please describe what you were doing when this error occurred:
             <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
               We encountered an unexpected error. Our team has been notified and is working to fix it.
             </p>
+
+            {/* Recovery Suggestions */}
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">What you can try:</h3>
+              <ul className="list-disc list-inside text-gray-600 dark:text-gray-400">
+                {this.getRecoverySuggestions(this.state.errorType).map((suggestion, index) => (
+                  <li key={index}>{suggestion}</li>
+                ))}
+              </ul>
+            </div>
 
             {/* Retry Count Indicator */}
             {this.state.retryCount > 0 && (
@@ -196,6 +259,36 @@ Please describe what you were doing when this error occurred:
               </button>
             </div>
 
+            {/* Contact Details */}
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Contact Details
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex items-center">
+                  <Mail className="w-5 h-5 mr-3 text-blue-600 dark:text-blue-400" />
+                  <div>
+                    <div className="font-medium text-gray-900 dark:text-white">Limitless Infotech</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">support@limitlessinfotech.com</div>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <Phone className="w-5 h-5 mr-3 text-green-600 dark:text-green-400" />
+                  <div>
+                    <div className="font-medium text-gray-900 dark:text-white">Phone</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">+917710909492</div>
+                  </div>
+                </div>
+                <div className="flex items-center col-span-1 sm:col-span-2">
+                  <Home className="w-5 h-5 mr-3 text-purple-600 dark:text-purple-400" />
+                  <div>
+                    <div className="font-medium text-gray-900 dark:text-white">Address</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Mumbai, India</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Additional Help */}
             <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
@@ -234,6 +327,58 @@ Please describe what you were doing when this error occurred:
                   <ExternalLink className="w-4 h-4 ml-1" />
                 </a>
               </div>
+            </div>
+
+            {/* Contact Form */}
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Report Issue
+              </h3>
+              <form onSubmit={this.handleFormSubmit} className="space-y-4">
+                <div>
+                  <label htmlFor="formName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+                  <input
+                    type="text"
+                    id="formName"
+                    name="formName"
+                    value={this.state.formName}
+                    onChange={this.handleFormChange}
+                    required
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent dark:bg-gray-700 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="formEmail" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                  <input
+                    type="email"
+                    id="formEmail"
+                    name="formEmail"
+                    value={this.state.formEmail}
+                    onChange={this.handleFormChange}
+                    required
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent dark:bg-gray-700 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="formMessage" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Message</label>
+                  <textarea
+                    id="formMessage"
+                    name="formMessage"
+                    value={this.state.formMessage}
+                    onChange={this.handleFormChange}
+                    required
+                    rows={4}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent dark:bg-gray-700 dark:text-white"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={this.state.isSubmitting}
+                  className="w-full bg-accent hover:bg-accent-dark text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center shadow-lg hover:shadow-xl disabled:opacity-50"
+                >
+                  {this.state.isSubmitting ? 'Sending...' : 'Send Report'}
+                </button>
+              </form>
             </div>
           </div>
         </div>

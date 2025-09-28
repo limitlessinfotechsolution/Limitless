@@ -5,7 +5,7 @@ import {
   User, Shield, TrendingUp, Search, Filter, Plus, Edit, Eye, Trash2,
   Star, CheckCircle, Download, BarChart3
 } from 'lucide-react';
-import Card from '../ui/Card';
+import CardEnhanced from '../ui/Card-enhanced';
 
 const MobileRefinementTest: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -70,7 +70,7 @@ const MobileRefinementTest: React.FC = () => {
       </motion.div>
 
       {/* Navigation Test */}
-      <Card className="p-4 border border-gray-200 dark:border-gray-700">
+      <CardEnhanced className="p-4 border border-gray-200 dark:border-gray-700">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
           <Menu className="w-5 h-5 mr-2 text-accent" />
           Navigation Component
@@ -92,10 +92,10 @@ const MobileRefinementTest: React.FC = () => {
             );
           })}
         </div>
-      </Card>
+      </CardEnhanced>
 
       {/* Stats Cards Test */}
-      <Card className="p-4 border border-gray-200 dark:border-gray-700">
+      <CardEnhanced className="p-4 border border-gray-200 dark:border-gray-700">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
           <BarChart3 className="w-5 h-5 mr-2 text-accent" />
           Stats Cards

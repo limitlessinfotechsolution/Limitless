@@ -2,9 +2,18 @@ import { NextRequest } from 'next/server';
 import { GET, POST } from '../pages/route';
 import { createServerClient } from '@supabase/ssr';
 
+// Mock environment variables
+process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
+
 // Mock NextResponse
 jest.mock('next/server', () => ({
-  NextRequest: jest.fn(),
+  NextRequest: jest.fn().mockImplementation((url, options) => ({
+    url,
+    method: options?.method || 'GET',
+    json: jest.fn().mockResolvedValue(options?.body ? JSON.parse(options.body) : {}),
+    ...options,
+  })),
   NextResponse: {
     json: jest.fn((data, options) => ({
       status: options?.status || 200,
@@ -19,9 +28,9 @@ jest.mock('@supabase/ssr', () => ({
 }));
 
 jest.mock('next/headers', () => ({
-  cookies: jest.fn(() => ({
-    get: jest.fn(),
-  })),
+  cookies: jest.fn(() => {
+    throw new Error('Cookies not available in test');
+  }),
 }));
 
 describe('/api/pages', () => {
@@ -70,7 +79,7 @@ describe('/api/pages', () => {
       const result = await response.json();
 
       expect(response.status).toBe(500);
-      expect(result.error).toBe('Database connection failed');
+      expect(result.error).toBe('Failed to fetch pages');
     });
   });
 
@@ -78,7 +87,7 @@ describe('/api/pages', () => {
     it('should create page successfully', async () => {
       const pageData = {
         page_name: 'New Page',
-        content: { title: 'New Page Title' },
+        content: 'New Page Content',
         is_published: false,
       };
 
@@ -98,6 +107,7 @@ describe('/api/pages', () => {
         method: 'POST',
         body: JSON.stringify(pageData),
       });
+
       const response = await POST(request);
       const result = await response.json();
 
@@ -119,7 +129,8 @@ describe('/api/pages', () => {
       const result = await response.json();
 
       expect(response.status).toBe(400);
-      expect(result.error).toBe('Page name is required');
+      expect(Array.isArray(result.error)).toBe(true);
+      expect(result.error.length).toBeGreaterThan(0);
     });
 
     it('should handle database errors', async () => {

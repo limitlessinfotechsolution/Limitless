@@ -32,6 +32,11 @@ const PortfolioFixed: React.FC = () => {
 
   useEffect(() => {
     const fetchProjects = async () => {
+      if (!supabase) {
+        setError('Supabase client not initialized');
+        setLoading(false);
+        return;
+      }
       const { data, error } = await supabase.from('projects').select('*').order('id');
 
       if (error) {
@@ -389,13 +394,12 @@ const PortfolioFixed: React.FC = () => {
                             )}
                           </div>
 
-                          <Link
-                            href={`/portfolio/${project.id}`}
-                            className="font-medium text-accent hover:text-accent-orange transition-colors flex items-center gap-1"
+                          <span
+                            className="font-medium text-accent hover:text-accent-orange transition-colors flex items-center gap-1 cursor-pointer"
                           >
                             View Case Study
                             <Icons.ArrowRight className="w-4 h-4" />
-                          </Link>
+                          </span>
                         </div>
                       </div>
                     </CardEnhanced>

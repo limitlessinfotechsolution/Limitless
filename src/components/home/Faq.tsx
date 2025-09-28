@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import Image from 'next/image';
-import Card from '../ui/Card';
+import CardEnhanced from '../ui/Card-enhanced';
 
 const faqs = [
   {
@@ -72,7 +72,7 @@ const Faq: React.FC = () => {
               className="rounded-xl shadow-lg"
             />
           </div>
-          <Card className="p-8">
+          <CardEnhanced className="p-8">
             {faqs.map((faq, index) => (
               <FaqItem
                 key={index}
@@ -81,7 +81,7 @@ const Faq: React.FC = () => {
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
               />
             ))}
-          </Card>
+          </CardEnhanced>
         </div>
       </div>
     </section>

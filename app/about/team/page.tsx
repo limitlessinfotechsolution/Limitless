@@ -13,7 +13,7 @@ export default function TeamPage() {
       name: 'Faisal Khan',
       role: 'CEO & Founder',
       bio: 'Visionary leader with 12+ years in technology and business development. Founded Limitless Infotech to bridge the gap between innovative technology and business needs. Expert in digital transformation strategies and scaling tech startups.',
-      avatar: '/src/assets/team/faisal.jpg',
+      avatar: '/assets/team/faisal.jpg',
       socialLinks: [
         { platform: 'linkedin', url: 'https://linkedin.com/in/faisal-khan-tech' },
         { platform: 'twitter', url: 'https://twitter.com/faisal_khan_tech' }

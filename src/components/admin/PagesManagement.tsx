@@ -9,8 +9,28 @@ import {
   Eye,
   EyeOff,
   Search,
-  FileText
+  FileText,
+  GripVertical
 } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface Page {
   id: string;
@@ -19,7 +39,94 @@ interface Page {
   is_published: boolean;
   created_at: string;
   updated_at: string;
+  display_order: number;
 }
+
+const SortablePageRow: React.FC<{
+  page: Page;
+  onTogglePublish: (id: string, status: boolean) => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
+}> = ({ page, onTogglePublish, onEdit, onDelete }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: page.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <tr ref={setNodeRef} style={style} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className="flex items-center space-x-3">
+          <button
+            {...attributes}
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
+          >
+            <GripVertical className="w-4 h-4" />
+          </button>
+          <FileText className="w-5 h-5 text-gray-400" />
+          <div>
+            <div className="text-sm font-medium text-gray-900 dark:text-white">
+              {page.page_name}
+            </div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              ID: {page.id}
+            </div>
+          </div>
+        </div>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+          page.is_published
+            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+            : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+        }`}>
+          {page.is_published ? 'Published' : 'Draft'}
+        </span>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+        {new Date(page.updated_at).toLocaleDateString()}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+        <div className="flex items-center justify-end space-x-2">
+          <button
+            onClick={() => onTogglePublish(page.id, page.is_published)}
+            className={`p-1 rounded ${
+              page.is_published
+                ? 'text-green-600 hover:text-green-800'
+                : 'text-yellow-600 hover:text-yellow-800'
+            }`}
+            title={page.is_published ? 'Unpublish' : 'Publish'}
+          >
+            {page.is_published ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+          <button
+            onClick={() => onEdit(page.id)}
+            className="p-1 text-blue-600 hover:text-blue-800"
+            title="Edit"
+          >
+            <Edit className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => onDelete(page.id)}
+            className="p-1 text-red-600 hover:text-red-800"
+            title="Delete"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
+};
 
 const PagesManagement: React.FC = () => {
   const router = useRouter();
@@ -27,6 +134,14 @@ const PagesManagement: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'published' | 'draft'>('all');
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   useEffect(() => {
     fetchPages();
@@ -88,6 +203,49 @@ const PagesManagement: React.FC = () => {
     }
   };
 
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = filteredPages.findIndex((page) => page.id === active.id);
+      const newIndex = filteredPages.findIndex((page) => page.id === over.id);
+
+      const reorderedPages = arrayMove(filteredPages, oldIndex, newIndex);
+
+      // Update display_order for all affected pages
+      const updatedPages = reorderedPages.map((page, index) => ({
+        ...page,
+        display_order: index
+      }));
+
+      // Update local state immediately for better UX
+      setPages(prevPages =>
+        prevPages.map(prevPage => {
+          const updatedPage = updatedPages.find(p => p.id === prevPage.id);
+          return updatedPage || prevPage;
+        })
+      );
+
+      // Send update to server
+      try {
+        const pageOrders = updatedPages.map((page, index) => ({
+          id: page.id,
+          display_order: index
+        }));
+
+        await fetch('/api/pages/order', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pageOrders }),
+        });
+      } catch (error) {
+        console.error('Failed to update page order:', error);
+        // Revert on error
+        fetchPages();
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -102,7 +260,7 @@ const PagesManagement: React.FC = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Pages Management</h1>
-          <p className="text-gray-600 dark:text-gray-400">Manage your website pages and content</p>
+          <p className="text-gray-600 dark:text-gray-400">Manage your website pages and content. Drag and drop to reorder.</p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
@@ -138,86 +296,45 @@ const PagesManagement: React.FC = () => {
 
       {/* Pages List */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Page
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Last Updated
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
-              {filteredPages.map((page) => (
-                <tr key={page.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <FileText className="w-5 h-5 text-gray-400 mr-3" />
-                      <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
-                          {page.page_name}
-                        </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          ID: {page.id}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      page.is_published
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                        : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                    }`}>
-                      {page.is_published ? 'Published' : 'Draft'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {new Date(page.updated_at).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex items-center justify-end space-x-2">
-                      <button
-                        onClick={() => handleTogglePublish(page.id, page.is_published)}
-                        className={`p-1 rounded ${
-                          page.is_published
-                            ? 'text-green-600 hover:text-green-800'
-                            : 'text-yellow-600 hover:text-yellow-800'
-                        }`}
-                        title={page.is_published ? 'Unpublish' : 'Publish'}
-                      >
-                        {page.is_published ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                      <button
-                        onClick={() => router.push(`/admin/pages/${page.id}/edit`)}
-                        className="p-1 text-blue-600 hover:text-blue-800"
-                        title="Edit"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(page.id)}
-                        className="p-1 text-red-600 hover:text-red-800"
-                        title="Delete"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={filteredPages.map(page => page.id)} strategy={verticalListSortingStrategy}>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-gray-700">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      Page
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      Last Updated
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
+                  {filteredPages.map((page) => (
+                    <SortablePageRow
+                      key={page.id}
+                      page={page}
+                      onTogglePublish={handleTogglePublish}
+                      onEdit={(id) => router.push(`/admin/pages/${id}/edit`)}
+                      onDelete={handleDelete}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </SortableContext>
+        </DndContext>
 
         {filteredPages.length === 0 && (
           <div className="text-center py-12">

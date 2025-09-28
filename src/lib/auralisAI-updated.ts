@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { ChatContext, IntentDetection, EscalationData } from '../types/chat';
 
 // Initialize Supabase client if environment variables are available
@@ -7,6 +8,11 @@ const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SE
       process.env.NEXT_PUBLIC_SUPABASE_URL,
       process.env.SUPABASE_SERVICE_ROLE_KEY
     )
+  : null;
+
+// Initialize Google AI client
+const genAI = process.env.GOOGLE_AI_API_KEY
+  ? new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY)
   : null;
 
 interface KnowledgeItem {
@@ -358,6 +364,43 @@ export class AuralisAI {
         return "We partner with businesses of all sizes to transform their operations through technology. Our partnership models include project-based engagements, retainer agreements, and strategic alliances. Let's discuss how we can collaborate on your next project.";
 
       default: {
+        // Try Google AI for general queries if available
+        if (genAI) {
+          try {
+            const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+
+            const systemPrompt = `You are Auralis, an AI assistant for Limitless Infotech, a software development company specializing in web development, mobile apps, AI automation, and digital transformation.
+
+Company Information:
+- We offer web development, mobile apps, custom software, CRM systems, AI automation
+- Technologies: React, Next.js, Node.js, Python, AI/ML, cloud services (AWS, Azure, GCP)
+- Project timelines: Simple websites (2-4 weeks), complex apps (3-6 months), enterprise (6+ months)
+- Pricing: Customized based on project scope, with special rates for Indian clients
+- Support: Comprehensive post-launch support including bug fixes and updates
+
+Key Services:
+- Web Development: React, Next.js, responsive design, SEO optimization, e-commerce
+- Mobile Development: iOS, Android, React Native, Flutter
+- AI Solutions: Chatbots, predictive analytics, workflow automation
+- Custom Software: CRM systems, enterprise applications
+
+Always be helpful, professional, and focus on how we can help transform businesses through technology. If the user asks about something not related to our services, politely redirect to our expertise areas.
+
+User message: "${message}"
+
+Provide a helpful, contextual response based on our services and capabilities.`;
+
+            const result = await model.generateContent(systemPrompt);
+            const aiResponse = result.response.text();
+
+            if (aiResponse && aiResponse.trim().length > 0) {
+              return aiResponse;
+            }
+          } catch (error) {
+            console.warn('Google AI generation failed, falling back to predefined responses:', error);
+          }
+        }
+
         // Enhanced fallback responses based on keywords
         if (lowerMessage.includes('technology') || lowerMessage.includes('tech')) {
           return "We stay at the forefront of technology trends, specializing in React, Next.js, Node.js, Python, AI/ML, cloud services (AWS, Azure, GCP), and modern development practices. What specific technology interests you?";

@@ -84,3 +84,30 @@ export interface SecurityMetric {
   suspiciousIPs: string[];
   timestamp: Date;
 }
+
+export interface Project {
+  id: string;
+  title: string;
+  description: string;
+  industry: string;
+  serviceType: string;
+  projectSize: string;
+  image: string;
+  challenge: string;
+  solution: string;
+  techStack: string[];
+  results: string[];
+  clientReview?: {
+    content: string;
+    author: string;
+    rating: number;
+  };
+}
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  role: string;
+  bio: string;
+  image: string;
+}

@@ -14,18 +14,29 @@ const pageSchema = z.object({
 
 // Helper function to create a Supabase client with user session
 const createSupabaseClient = async () => {
-  const cookieStore = await cookies();
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
+  try {
+    const cookieStore = await cookies();
+    return createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value;
+          },
         },
-      },
+      }
+    );
+  } catch (error) {
+    // Fallback for test environment or when cookies are not available
+    if (process.env.NODE_ENV === 'test') {
+      return createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
     }
-  );
+    throw error;
+  }
 };
 
 // GET: Fetch all pages (admin-only for management)

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
 import { TeamMember } from '../types';
-import Card from '../components/ui/Card';
 import CardEnhanced from '../components/ui/Card-enhanced';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
 import LazyImage from '../components/ui/LazyImage';
@@ -287,12 +286,12 @@ useEffect(() => {
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[...Array(6)].map((_, index) => (
-                <Card key={index} className="p-6">
+                <CardEnhanced key={index} variant="elevated" className="p-6">
                   <SkeletonLoader width="4rem" height="4rem" rounded className="mb-4" />
                   <SkeletonLoader width="60%" height="1.5rem" className="mb-2" />
                   <SkeletonLoader width="40%" height="1rem" className="mb-2" />
                   <SkeletonLoader width="80%" height="1rem" />
-                </Card>
+                </CardEnhanced>
               ))}
             </div>
           ) : error ? <div className="text-center text-red-500">Error: {error}</div> : (
