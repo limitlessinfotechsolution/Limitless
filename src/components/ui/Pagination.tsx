@@ -4,7 +4,7 @@ import * as React from 'react'
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
-import { ButtonProps, buttonVariants } from '@/components/ui/Button'
+import { buttonVariants } from './button-variants'
 
 const Pagination = ({ className, ...props }: React.HTMLAttributes<HTMLEmbedElement>) => (
   <nav
@@ -65,7 +65,7 @@ const PaginationItem = React.forwardRef<HTMLLIElement, React.LiHTMLAttributes<HT
 ))
 PaginationItem.displayName = 'PaginationItem'
 
-interface PaginationPreviousProps extends Omit<ButtonProps, 'size'> {
+interface PaginationPreviousProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   href?: string
 }
 
@@ -88,7 +88,7 @@ const PaginationPrevious = React.forwardRef<
 ))
 PaginationPrevious.displayName = 'PaginationPrevious'
 
-interface PaginationNextProps extends Omit<ButtonProps, 'size'> {
+interface PaginationNextProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   href?: string
 }
 

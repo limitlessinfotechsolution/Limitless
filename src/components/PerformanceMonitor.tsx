@@ -51,8 +51,9 @@ const PerformanceMonitor: React.FC = () => {
     const measureFID = () => {
       const fidObserver = new PerformanceObserver((list) => {
         const entries = list.getEntries();
-        entries.forEach((entry: any) => {
-          setMetrics(prev => ({ ...prev, FID: entry.processingStart - entry.startTime }));
+        entries.forEach((entry) => {
+          const fidEntry = entry as PerformanceEventTiming;
+          setMetrics(prev => ({ ...prev, FID: fidEntry.processingStart - fidEntry.startTime }));
         });
       });
       fidObserver.observe({ entryTypes: ['first-input'] });
@@ -62,9 +63,10 @@ const PerformanceMonitor: React.FC = () => {
     const measureCLS = () => {
       const clsObserver = new PerformanceObserver((list) => {
         const entries = list.getEntries();
-        entries.forEach((entry: any) => {
-          if (!entry.hadRecentInput) {
-            clsValue += entry.value;
+        entries.forEach((entry) => {
+          const clsEntry = entry as unknown as { hadRecentInput: boolean; value: number };
+          if (!clsEntry.hadRecentInput) {
+            clsValue += clsEntry.value;
           }
         });
         setMetrics(prev => ({ ...prev, CLS: clsValue }));
@@ -88,18 +90,28 @@ const PerformanceMonitor: React.FC = () => {
     measureCLS();
     measureTTFB();
 
-    // Send metrics to analytics (you can integrate with Google Analytics, etc.)
+    return () => {
+      if (observer) {
+        observer.disconnect();
+      }
+    };
+  }, [pathname]);
+
+  // Send metrics after page load
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'production') return;
+
     const sendMetrics = () => {
       const analyticsData = {
         page: pathname,
         timestamp: Date.now(),
-        ...metrics,
+        metrics,
         userAgent: navigator.userAgent,
         url: window.location.href,
       };
 
       // Send to your analytics endpoint
-      if (typeof window !== 'undefined' && window.fetch) {
+      if (typeof window !== 'undefined') {
         fetch('/api/analytics', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -108,19 +120,12 @@ const PerformanceMonitor: React.FC = () => {
       }
     };
 
-    // Send metrics after page load
     if (document.readyState === 'complete') {
       setTimeout(sendMetrics, 0);
     } else {
       window.addEventListener('load', () => setTimeout(sendMetrics, 0));
     }
-
-    return () => {
-      if (observer) {
-        observer.disconnect();
-      }
-    };
-  }, [pathname]);
+  }, [pathname, metrics]);
 
   // Development mode: show metrics in console
   useEffect(() => {

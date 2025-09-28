@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, Clock, Bookmark, ThumbsUp, MessageCircle, Twitter, Facebook, Linkedin, Link2 } from 'lucide-react';
@@ -133,8 +134,8 @@ const blogPosts = [
 const BlogPost: React.FC = () => {
   const params = useParams();
   const postId = params.id as string;
-  const [post, setPost] = useState<any>(null);
-  const [relatedPosts, setRelatedPosts] = useState<any[]>([]);
+  const [post, setPost] = useState<typeof blogPosts[0] | null>(null);
+  const [relatedPosts, setRelatedPosts] = useState<typeof blogPosts>([]);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [likes, setLikes] = useState(0);
   const [hasLiked, setHasLiked] = useState(false);
@@ -146,7 +147,7 @@ const BlogPost: React.FC = () => {
       // Load related posts
       const related = foundPost.relatedPosts
         .map((id: string) => blogPosts.find(p => p.id === id))
-        .filter(Boolean);
+        .filter((post): post is typeof blogPosts[0] => post !== undefined);
       setRelatedPosts(related);
     }
   }, [postId]);
@@ -258,9 +259,11 @@ const BlogPost: React.FC = () => {
               </p>
 
               <div className="flex items-center justify-center space-x-6">
-                <img
+                <Image
                   src={post.authorImage}
                   alt={post.author}
+                  width={64}
+                  height={64}
                   className="w-16 h-16 rounded-full object-cover border-4 border-white/20"
                 />
                 <div className="text-left">
@@ -362,9 +365,11 @@ const BlogPost: React.FC = () => {
                 {/* Author Bio */}
                 <div className="p-8 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
                   <div className="flex items-start space-x-4">
-                    <img
+                    <Image
                       src={post.authorImage}
                       alt={post.author}
+                      width={64}
+                      height={64}
                       className="w-16 h-16 rounded-full object-cover flex-shrink-0"
                     />
                     <div className="flex-1">
@@ -394,16 +399,18 @@ const BlogPost: React.FC = () => {
                 >
                   <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Related Articles</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {relatedPosts.map((relatedPost: any) => (
+                    {relatedPosts.map((relatedPost: typeof blogPosts[0]) => (
                       <Link
                         key={relatedPost.id}
                         href={`/blog/${relatedPost.id}`}
                         className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden group"
                       >
                         <div className="relative overflow-hidden">
-                          <img
+                          <Image
                             src={relatedPost.image}
                             alt={relatedPost.title}
+                            width={400}
+                            height={160}
                             className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                           <div className="absolute top-3 left-3">

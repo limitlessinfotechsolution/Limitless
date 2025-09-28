@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, Search, Filter, ArrowRight } from 'lucide-react';
 import SEOHead from '../../src/components/SEOHead';
@@ -246,10 +247,12 @@ const Blog: React.FC = () => {
                     </p>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <img
+                        <Image
                           src={featuredPost.authorImage}
                           alt={featuredPost.author}
-                          className="w-10 h-10 rounded-full object-cover"
+                          width={40}
+                          height={40}
+                          className="rounded-full object-cover"
                         />
                         <div>
                           <div className="font-medium text-gray-900 dark:text-white">
@@ -270,9 +273,11 @@ const Blog: React.FC = () => {
                     </div>
                   </div>
                   <div className="relative">
-                    <img
+                    <Image
                       src={featuredPost.image}
                       alt={featuredPost.title}
+                      width={400}
+                      height={320}
                       className="w-full h-64 lg:h-80 object-cover rounded-xl shadow-lg"
                     />
                     <div className="absolute top-4 right-4">
@@ -343,9 +348,11 @@ const Blog: React.FC = () => {
                   className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden group"
                 >
                   <div className="relative overflow-hidden">
-                    <img
+                    <Image
                       src={post.image}
                       alt={post.title}
+                      width={400}
+                      height={192}
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute top-4 left-4">
@@ -377,10 +384,12 @@ const Blog: React.FC = () => {
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <img
+                        <Image
                           src={post.authorImage}
                           alt={post.author}
-                          className="w-8 h-8 rounded-full object-cover"
+                          width={32}
+                          height={32}
+                          className="rounded-full object-cover"
                         />
                         <span className="text-sm font-medium text-gray-900 dark:text-white">
                           {post.author}

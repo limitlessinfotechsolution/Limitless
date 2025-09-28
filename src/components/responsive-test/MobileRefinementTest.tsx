@@ -6,6 +6,7 @@ import {
   Star, CheckCircle, Download, BarChart3
 } from 'lucide-react';
 import CardEnhanced from '../ui/Card-enhanced';
+import Card from '../ui/Card';
 
 const MobileRefinementTest: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -124,7 +125,7 @@ const MobileRefinementTest: React.FC = () => {
             );
           })}
         </div>
-      </Card>
+      </CardEnhanced>
 
       {/* Testimonials Test */}
       <Card className="p-4 border border-gray-200 dark:border-gray-700">

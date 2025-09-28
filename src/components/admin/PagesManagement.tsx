@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Plus,
   Edit,
   Trash2,
   Eye,
@@ -134,7 +133,7 @@ const PagesManagement: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'published' | 'draft'>('all');
-  const [showCreateModal, setShowCreateModal] = useState(false);
+
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -262,13 +261,7 @@ const PagesManagement: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Pages Management</h1>
           <p className="text-gray-600 dark:text-gray-400">Manage your website pages and content. Drag and drop to reorder.</p>
         </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="flex items-center space-x-2 bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent-dark transition-colors"
-        >
-          <Plus className="w-5 h-5" />
-          <span>Create Page</span>
-        </button>
+
       </div>
 
       {/* Filters and Search */}

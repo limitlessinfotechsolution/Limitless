@@ -1,12 +1,4 @@
-import React from 'react';
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Terms of Service - Limitless Infotech',
-  description: 'Terms of service for using Limitless Infotech services and website.',
-};
-
-const TermsOfService: React.FC = () => {
+const TermsOfService = () => {
   return (
     <div className="pt-20">
       <div className="container-custom py-16">

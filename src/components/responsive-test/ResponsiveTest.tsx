@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import CardEnhanced from '../ui/Card-enhanced';
+import Card from '../ui/Card';
 
 const ResponsiveTest: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);

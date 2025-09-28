@@ -127,7 +127,7 @@ useEffect(() => {
               >
                 <CardEnhanced variant='elevated' hover='glow' className="p-8 text-center group">
                   <LazyImage
-                    src={founder.image}
+                    src="/images/faidal.jpg"
                     alt={founder.name}
                     width={128}
                     height={128}

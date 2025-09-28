@@ -1,6 +1,4 @@
 'use client';
-
-import React from 'react';
 import { Users, Award, Target, Linkedin, Github, Twitter, Dribbble } from 'lucide-react';
 import CardEnhanced from '@/components/ui/Card-enhanced';
 import { Button } from '@/components/ui/Button';
@@ -12,89 +10,37 @@ export default function TeamPage() {
       id: 1,
       name: 'Faisal Khan',
       role: 'CEO & Founder',
-      bio: 'Visionary leader with 12+ years in technology and business development. Founded Limitless Infotech to bridge the gap between innovative technology and business needs. Expert in digital transformation strategies and scaling tech startups.',
+      bio: 'Visionary leader with 10+ years in technology and business development. Founded Limitless Infotech to bridge the gap between innovative technology and business needs. Expert in digital transformation strategies and scaling tech startups.',
       avatar: '/assets/team/faisal.jpg',
       socialLinks: [
-        { platform: 'linkedin', url: 'https://linkedin.com/in/faisal-khan-tech' },
-        { platform: 'twitter', url: 'https://twitter.com/faisal_khan_tech' }
+        { platform: 'linkedin', url: 'https://linkedin.com/in/faisalarzookhan' },
+        { platform: 'twitter', url: 'https://twitter.com/faisalarzookhan' },
+        { platform: 'github', url: 'https://github.com/faisalarzookhan' }
       ]
     },
     {
       id: 2,
-      name: 'Priya Sharma',
-      role: 'CTO & Technical Director',
-      bio: '15+ years in software architecture and cloud solutions. Leads our technical innovation initiatives, specializing in scalable enterprise systems, AI integration, and modern development practices.',
+      name: 'Taj Nadaf',
+      role: 'CO-Founder & CTO',
+      bio: '6+ years in software architecture and cloud solutions. Leads our technical innovation initiatives, specializing in scalable enterprise systems, AI integration, and modern development practices.',
       avatar: '',
       socialLinks: [
-        { platform: 'linkedin', url: 'https://linkedin.com/in/priya-sharma-tech' },
-        { platform: 'github', url: 'https://github.com/priya-sharma' }
+        { platform: 'linkedin', url: 'https://linkedin.com/in/' },
+        { platform: 'github', url: 'https://github.com/' }
       ]
     },
     {
       id: 3,
-      name: 'Rajesh Kumar',
-      role: 'Lead Full-Stack Developer',
+      name: 'Vinit Domitie',
+      role: 'Backend Developer',
       bio: '10+ years crafting robust web applications. Expert in React, Node.js, and cloud-native development. Passionate about clean code, performance optimization, and mentoring junior developers.',
       avatar: '',
       socialLinks: [
-        { platform: 'linkedin', url: 'https://linkedin.com/in/rajesh-kumar-dev' },
-        { platform: 'github', url: 'https://github.com/rajesh-kumar' }
+        { platform: 'linkedin', url: 'https://linkedin.com/in/' },
+        { platform: 'github', url: 'https://github.com/' }
       ]
     },
-    {
-      id: 4,
-      name: 'Ananya Patel',
-      role: 'UX/UI Design Lead',
-      bio: '8+ years creating user-centered digital experiences. Specializes in design systems, accessibility, and user research. Awarded for innovative mobile app designs and enterprise dashboard solutions.',
-      avatar: '',
-      socialLinks: [
-        { platform: 'linkedin', url: 'https://linkedin.com/in/ananya-patel-design' },
-        { platform: 'dribbble', url: 'https://dribbble.com/ananya-patel' }
-      ]
-    },
-    {
-      id: 5,
-      name: 'Vikram Singh',
-      role: 'DevOps & Cloud Architect',
-      bio: '12+ years in infrastructure automation and cloud architecture. Expert in AWS, Kubernetes, and CI/CD pipelines. Ensures our systems are secure, scalable, and always available.',
-      avatar: '',
-      socialLinks: [
-        { platform: 'linkedin', url: 'https://linkedin.com/in/vikram-singh-devops' },
-        { platform: 'github', url: 'https://github.com/vikram-singh' }
-      ]
-    },
-    {
-      id: 6,
-      name: 'Meera Joshi',
-      role: 'Marketing & Growth Director',
-      bio: 'Strategic marketing leader with 10+ years in B2B tech marketing. Drives brand awareness, lead generation, and customer acquisition through data-driven marketing campaigns and content strategies.',
-      avatar: '',
-      socialLinks: [
-        { platform: 'linkedin', url: 'https://linkedin.com/in/meera-joshi-marketing' },
-        { platform: 'twitter', url: 'https://twitter.com/meera_joshi_mkt' }
-      ]
-    },
-    {
-      id: 7,
-      name: 'Arjun Nair',
-      role: 'AI/ML Engineer',
-      bio: 'PhD in Computer Science with 8+ years in machine learning and AI. Develops intelligent systems for predictive analytics, natural language processing, and automated decision-making solutions.',
-      avatar: '',
-      socialLinks: [
-        { platform: 'linkedin', url: 'https://linkedin.com/in/arjun-nair-ai' },
-        { platform: 'github', url: 'https://github.com/arjun-nair' }
-      ]
-    },
-    {
-      id: 8,
-      name: 'Kavita Reddy',
-      role: 'Project Manager',
-      bio: 'Certified PMP with 9+ years managing complex software projects. Ensures timely delivery, quality standards, and client satisfaction through agile methodologies and stakeholder management.',
-      avatar: '',
-      socialLinks: [
-        { platform: 'linkedin', url: 'https://linkedin.com/in/kavita-reddy-pm' }
-      ]
-    }
+
   ];
 
   const values = [

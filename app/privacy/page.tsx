@@ -1,12 +1,4 @@
-import React from 'react';
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Privacy Policy - Limitless Infotech',
-  description: 'Our privacy policy explains how we collect, use, and protect your personal information.',
-};
-
-const PrivacyPolicy: React.FC = () => {
+const PrivacyPolicy = () => {
   return (
     <div className="pt-20">
       <div className="container-custom py-16">

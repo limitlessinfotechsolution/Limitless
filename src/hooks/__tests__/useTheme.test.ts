@@ -82,7 +82,7 @@ describe('useTheme', () => {
 
   it('should handle system theme preference', () => {
     // Mock system prefers dark
-    (window.matchMedia as any).mockImplementation((query: string) => ({
+    (window.matchMedia as jest.MockedFunction<typeof window.matchMedia>).mockImplementation((query: string) => ({
       matches: query === '(prefers-color-scheme: dark)',
       media: query,
       onchange: null,

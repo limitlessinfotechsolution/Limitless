@@ -14,7 +14,7 @@ interface SEOHeadProps {
   description?: string;
   canonical?: string;
   ogImage?: string;
-  structuredData?: any[];
+  structuredData?: unknown[];
   breadcrumbs?: Array<{ name: string; url: string }>;
   pageData?: {
     name: string;

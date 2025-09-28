@@ -47,7 +47,7 @@ export async function handleBulkAction(
 // Export utilities
 import Papa from 'papaparse';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import { autoTable } from 'jspdf-autotable';
 
 export async function exportToCSV(data: unknown[], filename: string): Promise<Blob> {
   const csv = Papa.unparse(data);
@@ -63,13 +63,13 @@ export async function exportToCSV(data: unknown[], filename: string): Promise<Bl
   return blob;
 }
 
-export async function exportToPDF(data: unknown[], title: string): Promise<Blob> {
+export async function exportToPDF(data: Record<string, unknown>[], title: string): Promise<Blob> {
   const doc = new jsPDF();
   doc.text(title, 14, 20);
   if (data.length > 0) {
-    const headers = Object.keys(data[0] as Record<string, unknown>);
-    const body = data.map(row => headers.map(header => (row as Record<string, unknown>)[header] || ''));
-    (doc as any).autoTable({
+    const headers = Object.keys(data[0]);
+    const body = data.map(row => headers.map(header => String(row[header] || '')));
+    autoTable(doc, {
       head: [headers],
       body,
       startY: 30,
