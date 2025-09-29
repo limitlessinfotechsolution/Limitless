@@ -1,22 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { z } from 'zod';
 
-export const runtime = 'edge';
-
-// Zod schema for page creation
-const pageSchema = z.object({
-  page_name: z.string().min(1, 'Page name is required'),
-  content: z.string().optional(),
-  is_published: z.boolean().optional(),
-});
-
-// Helper function to create a Supabase client with user session
-const createSupabaseClient = async () => {
+export async function GET(_request: NextRequest) {
   try {
     const cookieStore = await cookies();
-    return createServerClient(
+    const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
@@ -27,57 +16,107 @@ const createSupabaseClient = async () => {
         },
       }
     );
-  } catch (error) {
-    // Fallback for test environment or when cookies are not available
-    if (process.env.NODE_ENV === 'test') {
-      return createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
-    }
-    throw error;
-  }
-};
 
-// GET: Fetch all pages (admin-only for management)
-export async function GET() {
-  const supabase = await createSupabaseClient();
-  try {
-    const { data, error } = await supabase
+    // Auth check
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Verify admin role
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', session.user.id)
+      .single();
+
+    if (profile?.role !== 'admin' && profile?.role !== 'super_admin') {
+      return NextResponse.json({ error: 'Access denied. Admin privileges required.' }, { status: 403 });
+    }
+
+    // Fetch all pages
+    const { data: pages, error } = await supabase
       .from('pages')
-      .select('id, page_name, content, is_published, version, created_at, updated_at')
+      .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error fetching pages:', error);
+      return NextResponse.json({ error: 'Failed to fetch pages' }, { status: 500 });
+    }
 
-    return NextResponse.json({ pages: data ?? [] }, { status: 200 });
-  } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : 'Failed to fetch pages';
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    return NextResponse.json({ pages });
+  } catch (error) {
+    console.error('Unexpected error in pages API:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
-// POST: Create a new page (admin-only)
 export async function POST(request: NextRequest) {
-  const supabase = await createSupabaseClient();
   try {
-    const body = await request.json();
-    const validated = pageSchema.parse(body);
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value;
+          },
+        },
+      }
+    );
 
-    const { data, error } = await supabase
-      .from('pages')
-      .insert([{ page_name: validated.page_name, content: validated.content, is_published: validated.is_published }])
-      .select('id')
+    // Auth check
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Verify admin role
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', session.user.id)
       .single();
 
-    if (error) throw error;
-
-    return NextResponse.json({ id: data.id }, { status: 201 });
-  } catch (err: unknown) {
-    if (err instanceof z.ZodError) {
-      return NextResponse.json({ error: err.issues.map(issue => issue.message) }, { status: 400 });
+    if (profile?.role !== 'admin' && profile?.role !== 'super_admin') {
+      return NextResponse.json({ error: 'Access denied. Admin privileges required.' }, { status: 403 });
     }
-    const errorMessage = err instanceof Error ? err.message : 'Failed to create page';
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+
+    // Parse request body
+    const body = await request.json();
+    const { page_name, content, is_published } = body;
+
+    // Basic validation
+    const errors = [];
+    if (!page_name || typeof page_name !== 'string' || page_name.trim() === '') {
+      errors.push('Page name is required and must be a non-empty string');
+    }
+    if (errors.length > 0) {
+      return NextResponse.json({ error: errors }, { status: 400 });
+    }
+
+    // Create page
+    const { data: page, error } = await supabase
+      .from('pages')
+      .insert({
+        page_name: page_name.trim(),
+        content,
+        is_published: is_published || false,
+        created_by: session.user.id,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating page:', error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json(page, { status: 201 });
+  } catch (error) {
+    console.error('Unexpected error in pages API:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

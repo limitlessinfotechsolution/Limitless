@@ -1,10 +1,11 @@
-const CACHE_NAME = 'limitless-v2';
+const CACHE_NAME = 'limitless-v3';
 const urlsToCache = [
   '/',
   '/manifest.json'
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => cache.addAll(urlsToCache))
@@ -23,12 +24,15 @@ self.addEventListener('fetch', (event) => {
         if (response) {
           return response;
         }
-        return fetch(event.request);
+        return fetch(event.request).catch(() => {
+          return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
+        });
       })
   );
 });
 
 self.addEventListener('activate', (event) => {
+  self.clients.claim();
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(

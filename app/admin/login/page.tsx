@@ -17,6 +17,12 @@ const AdminLogin: React.FC = () => {
     setIsLoggingIn(true);
     setError('');
 
+    if (!supabase) {
+      setError('Supabase client not configured');
+      setIsLoggingIn(false);
+      return;
+    }
+
     try {
       // Sign in with Supabase
       const { data, error: authError } = await supabase.auth.signInWithPassword({
@@ -66,7 +72,7 @@ const AdminLogin: React.FC = () => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full"
+      className="w-full max-w-md mx-auto"
     >
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8">
@@ -166,7 +172,7 @@ const AdminLogin: React.FC = () => {
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-500">
               Email: admin@limitlessinfotech.com<br />
-              Password: admin123
+              Password: Try@Admin123
             </p>
           </div>
         </motion.form>

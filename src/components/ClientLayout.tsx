@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Navigation from './common/Navigation';
 import Footer from './common/Footer';
 import ChatbotWidget from './chatbot/ChatbotWidget';
@@ -12,18 +13,21 @@ export default function ClientLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const isAdmin = pathname.startsWith('/admin');
+
   useEffect(() => {
     document.documentElement.setAttribute('crxlauncher', '');
   }, []);
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
-      <Navigation />
+      {!isAdmin && <Navigation />}
       <main>
         {children}
       </main>
-      <Footer />
-      <ChatbotWidget />
+      {!isAdmin && <Footer />}
+      {!isAdmin && <ChatbotWidget />}
       <PWA />
     </div>
   );

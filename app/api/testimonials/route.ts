@@ -39,7 +39,6 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from('testimonials')
       .select('*')
-      .eq('approved', true)
       .order('created_at', { ascending: false });
     
     // Apply search filter if provided

@@ -29,7 +29,7 @@ async function seedAdminUser() {
     console.log('📧 Creating admin user...')
     const { data: userData, error: userError } = await supabase.auth.admin.createUser({
       email: 'admin@limitlessinfotech.com',
-      password: 'admin123',
+      password: 'Try@Admin123',
       email_confirm: true,
       user_metadata: {
         role: 'admin'
@@ -133,7 +133,7 @@ async function seedAdminUser() {
     console.log('🎉 Admin user seeding completed successfully!')
     console.log('\n📝 Demo Credentials:')
     console.log('Email: admin@limitlessinfotech.com')
-    console.log('Password: admin123')
+    console.log('Password: Try@Admin123')
     console.log('\n💡 Now you can login at /admin/login')
 
   } catch (error) {

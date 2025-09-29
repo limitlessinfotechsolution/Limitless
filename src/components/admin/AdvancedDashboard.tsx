@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Card from '../ui/Card';
 import Breadcrumb from '../ui/Breadcrumb';
 import Skeleton from '../ui/Skeleton';
+import { RefreshCw } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import {
   Users,
@@ -103,104 +104,122 @@ const AdvancedDashboard: React.FC = () => {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasError, setHasError] = useState(false);
 
-  useEffect(() => {
-    fetchDashboardData();
+  const fetchDashboardData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    setHasError(false);
 
-    // Set up polling for real-time updates every 5 minutes
-    const interval = setInterval(fetchDashboardData, 5 * 60 * 1000);
+    let pagesData = { pages: [] as PageData[] };
+    let testimonialsData = { testimonials: [] as TestimonialData[] };
+    let leadsData = { leads: [] as LeadData[] };
+    let projectsData = { projects: [] as ProjectData[] };
 
-    return () => clearInterval(interval);
-  }, []);
-
-  const fetchDashboardData = async () => {
     try {
-      // Fetch stats from various APIs
-      const [pagesRes, testimonialsRes, leadsRes, projectsRes] = await Promise.all([
-        fetch('/api/pages'),
-        fetch('/api/testimonials'),
-        fetch('/api/leads'),
-        fetch('/api/projects'),
-      ]);
+      // Fetch pages
+      try {
+        const pagesRes = await fetch('/api/pages');
+        if (pagesRes.ok) {
+          pagesData = await pagesRes.json();
+        }
+      } catch (err) {
+        console.error('Pages fetch error:', err);
+      }
 
-      const [pagesData, testimonialsData, leadsData, projectsData] = await Promise.all([
-        pagesRes.json(),
-        testimonialsRes.json(),
-        leadsRes.json(),
-        projectsRes.json(),
-      ]);
+      // Fetch testimonials
+      try {
+        const testimonialsRes = await fetch('/api/testimonials');
+        if (testimonialsRes.ok) {
+          testimonialsData = await testimonialsRes.json();
+        }
+      } catch (err) {
+        console.error('Testimonials fetch error:', err);
+      }
 
-      // Calculate stats
+      // Fetch leads
+      try {
+        const leadsRes = await fetch('/api/leads');
+        if (leadsRes.ok) {
+          leadsData = await leadsRes.json();
+        }
+      } catch (err) {
+        console.error('Leads fetch error:', err);
+      }
+
+      // Fetch projects
+      try {
+        const projectsRes = await fetch('/api/projects');
+        if (projectsRes.ok) {
+          projectsData = await projectsRes.json();
+        }
+      } catch (err) {
+        console.error('Projects fetch error:', err);
+      }
+
+      // Calculate stats with fallbacks
       const dashboardStats: DashboardStats = {
-        totalPages: pagesData.pages?.length || 0,
-        publishedPages: pagesData.pages?.filter((p: unknown) => (p as PageData).is_published).length || 0,
-        totalTestimonials: testimonialsData.testimonials?.length || 0,
-        approvedTestimonials: testimonialsData.testimonials?.filter((t: unknown) => (t as TestimonialData).approved).length || 0,
-        totalLeads: leadsData.leads?.length || 0,
-        recentLeads: leadsData.leads?.filter((l: unknown) =>
-          new Date((l as LeadData).created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-        ).length || 0,
-        totalProjects: projectsData.projects?.length || 0,
-        publishedProjects: projectsData.projects?.filter((p: unknown) => (p as ProjectData).is_published).length || 0,
+        totalPages: pagesData.pages.length,
+        publishedPages: pagesData.pages.filter((p) => p.is_published).length,
+        totalTestimonials: testimonialsData.testimonials.length,
+        approvedTestimonials: testimonialsData.testimonials.filter((t) => t.approved).length,
+        totalLeads: leadsData.leads.length,
+        recentLeads: leadsData.leads.filter((l) =>
+          new Date(l.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+        ).length,
+        totalProjects: projectsData.projects.length,
+        publishedProjects: projectsData.projects.filter((p) => p.is_published).length,
       };
 
       setStats(dashboardStats);
 
-      // Generate recent activity from real data
+      // Generate recent activity from available data
       const allActivities: RecentActivity[] = [];
 
       // Process pages
-      if (pagesData.pages) {
-        pagesData.pages.forEach((page: PageData) => {
-          allActivities.push({
-            id: `page-${page.id}`,
-            type: 'page',
-            action: page.is_published ? 'Page published' : 'Page updated',
-            title: page.page_name,
-            timestamp: page.updated_at,
-          });
+      pagesData.pages.forEach((page: PageData) => {
+        allActivities.push({
+          id: `page-${page.id}`,
+          type: 'page',
+          action: page.is_published ? 'Page published' : 'Page updated',
+          title: page.page_name,
+          timestamp: page.updated_at,
         });
-      }
+      });
 
       // Process testimonials
-      if (testimonialsData.testimonials) {
-        testimonialsData.testimonials.forEach((testimonial: TestimonialData) => {
-          allActivities.push({
-            id: `testimonial-${testimonial.id}`,
-            type: 'testimonial',
-            action: testimonial.approved ? 'Testimonial approved' : 'Testimonial submitted',
-            title: `${testimonial.name} - ${testimonial.company}`,
-            timestamp: testimonial.updated_at,
-          });
+      testimonialsData.testimonials.forEach((testimonial: TestimonialData) => {
+        allActivities.push({
+          id: `testimonial-${testimonial.id}`,
+          type: 'testimonial',
+          action: testimonial.approved ? 'Testimonial approved' : 'Testimonial submitted',
+          title: `${testimonial.name} - ${testimonial.company}`,
+          timestamp: testimonial.updated_at,
         });
-      }
+      });
 
       // Process leads
-      if (leadsData.leads) {
-        leadsData.leads.forEach((lead: LeadData) => {
-          const businessBasics = lead.business_basics as { companyName?: string; contactName?: string };
-          allActivities.push({
-            id: `lead-${lead.id}`,
-            type: 'lead',
-            action: 'New lead received',
-            title: `${businessBasics.contactName || 'Unknown'} - ${businessBasics.companyName || 'Project Inquiry'}`,
-            timestamp: lead.created_at,
-          });
+      leadsData.leads.forEach((lead: LeadData) => {
+        const businessBasics = lead.business_basics as { companyName?: string; contactName?: string };
+        allActivities.push({
+          id: `lead-${lead.id}`,
+          type: 'lead',
+          action: 'New lead received',
+          title: `${businessBasics.contactName || 'Unknown'} - ${businessBasics.companyName || 'Project Inquiry'}`,
+          timestamp: lead.created_at,
         });
-      }
+      });
 
       // Process projects
-      if (projectsData.projects) {
-        projectsData.projects.forEach((project: ProjectData) => {
-          allActivities.push({
-            id: `project-${project.id}`,
-            type: 'project',
-            action: project.is_published ? 'Project published' : 'Project updated',
-            title: project.title,
-            timestamp: project.updated_at,
-          });
+      projectsData.projects.forEach((project: ProjectData) => {
+        allActivities.push({
+          id: `project-${project.id}`,
+          type: 'project',
+          action: project.is_published ? 'Project published' : 'Project updated',
+          title: project.title,
+          timestamp: project.updated_at,
         });
-      }
+      });
 
       // Sort by timestamp descending and take the 10 most recent
       allActivities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
@@ -214,9 +233,9 @@ const AdvancedDashboard: React.FC = () => {
       });
 
       const chartDataMap = last7Days.map(date => {
-        const count = leadsData.leads?.filter((lead: LeadData) =>
+        const count = leadsData.leads.filter((lead: LeadData) =>
           new Date(lead.created_at).toISOString().split('T')[0] === date
-        ).length || 0;
+        ).length;
         return { date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), leads: count };
       });
 
@@ -231,15 +250,26 @@ const AdvancedDashboard: React.FC = () => {
       };
       setHealthMetrics(mockHealthMetrics);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch dashboard data');
+      const msg = err instanceof Error ? err.message : 'Failed to fetch dashboard data';
+      setError(msg);
+      setHasError(true);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+
+    // Set up polling for real-time updates every 5 minutes
+    const interval = setInterval(fetchDashboardData, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, [fetchDashboardData]);
 
   if (loading) {
-    return (
-      <div className="max-w-7xl mx-auto space-y-6">
+  return (
+    <div className="w-full space-y-6">
         <Breadcrumb items={[{ label: 'Dashboard' }]} />
         <div className="flex justify-between items-center">
           <Skeleton className="h-8 w-48" />
@@ -296,8 +326,36 @@ const AdvancedDashboard: React.FC = () => {
     );
   }
 
-  if (error) return <div className="text-red-500">{error}</div>;
-  if (!stats) return <div>No data available</div>;
+  if (hasError && error) {
+    return (
+      <div className="w-full space-y-6 p-6">
+        <Breadcrumb items={[{ label: 'Dashboard' }]} />
+        <Card className="p-6">
+          <div className="flex flex-col items-center space-y-4 text-center">
+            <AlertCircle className="w-12 h-12 text-red-500" />
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Failed to load dashboard data</h2>
+            <p className="text-gray-600 dark:text-gray-400">{error}</p>
+            <button
+              onClick={fetchDashboardData}
+              className="flex items-center space-x-2 px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-dark transition-colors"
+            >
+              <RefreshCw className="w-4 h-4 animate-spin" />
+              <span>Retry</span>
+            </button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!stats) return (
+    <div className="w-full space-y-6 p-6">
+      <Breadcrumb items={[{ label: 'Dashboard' }]} />
+      <Card className="p-6 text-center">
+        <p className="text-gray-600 dark:text-gray-400">No data available. Please check your connections.</p>
+      </Card>
+    </div>
+  );
 
   const statCards = [
     {
@@ -361,7 +419,7 @@ const AdvancedDashboard: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="w-full space-y-6">
       <Breadcrumb items={[{ label: 'Dashboard' }]} />
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Dashboard</h1>

@@ -1,23 +1,46 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { supabase } from '../lib/supabaseClient';
 import LoginGate from '../components/admin/LoginGate';
+import ProfessionalLoader from '../components/ui/ProfessionalLoader';
 
 const Admin: React.FC = () => {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const handleLoginSuccess = () => {
-    setIsAuthenticated(true);
-    router.push('/admin/dashboard');
-  };
+  useEffect(() => {
+    const checkAndRedirect = async () => {
+      if (!supabase) return;
 
-  if (!isAuthenticated) {
-    return <LoginGate onSuccess={handleLoginSuccess} />;
-  }
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
 
-  return <div>Redirecting...</div>;
+        if (profile?.role === 'admin' || profile?.role === 'super_admin') {
+          router.push('/admin/dashboard');
+        }
+      }
+    };
+
+    checkAndRedirect();
+  }, [router]);
+
+  return (
+    <LoginGate>
+      <div className="min-h-screen flex items-center justify-center">
+        <ProfessionalLoader />
+      </div>
+    </LoginGate>
+  );
+};
+
+export const getServerSideProps = async () => {
+  return { props: {} };
 };
 
 export default Admin;

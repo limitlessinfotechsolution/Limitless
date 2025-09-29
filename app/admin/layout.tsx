@@ -11,7 +11,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     <LoginGate>
       <div className="flex h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <main className="flex-1 lg:ml-0 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+        <main className="flex-1 lg:ml-0 p-2 sm:p-4 lg:p-6 overflow-y-auto">
           {/* Mobile menu button */}
           <button
             onClick={() => setSidebarOpen(true)}
