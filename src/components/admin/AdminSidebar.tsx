@@ -18,6 +18,16 @@ import {
   Bell,
   Moon,
   Sun,
+  Shield,
+  Activity,
+  Building,
+  Zap,
+  Brain,
+  MessageCircle,
+  Settings,
+  HardDrive,
+  ChevronDown,
+  ChevronRight,
 } from 'lucide-react';
 
 interface AdminSidebarProps {
@@ -69,57 +79,140 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = true, onClose }) =
 
   const unreadCount = notifications.filter(n => n.unread).length;
 
-  const navigationItems = [
+  const navigationGroups = [
     {
-      name: 'Dashboard',
-      href: '/admin/dashboard',
-      icon: LayoutDashboard,
+      name: 'Core Management',
+      items: [
+        {
+          name: 'Dashboard',
+          href: '/admin/dashboard',
+          icon: LayoutDashboard,
+        },
+        {
+          name: 'Pages',
+          href: '/admin/pages',
+          icon: FileText,
+        },
+        {
+          name: 'Portfolio',
+          href: '/admin/portfolio',
+          icon: Briefcase,
+        },
+        {
+          name: 'Testimonials',
+          href: '/admin/testimonials',
+          icon: MessageSquare,
+        },
+        {
+          name: 'Leads',
+          href: '/admin/leads',
+          icon: Users,
+        },
+      ],
     },
     {
-      name: 'Pages',
-      href: '/admin/pages',
-      icon: FileText,
+      name: 'Access Control',
+      items: [
+        {
+          name: 'Users',
+          href: '/admin/users',
+          icon: UserCheck,
+        },
+        {
+          name: 'Roles & Permissions',
+          href: '/admin/roles',
+          icon: Shield,
+        },
+        {
+          name: 'Audit Logs',
+          href: '/admin/audit',
+          icon: Activity,
+        },
+      ],
     },
     {
-      name: 'Portfolio',
-      href: '/admin/portfolio',
-      icon: Briefcase,
+      name: 'System Monitoring',
+      items: [
+        {
+          name: 'System Health',
+          href: '/admin/system-health',
+          icon: Activity,
+        },
+        {
+          name: 'Organization Overview',
+          href: '/admin/organization',
+          icon: Building,
+        },
+      ],
     },
     {
-      name: 'Testimonials',
-      href: '/admin/testimonials',
-      icon: MessageSquare,
+      name: 'Automation',
+      items: [
+        {
+          name: 'Workflows',
+          href: '/admin/automation',
+          icon: Zap,
+        },
+        {
+          name: 'AI Governance',
+          href: '/admin/ai-governance',
+          icon: Brain,
+        },
+      ],
     },
     {
-      name: 'Leads',
-      href: '/admin/leads',
-      icon: Users,
+      name: 'Communication',
+      items: [
+        {
+          name: 'Internal Comms',
+          href: '/admin/communication',
+          icon: MessageCircle,
+        },
+        {
+          name: 'Mail',
+          href: '/admin/mail',
+          icon: Mail,
+        },
+      ],
     },
     {
-      name: 'Users',
-      href: '/admin/users',
-      icon: UserCheck,
-    },
-    {
-      name: 'FAQ',
-      href: '/admin/faq',
-      icon: HelpCircle,
-    },
-    {
-      name: 'Mail',
-      href: '/admin/mail',
-      icon: Mail,
-    },
-    {
-      name: 'SEO',
-      href: '/admin/seo',
-      icon: Search,
+      name: 'Configuration',
+      items: [
+        {
+          name: 'Settings',
+          href: '/admin/settings',
+          icon: Settings,
+        },
+        {
+          name: 'Backup & Recovery',
+          href: '/admin/backup',
+          icon: HardDrive,
+        },
+        {
+          name: 'FAQ',
+          href: '/admin/faq',
+          icon: HelpCircle,
+        },
+        {
+          name: 'SEO',
+          href: '/admin/seo',
+          icon: Search,
+        },
+      ],
     },
   ];
 
-  const filteredItems = navigationItems.filter(item =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Flatten navigation items for search
+  const allNavigationItems = navigationGroups.flatMap(group => group.items);
+
+  const filteredGroups = searchQuery
+    ? navigationGroups.map(group => ({
+        ...group,
+        items: group.items.filter(item =>
+          item.name.toLowerCase().includes(searchQuery.toLowerCase())
+        ),
+      })).filter(group => group.items.length > 0)
+    : navigationGroups;
 
   return (
     <>
@@ -184,34 +277,43 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = true, onClose }) =
               />
             </div>
           </div>
-          <ul className="space-y-2">
-            {filteredItems.length > 0 ? (
-              filteredItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = pathname === item.href;
-                return (
-                  <li key={item.name}>
-                    <Link
-                      href={item.href}
-                      onClick={onClose} // Close sidebar on mobile when navigating
-                      className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-                        isActive
-                          ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
-                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                      }`}
-                    >
-                      <Icon className="w-5 h-5" />
-                      <span>{item.name}</span>
-                    </Link>
-                  </li>
-                );
-              })
+          <div className="space-y-4">
+            {filteredGroups.length > 0 ? (
+              filteredGroups.map((group) => (
+                <div key={group.name}>
+                  <h3 className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    {group.name}
+                  </h3>
+                  <ul className="space-y-1">
+                    {group.items.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = pathname === item.href;
+                      return (
+                        <li key={item.name}>
+                          <Link
+                            href={item.href}
+                            onClick={onClose} // Close sidebar on mobile when navigating
+                            className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                              isActive
+                                ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                            }`}
+                          >
+                            <Icon className="w-5 h-5" />
+                            <span>{item.name}</span>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ))
             ) : (
-              <li className="px-3 py-2 text-gray-500 dark:text-gray-400 text-sm">
+              <div className="px-3 py-2 text-gray-500 dark:text-gray-400 text-sm">
                 No navigation items found.
-              </li>
+              </div>
             )}
-          </ul>
+          </div>
         </nav>
       </aside>
 
