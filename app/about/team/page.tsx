@@ -1,7 +1,7 @@
 'use client';
 import { Users, Award, Target, Linkedin, Github, Twitter, Dribbble } from 'lucide-react';
-import CardEnhanced from '@/components/ui/Card-enhanced';
-import { Button } from '@/components/ui/Button';
+import CardEnhanced from '@/components/ui/CardEnhanced';
+import Button from '@/components/ui/Button';
 import Image from 'next/image';
 
 export default function TeamPage() {

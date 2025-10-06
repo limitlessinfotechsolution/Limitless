@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Button } from '@/components/ui/Button';
-import CardEnhanced from '@/components/ui/Card-enhanced';
+import Button from '@/components/ui/Button';
+import CardEnhanced from '@/components/ui/CardEnhanced';
 import './globals.css';
 
 export default function TestUIPage() {

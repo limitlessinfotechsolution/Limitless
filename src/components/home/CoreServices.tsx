@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { supabase } from '../../lib/supabaseClient';
 import { Service } from '../../types';
 import * as Icons from 'lucide-react';
-import CardEnhanced from '../ui/Card-enhanced';
+import CardEnhanced from '../ui/CardEnhanced';
 import SkeletonLoader from '../ui/SkeletonLoader';
 
 const CoreServices: React.FC = () => {

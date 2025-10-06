@@ -4,7 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import * as Icons from 'lucide-react';
-import CardEnhanced from '../ui/Card-enhanced';
+import CardEnhanced from '../ui/CardEnhanced';
 import LazyImage from '../ui/LazyImage';
 
 interface CaseStudyData {

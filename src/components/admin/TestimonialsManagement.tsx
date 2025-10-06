@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Card from '../ui/Card';
+import { Card } from '../ui/Card';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import { Search, Download, CheckSquare, Square, Trash2, Edit, Star, Eye, EyeOff, Filter } from 'lucide-react';
 
@@ -53,9 +53,9 @@ const TestimonialsManagement: React.FC = () => {
   };
 
   const filteredTestimonials = testimonials.filter(testimonial => {
-    const matchesSearch = testimonial.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         testimonial.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         testimonial.content.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (testimonial.client_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                         (testimonial.company?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                         (testimonial.content?.toLowerCase() || '').includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' ||
       (filterStatus === 'published' && testimonial.is_published) ||
       (filterStatus === 'draft' && !testimonial.is_published);
@@ -211,8 +211,8 @@ const TestimonialsManagement: React.FC = () => {
     const csvContent = [
       ['Client Name', 'Company', 'Rating', 'Content', 'Status', 'Featured', 'Created'],
       ...filteredTestimonials.map(t => [
-        t.client_name,
-        t.company,
+        t.client_name || '',
+        t.company || '',
         t.rating.toString(),
         `"${t.content.replace(/"/g, '""')}"`,
         t.is_published ? 'Published' : 'Draft',
@@ -424,7 +424,7 @@ const TestimonialsManagement: React.FC = () => {
               <button
                 onClick={() => handleSelectTestimonial(testimonial.id)}
                 className="text-gray-600 dark:text-gray-300 mt-1"
-                aria-label={`Select testimonial from ${testimonial.client_name}`}
+                aria-label={`Select testimonial from ${testimonial.client_name || 'Unknown'}`}
               >
                 {selectedTestimonials.has(testimonial.id) ? (
                   <CheckSquare className="w-5 h-5" />
@@ -434,7 +434,7 @@ const TestimonialsManagement: React.FC = () => {
               </button>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <h3 className="font-semibold">{testimonial.client_name}</h3>
+                  <h3 className="font-semibold">{testimonial.client_name || 'Unknown'}</h3>
                   <span className="text-gray-500">from</span>
                   <span className="font-medium text-blue-600">{testimonial.company}</span>
                 </div>

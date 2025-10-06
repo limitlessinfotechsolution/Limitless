@@ -28,9 +28,9 @@ jest.mock('@supabase/ssr', () => ({
 }));
 
 jest.mock('next/headers', () => ({
-  cookies: jest.fn(() => {
-    throw new Error('Cookies not available in test');
-  }),
+  cookies: jest.fn(() => Promise.resolve({
+    get: jest.fn(),
+  })),
 }));
 
 describe('/api/pages', () => {
@@ -42,20 +42,40 @@ describe('/api/pages', () => {
     it('should return pages successfully', async () => {
       const mockPages = [
         { id: 1, page_name: 'Home', is_published: true },
-        { id: 2, page_name: 'About', is_published: true },
+        { id: 2, page_name: 'Service', is_published: true },
+        { id: 3, page_name: 'Portfolio', is_published: true },
+        { id: 4, page_name: 'Testimonials', is_published: true },
+        { id: 5, page_name: 'About', is_published: true },
+        { id: 6, page_name: 'Contact', is_published: true },
+        { id: 7, page_name: 'Admin', is_published: true },
+        { id: 8, page_name: 'Client-Portal', is_published: true },
+        { id: 9, page_name: 'Team', is_published: true },
+        { id: 10, page_name: 'Faq', is_published: true },
       ];
 
       const mockSupabase = {
-        from: jest.fn(() => ({
-          select: jest.fn(() => ({
-            order: jest.fn(() => Promise.resolve({ data: mockPages, error: null })),
-          })),
-        })),
+        auth: {
+          getSession: jest.fn().mockResolvedValue({ data: { session: { user: { id: 'admin-id' } } } }),
+        },
+        from: jest.fn()
+          .mockReturnValueOnce({
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                single: jest.fn().mockResolvedValue({ data: { role: 'admin' }, error: null }),
+              }),
+            }),
+          })
+          .mockReturnValueOnce({
+            select: jest.fn().mockReturnValue({
+              order: jest.fn().mockResolvedValue({ data: mockPages, error: null }),
+            }),
+          }),
       };
 
       (createServerClient as jest.Mock).mockReturnValue(mockSupabase);
 
-      const response = await GET();
+      const request = new NextRequest('http://limitlessinfotech.com/api/pages');
+      const response = await GET(request);
       const result = await response.json();
 
       expect(response.status).toBe(200);
@@ -66,16 +86,28 @@ describe('/api/pages', () => {
       const mockError = { message: 'Database connection failed' };
 
       const mockSupabase = {
-        from: jest.fn(() => ({
-          select: jest.fn(() => ({
-            order: jest.fn(() => Promise.resolve({ data: null, error: mockError })),
-          })),
-        })),
+        auth: {
+          getSession: jest.fn().mockResolvedValue({ data: { session: { user: { id: 'admin-id' } } } }),
+        },
+        from: jest.fn()
+          .mockReturnValueOnce({
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                single: jest.fn().mockResolvedValue({ data: { role: 'admin' }, error: null }),
+              }),
+            }),
+          })
+          .mockReturnValueOnce({
+            select: jest.fn().mockReturnValue({
+              order: jest.fn().mockResolvedValue({ data: null, error: mockError }),
+            }),
+          }),
       };
 
       (createServerClient as jest.Mock).mockReturnValue(mockSupabase);
 
-      const response = await GET();
+      const request = new NextRequest('http://localhost:3000/api/pages');
+      const response = await GET(request);
       const result = await response.json();
 
       expect(response.status).toBe(500);
@@ -92,13 +124,24 @@ describe('/api/pages', () => {
       };
 
       const mockSupabase = {
-        from: jest.fn(() => ({
-          insert: jest.fn(() => ({
-            select: jest.fn(() => ({
-              single: jest.fn(() => Promise.resolve({ data: { id: 1 }, error: null })),
-            })),
-          })),
-        })),
+        auth: {
+          getSession: jest.fn().mockResolvedValue({ data: { session: { user: { id: 'admin-id' } } } }),
+        },
+        from: jest.fn()
+          .mockReturnValueOnce({
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                single: jest.fn().mockResolvedValue({ data: { role: 'admin' }, error: null }),
+              }),
+            }),
+          })
+          .mockReturnValueOnce({
+            insert: jest.fn().mockReturnValue({
+              select: jest.fn().mockReturnValue({
+                single: jest.fn().mockResolvedValue({ data: { id: 1 }, error: null }),
+              }),
+            }),
+          }),
       };
 
       (createServerClient as jest.Mock).mockReturnValue(mockSupabase);
@@ -142,13 +185,24 @@ describe('/api/pages', () => {
 
       const mockError = { message: 'Insert failed' };
       const mockSupabase = {
-        from: jest.fn(() => ({
-          insert: jest.fn(() => ({
-            select: jest.fn(() => ({
-              single: jest.fn(() => Promise.resolve({ data: null, error: mockError })),
-            })),
-          })),
-        })),
+        auth: {
+          getSession: jest.fn().mockResolvedValue({ data: { session: { user: { id: 'admin-id' } } } }),
+        },
+        from: jest.fn()
+          .mockReturnValueOnce({
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                single: jest.fn().mockResolvedValue({ data: { role: 'admin' }, error: null }),
+              }),
+            }),
+          })
+          .mockReturnValueOnce({
+            insert: jest.fn().mockReturnValue({
+              select: jest.fn().mockReturnValue({
+                single: jest.fn().mockResolvedValue({ data: null, error: mockError }),
+              }),
+            }),
+          }),
       };
 
       (createServerClient as jest.Mock).mockReturnValue(mockSupabase);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
 import { TeamMember } from '../types';
-import CardEnhanced from '../components/ui/Card-enhanced';
+import CardEnhanced from '../components/ui/CardEnhanced';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
 import LazyImage from '../components/ui/LazyImage';
 import CompanyTimeline from '../components/about/CompanyTimeline';

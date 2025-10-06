@@ -2,21 +2,24 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import Card from '../ui/Card';
+import { Card } from '../ui/Card';
 import Breadcrumb from '../ui/Breadcrumb';
 import Skeleton from '../ui/Skeleton';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Wifi, WifiOff } from 'lucide-react';
+import { useWebSocket } from '../../hooks/useWebSocket';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import {
   Users,
   FileText,
   MessageSquare,
-  TrendingUp,
   Clock,
   AlertCircle,
   Activity,
   Zap,
   HardDrive,
+  TrendingUp,
+  TrendingDown,
+  Minus,
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -91,8 +94,15 @@ interface ProjectData {
   updated_at: string;
 }
 
+type WebSocketData =
+  | { type: 'stats'; stats: DashboardStats }
+  | { type: 'activity'; activity: RecentActivity }
+  | { type: 'health'; health: { uptime: string; responseTime: number; memoryUsage: number; status: 'healthy' | 'warning' | 'error' } }
+  | { type: string };
+
 const AdvancedDashboard: React.FC = () => {
   const router = useRouter();
+
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [chartData, setChartData] = useState<{ date: string; leads: number }[]>([]);
@@ -105,6 +115,49 @@ const AdvancedDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hasError, setHasError] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [timeRange] = useState<'7d' | '30d' | '90d'>('7d');
+  const [trendData, setTrendData] = useState<{
+    [key: string]: { change: number; trend: 'up' | 'down' | 'neutral' };
+  }>({});
+
+  // Calculate trend data based on time range
+  const calculateTrends = useCallback((pages: PageData[], testimonials: TestimonialData[], leads: LeadData[], projects: ProjectData[]) => {
+    const now = new Date();
+    const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90;
+    const periodStart = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+    const previousPeriodStart = new Date(periodStart.getTime() - days * 24 * 60 * 60 * 1000);
+
+    const currentPeriod = {
+      pages: pages.filter(p => new Date(p.created_at) >= periodStart).length,
+      testimonials: testimonials.filter(t => new Date(t.created_at) >= periodStart).length,
+      leads: leads.filter(l => new Date(l.created_at) >= periodStart).length,
+      projects: projects.filter(p => new Date(p.created_at) >= periodStart).length,
+    };
+
+    const previousPeriod = {
+      pages: pages.filter(p => new Date(p.created_at) >= previousPeriodStart && new Date(p.created_at) < periodStart).length,
+      testimonials: testimonials.filter(t => new Date(t.created_at) >= previousPeriodStart && new Date(t.created_at) < periodStart).length,
+      leads: leads.filter(l => new Date(l.created_at) >= previousPeriodStart && new Date(l.created_at) < periodStart).length,
+      projects: projects.filter(p => new Date(p.created_at) >= previousPeriodStart && new Date(p.created_at) < periodStart).length,
+    };
+
+    const trends = {
+      pages: previousPeriod.pages > 0 ? ((currentPeriod.pages - previousPeriod.pages) / previousPeriod.pages) * 100 : 0,
+      testimonials: previousPeriod.testimonials > 0 ? ((currentPeriod.testimonials - previousPeriod.testimonials) / previousPeriod.testimonials) * 100 : 0,
+      leads: previousPeriod.leads > 0 ? ((currentPeriod.leads - previousPeriod.leads) / previousPeriod.leads) * 100 : 0,
+      projects: previousPeriod.projects > 0 ? ((currentPeriod.projects - previousPeriod.projects) / previousPeriod.projects) * 100 : 0,
+    };
+
+    const trendData: { [key: string]: { change: number; trend: 'up' | 'down' | 'neutral' } } = {
+      pages: { change: Math.abs(trends.pages), trend: trends.pages > 0 ? 'up' : trends.pages < 0 ? 'down' : 'neutral' },
+      testimonials: { change: Math.abs(trends.testimonials), trend: trends.testimonials > 0 ? 'up' : trends.testimonials < 0 ? 'down' : 'neutral' },
+      leads: { change: Math.abs(trends.leads), trend: trends.leads > 0 ? 'up' : trends.leads < 0 ? 'down' : 'neutral' },
+      projects: { change: Math.abs(trends.projects), trend: trends.projects > 0 ? 'up' : trends.projects < 0 ? 'down' : 'neutral' },
+    };
+
+    setTrendData(trendData);
+  }, [timeRange]);
 
   const fetchDashboardData = useCallback(async () => {
     setLoading(true);
@@ -249,6 +302,10 @@ const AdvancedDashboard: React.FC = () => {
         status: 'healthy' as const,
       };
       setHealthMetrics(mockHealthMetrics);
+      setLastUpdate(new Date());
+
+      // Calculate trends
+      calculateTrends(pagesData.pages, testimonialsData.testimonials, leadsData.leads, projectsData.projects);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to fetch dashboard data';
       setError(msg);
@@ -256,16 +313,49 @@ const AdvancedDashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [calculateTrends]);
+
+  // Type guards for WebSocket data
+  const isStats = (data: WebSocketData): data is { type: 'stats'; stats: DashboardStats } => data.type === 'stats';
+  const isActivity = (data: WebSocketData): data is { type: 'activity'; activity: RecentActivity } => data.type === 'activity';
+  const isHealth = (data: WebSocketData): data is { type: 'health'; health: { uptime: string; responseTime: number; memoryUsage: number; status: 'healthy' | 'warning' | 'error' } } => data.type === 'health';
+
+  // Handle real-time data updates
+  const handleDataUpdate = useCallback((data: unknown) => {
+    console.log('Real-time data update received:', data);
+    const wsData = data as WebSocketData;
+    // Update specific data based on the update type
+    if (isStats(wsData)) {
+      setStats(wsData.stats);
+      setLastUpdate(new Date());
+    } else if (isActivity(wsData)) {
+      setRecentActivity(prev => [wsData.activity, ...prev.slice(0, 9)]);
+    } else if (isHealth(wsData)) {
+      setHealthMetrics(wsData.health);
+    } else {
+      // Trigger full refresh for other updates
+      fetchDashboardData();
+    }
+  }, [fetchDashboardData]);
+
+  const { isConnected, isConnecting } = useWebSocket({
+    url: process.env.NEXT_PUBLIC_SOCKET_URL || '    ',
+    autoConnect: true,
+    onDataUpdate: handleDataUpdate,
+  });
 
   useEffect(() => {
     fetchDashboardData();
 
-    // Set up polling for real-time updates every 5 minutes
-    const interval = setInterval(fetchDashboardData, 5 * 60 * 1000);
+    // Fallback polling every 5 minutes if WebSocket fails
+    const interval = setInterval(() => {
+      if (!isConnected) {
+        fetchDashboardData();
+      }
+    }, 5 * 60 * 1000);
 
     return () => clearInterval(interval);
-  }, [fetchDashboardData]);
+  }, [fetchDashboardData, isConnected]);
 
   if (loading) {
   return (
@@ -364,6 +454,7 @@ const AdvancedDashboard: React.FC = () => {
       subtitle: `${stats.publishedPages} published`,
       icon: FileText,
       color: 'blue',
+      trend: trendData.pages,
     },
     {
       title: 'Testimonials',
@@ -371,6 +462,7 @@ const AdvancedDashboard: React.FC = () => {
       subtitle: `${stats.approvedTestimonials} approved`,
       icon: MessageSquare,
       color: 'green',
+      trend: trendData.testimonials,
     },
     {
       title: 'Leads',
@@ -378,6 +470,7 @@ const AdvancedDashboard: React.FC = () => {
       subtitle: `${stats.recentLeads} this week`,
       icon: Users,
       color: 'purple',
+      trend: trendData.leads,
     },
     {
       title: 'Projects',
@@ -385,6 +478,7 @@ const AdvancedDashboard: React.FC = () => {
       subtitle: `${stats.publishedProjects} published`,
       icon: TrendingUp,
       color: 'orange',
+      trend: trendData.projects,
     },
   ];
 
@@ -423,8 +517,22 @@ const AdvancedDashboard: React.FC = () => {
       <Breadcrumb items={[{ label: 'Dashboard' }]} />
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Dashboard</h1>
-        <div className="text-sm text-gray-500">
-          Last updated: {new Date().toLocaleString()}
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            {isConnected ? (
+              <Wifi className="w-4 h-4 text-green-500" />
+            ) : isConnecting ? (
+              <RefreshCw className="w-4 h-4 text-yellow-500 animate-spin" />
+            ) : (
+              <WifiOff className="w-4 h-4 text-red-500" />
+            )}
+            <span className="text-sm text-gray-500">
+              {isConnected ? 'Live' : isConnecting ? 'Connecting...' : 'Offline'}
+            </span>
+          </div>
+          <div className="text-sm text-gray-500">
+            Last updated: {lastUpdate.toLocaleString()}
+          </div>
         </div>
       </div>
 
@@ -432,6 +540,8 @@ const AdvancedDashboard: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((card, index) => {
           const Icon = card.icon;
+          const TrendIcon = card.trend?.trend === 'up' ? TrendingUp : card.trend?.trend === 'down' ? TrendingDown : Minus;
+          const trendColor = card.trend?.trend === 'up' ? 'text-green-600' : card.trend?.trend === 'down' ? 'text-red-600' : 'text-gray-600';
           return (
             <Card key={index} className="p-6">
               <div className="flex items-center justify-between">
@@ -442,9 +552,19 @@ const AdvancedDashboard: React.FC = () => {
                   <p className="text-3xl font-bold text-gray-900 dark:text-white">
                     {card.value}
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {card.subtitle}
-                  </p>
+                  <div className="flex items-center space-x-2">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {card.subtitle}
+                    </p>
+                    {card.trend && card.trend.change > 0 && (
+                      <div className={`flex items-center space-x-1 ${trendColor}`}>
+                        <TrendIcon className="w-4 h-4" />
+                        <span className="text-sm font-medium">
+                          {card.trend.change.toFixed(1)}%
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className={`p-3 rounded-full bg-${card.color}-100 dark:bg-${card.color}-900`}>
                   <Icon className={`w-6 h-6 text-${card.color}-600 dark:text-${card.color}-400`} />

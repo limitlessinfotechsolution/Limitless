@@ -9,7 +9,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   useEffect(() => {
     setMounted(true);
-    
+
     // Get theme from localStorage
     const storedTheme = localStorage.getItem('theme') as Theme;
     if (storedTheme && ['light', 'dark', 'system'].includes(storedTheme)) {
@@ -19,9 +19,9 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   useEffect(() => {
     if (!mounted) return;
-    
+
     const root = document.documentElement;
-    
+
     // Apply theme to document
     if (theme === 'system') {
       // Check if window.matchMedia is available (not in SSR)
@@ -32,15 +32,10 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     } else {
       root.classList.toggle('dark', theme === 'dark');
     }
-    
+
     // Store theme preference
     localStorage.setItem('theme', theme);
   }, [theme, mounted]);
-
-  // Prevent rendering until mounted to avoid hydration issues
-  if (!mounted) {
-    return <>{children}</>;
-  }
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>

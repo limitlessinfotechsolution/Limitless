@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, X, Tag, Folder } from 'lucide-react';
-import Card from '../ui/Card';
+import { Card } from '../ui/Card';
 
 interface Category {
   id: string;

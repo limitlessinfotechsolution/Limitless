@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Button } from '@/components/ui/Button';
+import Button from '@/components/ui/Button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/DropdownMenu';
-import { Checkbox } from '@/components/ui/Checkbox';
+import Checkbox from '@/components/ui/Checkbox';
 import { MoreHorizontal, Trash2, CheckCircle, EyeOff, Download } from 'lucide-react';
 import { ExportFormat } from '@/types';
 import { handleBulkAction } from '@/lib/adminUtils'; // Assume this is created

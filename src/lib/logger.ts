@@ -62,7 +62,7 @@ interface Logger {
   debug(message: string, meta?: unknown): void;
 }
 
-// Client-side logger using console
+// Client-side logger using console or in test environment
 const clientLogger: Logger = {
   error: (message: string, meta?: unknown) => {
     console.error(`[${new Date().toISOString()}] ERROR:`, message, meta);
@@ -74,7 +74,7 @@ const clientLogger: Logger = {
     console.info(`[${new Date().toISOString()}] INFO:`, message, meta);
   },
   debug: (message: string, meta?: unknown) => {
-    if (isDevelopment) {
+    if (isDevelopment || process.env.NODE_ENV === 'test') {
       console.debug(`[${new Date().toISOString()}] DEBUG:`, message, meta);
     }
   },
@@ -89,7 +89,7 @@ const serverLogger: Logger = {
 };
 
 // Export the appropriate logger
-export const logger = isClient ? clientLogger : serverLogger;
+export const logger = isClient || process.env.NODE_ENV === 'test' ? clientLogger : serverLogger;
 
 // Global error handler (client-side only)
 if (isClient) {

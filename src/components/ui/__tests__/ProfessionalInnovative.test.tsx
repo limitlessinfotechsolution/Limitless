@@ -18,7 +18,6 @@ jest.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-// Mock UI_CONFIG
 jest.mock('../../config/uiConfig', () => ({
   UI_CONFIG: {
     colors: {

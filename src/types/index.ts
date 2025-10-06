@@ -1,3 +1,8 @@
+import { SupabaseClient } from '@supabase/supabase-js';
+import { Database } from './supabase';
+
+export type TypedSupabaseClient = SupabaseClient<Database>;
+
 export interface AuditLogDetails {
   [key: string]: string | number | boolean | object | null;
 }

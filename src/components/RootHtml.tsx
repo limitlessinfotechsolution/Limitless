@@ -2,6 +2,8 @@
 
 import React from 'react';
 
+import Head from 'next/head';
+
 export default function RootHtml({
   children,
 }: {
@@ -9,9 +11,9 @@ export default function RootHtml({
 }) {
   return (
     <html lang="en">
-      <head>
+      <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-      </head>
+      </Head>
       {children}
     </html>
   );

@@ -3,19 +3,6 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import EnterpriseTable from '../EnterpriseTable';
 
-// Mock child components that use icons
-jest.mock('../Card', () => {
-  return function MockCard({ children, className }: { children: React.ReactNode; className?: string }) {
-    return <div className={className} data-testid="mock-card">{children}</div>;
-  };
-});
-
-jest.mock('../Button', () => {
-  return function MockButton({ children, className }: { children: React.ReactNode; className?: string }) {
-    return <button className={className} data-testid="mock-button">{children}</button>;
-  };
-});
-
 // Mock data for testing
 const mockData = [
   { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Developer' },
@@ -56,7 +43,7 @@ describe('EnterpriseTable', () => {
         columns={mockColumns}
       />
     );
-    
+
     expect(screen.getByText('John Doe')).toBeInTheDocument();
     expect(screen.getByText('jane@example.com')).toBeInTheDocument();
   });
@@ -69,7 +56,7 @@ describe('EnterpriseTable', () => {
         loading={true}
       />
     );
-    
+
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
@@ -80,14 +67,14 @@ describe('EnterpriseTable', () => {
         columns={mockColumns}
       />
     );
-    
+
     expect(screen.getByText('No data available')).toBeInTheDocument();
   });
 
   test('renders action buttons when action handlers are provided', () => {
     const mockEdit = jest.fn();
     const mockDelete = jest.fn();
-    
+
     render(
       <EnterpriseTable
         data={mockData}
@@ -96,8 +83,8 @@ describe('EnterpriseTable', () => {
         onDelete={mockDelete}
       />
     );
-    
-    const editButtons = screen.getAllByTestId('mock-button');
-    expect(editButtons.length).toBeGreaterThan(0);
+
+    expect(screen.getAllByText('Edit')).toHaveLength(2);
+    expect(screen.getAllByText('Delete')).toHaveLength(2);
   });
 });

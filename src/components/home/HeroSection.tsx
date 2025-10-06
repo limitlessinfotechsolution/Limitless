@@ -12,7 +12,7 @@ const HeroSection: React.FC = React.memo(() => {
   const y3 = useTransform(scrollYProgress, [0, 1], [0, -150]);
 
   return (
-    <ParallaxSection className="relative min-h-screen flex items-center bg-gradient-to-br from-gray-50 via-white to-accent/5 dark:from-gray-900 dark:via-gray-800 dark:to-accent/10 overflow-hidden">
+    <ParallaxSection className="relative min-h-screen flex items-center bg-gradient-to-br from-gray-50 via-white to-accent/5 dark:from-gray-900 dark:via-gray-800 dark:to-accent/10 overflow-hidden pt-20">
       {/* Enhanced Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0" style={{

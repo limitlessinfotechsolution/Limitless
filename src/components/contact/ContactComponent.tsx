@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin } from 'lucide-react';
 
-import CardEnhanced from '../ui/Card-enhanced';
+import CardEnhanced from '../ui/CardEnhanced';
 import InteractiveParticleBackground from '../ui/InteractiveParticleBackground';
 import GeneralInquiryForm from './GeneralInquiryForm';
 import AdvancedClientForm from './AdvancedClientForm';

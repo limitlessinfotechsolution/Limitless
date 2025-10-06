@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { HardDrive, Download, Upload, Clock, CheckCircle, AlertTriangle, RotateCcw, Cloud } from 'lucide-react';
+import { HardDrive, Download, Clock, CheckCircle, AlertTriangle, RotateCcw, Cloud } from 'lucide-react';
 
 const BackupPage: React.FC = () => {
   return (

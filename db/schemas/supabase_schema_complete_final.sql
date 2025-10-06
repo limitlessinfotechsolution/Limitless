@@ -13,7 +13,7 @@ CREATE EXTENSION IF NOT EXISTS "pgvector";
 -- =============================================================================
 
 -- User roles enum
-CREATE TYPE user_role AS ENUM ('user', 'moderator', 'admin', 'super_admin');
+CREATE TYPE user_role AS ENUM ('user', 'moderator', 'admin', 'super_admin', 'enterprise');
 
 -- Lead status enum
 CREATE TYPE lead_status AS ENUM ('new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost', 'archived');

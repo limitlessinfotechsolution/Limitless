@@ -2,70 +2,103 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Lock, AlertCircle } from 'lucide-react';
-import { supabase } from '../../../src/lib/supabaseClient';
+import { Eye, EyeOff, Lock, AlertCircle, Shield, Smartphone } from 'lucide-react';
 
 const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [twoFactorCode, setTwoFactorCode] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [twoFactorRequired, setTwoFactorRequired] = useState(false);
+  const [twoFactorMethod, setTwoFactorMethod] = useState<'totp' | 'email'>('totp');
+  const [deviceFingerprint] = useState(() => {
+    // Generate a simple device fingerprint
+    return btoa(navigator.userAgent + Date.now().toString()).substring(0, 32);
+  });
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoggingIn(true);
     setError('');
 
-    if (!supabase) {
-      setError('Supabase client not configured');
-      setIsLoggingIn(false);
-      return;
-    }
-
     try {
-      // Sign in with Supabase
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          deviceFingerprint,
+        }),
       });
 
-      if (authError) {
-        setError(authError.message);
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Login failed');
         setIsLoggingIn(false);
         return;
       }
 
-      if (data.user) {
-        // Check if user has admin role
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', data.user.id)
-          .single();
-
-        if (profileError) {
-          setError('Failed to verify admin access');
-          await supabase.auth.signOut();
-          setIsLoggingIn(false);
-          return;
-        }
-
-        if (profile?.role !== 'admin' && profile?.role !== 'super_admin') {
-          setError('Access denied. Admin privileges required.');
-          await supabase.auth.signOut();
-          setIsLoggingIn(false);
-          return;
-        }
-
-        // Redirect to admin dashboard
-        window.location.href = '/admin/dashboard';
+      if (data.twoFactorRequired) {
+        setTwoFactorRequired(true);
+        setTwoFactorMethod(data.method);
+        setIsLoggingIn(false);
+        return;
       }
+
+      // Login successful, redirect to dashboard
+      window.location.href = '/admin/dashboard';
     } catch (err) {
       setError('An unexpected error occurred');
       console.error('Login error:', err);
       setIsLoggingIn(false);
     }
+  };
+
+  const handleTwoFactorSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoggingIn(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/admin/verify-2fa', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          twoFactorCode,
+          deviceFingerprint,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || '2FA verification failed');
+        setIsLoggingIn(false);
+        return;
+      }
+
+      // 2FA verification successful, redirect to dashboard
+      window.location.href = '/admin/dashboard';
+    } catch (err) {
+      setError('An unexpected error occurred');
+      console.error('2FA verification error:', err);
+      setIsLoggingIn(false);
+    }
+  };
+
+  const handleBackToLogin = () => {
+    setTwoFactorRequired(false);
+    setTwoFactorCode('');
+    setError('');
   };
 
   return (
@@ -174,6 +207,16 @@ const AdminLogin: React.FC = () => {
               Email: admin@limitlessinfotech.com<br />
               Password: Try@Admin123
             </p>
+          </div>
+
+          {/* Enterprise Link */}
+          <div className="mt-4 text-center">
+            <a
+              href="/enterprise/login"
+              className="text-sm text-accent hover:text-accent-dark dark:text-accent-light dark:hover:text-accent transition-colors"
+            >
+              Enterprise Suite Login →
+            </a>
           </div>
         </motion.form>
     </motion.div>

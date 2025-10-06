@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useTheme } from '../../hooks/useTheme';
 import {
   LayoutDashboard,
@@ -12,31 +10,23 @@ import {
   Users,
   UserCheck,
   HelpCircle,
-  Mail,
   Search,
   X,
   Bell,
   Moon,
   Sun,
-  Shield,
-  Activity,
-  Building,
-  Zap,
-  Brain,
-  MessageCircle,
-  Settings,
-  HardDrive,
-  ChevronDown,
-  ChevronRight,
 } from 'lucide-react';
+
+export type AdminView = 'dashboard' | 'pages' | 'portfolio' | 'testimonials' | 'leads' | 'users' | 'faq';
 
 interface AdminSidebarProps {
   isOpen?: boolean;
   onClose?: () => void;
+  activeView: AdminView;
+  setActiveView: React.Dispatch<React.SetStateAction<AdminView>>;
 }
 
-const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = true, onClose }) => {
-  const pathname = usePathname();
+const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = true, onClose, activeView, setActiveView }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
@@ -85,125 +75,42 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = true, onClose }) =
       items: [
         {
           name: 'Dashboard',
-          href: '/admin/dashboard',
+          view: 'dashboard' as AdminView,
           icon: LayoutDashboard,
         },
         {
           name: 'Pages',
-          href: '/admin/pages',
+          view: 'pages' as AdminView,
           icon: FileText,
         },
         {
           name: 'Portfolio',
-          href: '/admin/portfolio',
+          view: 'portfolio' as AdminView,
           icon: Briefcase,
         },
         {
           name: 'Testimonials',
-          href: '/admin/testimonials',
+          view: 'testimonials' as AdminView,
           icon: MessageSquare,
         },
         {
           name: 'Leads',
-          href: '/admin/leads',
+          view: 'leads' as AdminView,
           icon: Users,
         },
-      ],
-    },
-    {
-      name: 'Access Control',
-      items: [
         {
           name: 'Users',
-          href: '/admin/users',
+          view: 'users' as AdminView,
           icon: UserCheck,
         },
         {
-          name: 'Roles & Permissions',
-          href: '/admin/roles',
-          icon: Shield,
-        },
-        {
-          name: 'Audit Logs',
-          href: '/admin/audit',
-          icon: Activity,
-        },
-      ],
-    },
-    {
-      name: 'System Monitoring',
-      items: [
-        {
-          name: 'System Health',
-          href: '/admin/system-health',
-          icon: Activity,
-        },
-        {
-          name: 'Organization Overview',
-          href: '/admin/organization',
-          icon: Building,
-        },
-      ],
-    },
-    {
-      name: 'Automation',
-      items: [
-        {
-          name: 'Workflows',
-          href: '/admin/automation',
-          icon: Zap,
-        },
-        {
-          name: 'AI Governance',
-          href: '/admin/ai-governance',
-          icon: Brain,
-        },
-      ],
-    },
-    {
-      name: 'Communication',
-      items: [
-        {
-          name: 'Internal Comms',
-          href: '/admin/communication',
-          icon: MessageCircle,
-        },
-        {
-          name: 'Mail',
-          href: '/admin/mail',
-          icon: Mail,
-        },
-      ],
-    },
-    {
-      name: 'Configuration',
-      items: [
-        {
-          name: 'Settings',
-          href: '/admin/settings',
-          icon: Settings,
-        },
-        {
-          name: 'Backup & Recovery',
-          href: '/admin/backup',
-          icon: HardDrive,
-        },
-        {
           name: 'FAQ',
-          href: '/admin/faq',
+          view: 'faq' as AdminView,
           icon: HelpCircle,
-        },
-        {
-          name: 'SEO',
-          href: '/admin/seo',
-          icon: Search,
         },
       ],
     },
   ];
-
-  // Flatten navigation items for search
-  const allNavigationItems = navigationGroups.flatMap(group => group.items);
 
   const filteredGroups = searchQuery
     ? navigationGroups.map(group => ({
@@ -287,13 +194,12 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = true, onClose }) =
                   <ul className="space-y-1">
                     {group.items.map((item) => {
                       const Icon = item.icon;
-                      const isActive = pathname === item.href;
+                      const isActive = activeView === item.view;
                       return (
                         <li key={item.name}>
-                          <Link
-                            href={item.href}
-                            onClick={onClose} // Close sidebar on mobile when navigating
-                            className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                          <button
+                            onClick={() => setActiveView(item.view)}
+                            className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors w-full text-left ${
                               isActive
                                 ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -301,7 +207,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = true, onClose }) =
                           >
                             <Icon className="w-5 h-5" />
                             <span>{item.name}</span>
-                          </Link>
+                          </button>
                         </li>
                       );
                     })}

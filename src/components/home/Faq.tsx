@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import Image from 'next/image';
-import CardEnhanced from '../ui/Card-enhanced';
+import CardEnhanced from '../ui/CardEnhanced';
 
 const faqs = [
   {

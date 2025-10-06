@@ -1,6 +1,32 @@
 import { renderHook } from '@testing-library/react';
 import { useAuth } from '../useAuth';
 
+const mockUnsubscribe = jest.fn();
+
+jest.mock('../../lib/supabaseClient', () => ({
+  supabase: {
+    auth: {
+      onAuthStateChange: jest.fn(() => ({
+        data: {
+          subscription: {
+            unsubscribe: mockUnsubscribe,
+          },
+        },
+      })),
+      getSession: jest.fn(() => Promise.resolve({ data: { session: null }, error: null })),
+      signInWithPassword: jest.fn(() => Promise.resolve({ data: { user: null }, error: null })),
+      signOut: jest.fn(() => Promise.resolve()),
+      from: jest.fn(() => ({
+        select: jest.fn(() => ({
+          eq: jest.fn(() => ({
+            single: jest.fn(() => Promise.resolve({ data: { id: 'user1', role: 'admin' }, error: null })),
+          })),
+        })),
+      })),
+    },
+  },
+}));
+
 describe('useAuth', () => {
   it('should return auth state and functions', () => {
     const { result } = renderHook(() => useAuth());
@@ -19,11 +45,6 @@ describe('useAuth', () => {
   });
 
   it('should initialize with loading state when supabase is available', () => {
-    // Mock supabase to be available
-    jest.mock('../../lib/supabaseClient', () => ({
-      supabase: {},
-    }));
-
     const { result } = renderHook(() => useAuth());
 
     expect(result.current.isLoading).toBe(true);

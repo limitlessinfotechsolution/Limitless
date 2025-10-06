@@ -1,23 +1,23 @@
 // Enterprise Components Index
-export { default as EnterpriseDashboard } from './EnterpriseDashboard';
-export { default as EnterpriseNavigation } from './EnterpriseNavigation';
-export { default as EnterpriseForm } from './EnterpriseForm';
-export { default as EnterpriseNotification } from './EnterpriseNotification';
-export { default as EnterpriseTeam } from './EnterpriseTeam';
-export { default as EnterprisePricing } from './EnterprisePricing';
-export { default as EnterpriseKPI } from './EnterpriseKPI';
-export { default as EnterpriseLayout } from './EnterpriseLayout';
-export { default as EnterpriseAnalytics } from './EnterpriseAnalytics';
-export { default as EnterpriseTable } from './EnterpriseTable';
-export { default as EnterpriseCalendar } from './EnterpriseCalendar';
-export { default as EnterpriseChat } from './EnterpriseChat';
-export { default as EnterpriseDemo } from './EnterpriseDemo';
-export { default as EnterpriseDataGrid } from './EnterpriseDataGrid';
-export { default as EnterpriseReporting } from './EnterpriseReporting';
-export { default as EnterpriseUserProfile } from './EnterpriseUserProfile';
-export { default as EnterpriseSuiteDemo } from './EnterpriseSuiteDemo';
+export { default as Dashboard } from '../enterprise/Dashboard';
+export { default as EnterpriseNavigation } from '../enterprise/EnterpriseNavigation';
+export { default as EnterpriseForm } from '../enterprise/EnterpriseForm';
+export { default as EnterpriseNotification } from '../enterprise/EnterpriseNotification';
+export { default as Team } from '../enterprise/Team';
+export { default as Pricing } from '../enterprise/Pricing';
+export { default as KPI } from '../enterprise/KPI';
+export { default as EnterpriseLayout } from '../enterprise/EnterpriseLayout';
+export { default as Analytics } from '../enterprise/Analytics';
+export { default as EnterpriseTable } from '../enterprise/EnterpriseTable';
+export { default as Calendar } from '../enterprise/Calendar';
+export { default as Chat } from '../enterprise/Chat';
+export { default as EnterpriseDemo } from '../enterprise/EnterpriseDemo';
+export { default as EnterpriseDataGrid } from '../enterprise/EnterpriseDataGrid';
+export { default as EnterpriseReporting } from '../enterprise/EnterpriseReporting';
+export { default as EnterpriseUserProfile } from '../enterprise/EnterpriseUserProfile';
+export { default as EnterpriseSuiteDemo } from '../enterprise/EnterpriseSuiteDemo';
 
 // Export types
-export type { CalendarEvent } from './EnterpriseCalendar';
-export type { ChatMessage, ChatParticipant } from './EnterpriseChat';
-export type { UserProfile } from './EnterpriseUserProfile';
+export type { CalendarEvent } from '../enterprise/Calendar';
+export type { ChatMessage, ChatParticipant } from '../enterprise/Chat';
+export type { UserProfile } from '../enterprise/EnterpriseUserProfile';

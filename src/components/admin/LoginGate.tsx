@@ -60,7 +60,7 @@ const LoginGate: React.FC<LoginGateProps> = ({ children }) => {
           animate={{ scale: 1 }}
           className="text-center"
         >
-          <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-30 h-30 sm:w-20 sm:h-20  bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
             <Lock className="w-8 h-8 text-white animate-pulse" />
           </div>
           <p className="text-gray-600 dark:text-gray-400">Loading...</p>

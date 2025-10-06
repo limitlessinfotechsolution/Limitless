@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="5" failures="0" errors="0" time="0.923">
+  <testsuite name="EnterpriseTable" errors="0" failures="0" skipped="0" timestamp="2025-10-05T09:23:58" time="0.305" tests="5">
+    <testcase classname="EnterpriseTable renders EnterpriseTable component with title" name="EnterpriseTable renders EnterpriseTable component with title" time="0.02">
+    </testcase>
+    <testcase classname="EnterpriseTable displays table data correctly" name="EnterpriseTable displays table data correctly" time="0.003">
+    </testcase>
+    <testcase classname="EnterpriseTable shows loading state when loading prop is true" name="EnterpriseTable shows loading state when loading prop is true" time="0.002">
+    </testcase>
+    <testcase classname="EnterpriseTable shows no data message when data is empty" name="EnterpriseTable shows no data message when data is empty" time="0.001">
+    </testcase>
+    <testcase classname="EnterpriseTable renders action buttons when action handlers are provided" name="EnterpriseTable renders action buttons when action handlers are provided" time="0.004">
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { MapPin, Eye, Navigation } from 'lucide-react';
 import LazyImage from '../ui/LazyImage';
-import CardEnhanced from '../ui/Card-enhanced';
+import CardEnhanced from '../ui/CardEnhanced';
 
 interface VirtualTourProps {
   className?: string;

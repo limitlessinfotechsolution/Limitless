@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import * as Icons from 'lucide-react';
-import CardEnhanced from '../components/ui/Card-enhanced';
+import CardEnhanced from '../components/ui/CardEnhanced';
 import InteractiveParticleBackground from '../components/ui/InteractiveParticleBackground';
 import TestimonialsCarousel from '../components/home/TestimonialsCarousel';
 import ClientLogos from '../components/home/ClientLogos';
+import PageErrorBoundary from '../components/PageErrorBoundary';
 
 interface ServiceItem {
   id: string;
@@ -107,6 +108,14 @@ const getProcessSteps = (categoryId: string) => {
 };
 
 const Services: React.FC = () => {
+  return (
+    <PageErrorBoundary pageName="Services">
+      <ServicesContent />
+    </PageErrorBoundary>
+  );
+};
+
+const ServicesContent: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState('web');
   const [expandedService, setExpandedService] = useState<string | null>(null);
 

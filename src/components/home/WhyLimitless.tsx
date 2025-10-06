@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Lock, Brush, TrendingUp, Zap, BrainCircuit, Award } from 'lucide-react';
-import Card from '../ui/Card';
+import { Card } from '../ui/Card';
 
 const qualities = [
   { title: "Total Security", icon: Lock, text: "Enterprise-grade encryption, secure coding, and compliance. Your data is our priority." },

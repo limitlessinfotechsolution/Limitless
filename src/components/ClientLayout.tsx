@@ -14,7 +14,7 @@ export default function ClientLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isAdmin = pathname.startsWith('/admin');
+  const isAdminOrEnterprise = pathname.startsWith('/admin') || pathname.startsWith('/enterprise');
 
   useEffect(() => {
     document.documentElement.setAttribute('crxlauncher', '');
@@ -22,12 +22,12 @@ export default function ClientLayout({
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
-      {!isAdmin && <Navigation />}
+      {!isAdminOrEnterprise && <Navigation />}
       <main>
         {children}
       </main>
-      {!isAdmin && <Footer />}
-      {!isAdmin && <ChatbotWidget />}
+      {!isAdminOrEnterprise && <Footer />}
+      {!isAdminOrEnterprise && <ChatbotWidget />}
       <PWA />
     </div>
   );

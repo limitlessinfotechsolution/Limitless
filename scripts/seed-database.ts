@@ -4,12 +4,12 @@ import { createClient } from '@supabase/supabase-js'
 import { Database } from '../src/types/supabase'
 
 // Database connection
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_DATABASE_URL
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 if (!supabaseUrl || !supabaseServiceKey) {
   console.error('Missing required environment variables:')
-  console.error('- NEXT_PUBLIC_SUPABASE_DATABASE_URL')
+  console.error('- NEXT_PUBLIC_SUPABASE_URL')
   console.error('- SUPABASE_SERVICE_ROLE_KEY')
   process.exit(1)
 }

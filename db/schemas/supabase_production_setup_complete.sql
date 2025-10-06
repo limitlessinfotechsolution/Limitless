@@ -1,40 +1,65 @@
 -- =============================================================================
--- PRODUCTION-READY SUPABASE SETUP FOR LIMITLESS INFOTECH SOLUTION'S
--- Generated: December 2024
--- Description: Complete production-ready database setup with enhanced security,
---              performance optimizations, monitoring, and comprehensive features
+-- COMPLETE SUPABASE SCHEMA FOR LIMITLESS INFOTECH
+-- Generated: September 2025
+-- Description: Complete production-ready database schema with all tables, relationships, policies, and functions
 -- =============================================================================
 
 -- Enable necessary extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS "pgvector";
-CREATE EXTENSION IF NOT EXISTS "pg_stat_statements";
-CREATE EXTENSION IF NOT EXISTS "pg_buffercache";
+-- CREATE EXTENSION IF NOT EXISTS "pgvector"; -- Commented out as not available in all Supabase plans
 
 -- =============================================================================
--- CUSTOM TYPES AND ENUMS
+-- CUSTOM ENUMS
 -- =============================================================================
 
 -- User roles enum
-CREATE TYPE user_role AS ENUM ('user', 'moderator', 'admin', 'super_admin');
+DO $$ BEGIN
+    CREATE TYPE user_role AS ENUM ('user', 'moderator', 'admin', 'super_admin', 'enterprise');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- Lead status enum
-CREATE TYPE lead_status AS ENUM ('new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost', 'archived');
+DO $$ BEGIN
+    CREATE TYPE lead_status AS ENUM ('new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost', 'archived');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- Project status enum
-CREATE TYPE project_status AS ENUM ('planning', 'in_progress', 'review', 'completed', 'on_hold', 'cancelled');
+DO $$ BEGIN
+    CREATE TYPE project_status AS ENUM ('planning', 'in_progress', 'review', 'completed', 'on_hold', 'cancelled');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- Task priority enum
-CREATE TYPE task_priority AS ENUM ('low', 'medium', 'high', 'urgent');
+DO $$ BEGIN
+    CREATE TYPE task_priority AS ENUM ('low', 'medium', 'high', 'urgent');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- Email status enum
-CREATE TYPE email_status AS ENUM ('draft', 'scheduled', 'sending', 'sent', 'delivered', 'opened', 'clicked', 'bounced', 'complained', 'unsubscribed');
+DO $$ BEGIN
+    CREATE TYPE email_status AS ENUM ('draft', 'scheduled', 'sending', 'sent', 'delivered', 'opened', 'clicked', 'bounced', 'complained', 'unsubscribed');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- Chat sender enum
-CREATE TYPE chat_sender AS ENUM ('user', 'bot', 'system', 'admin');
+DO $$ BEGIN
+    CREATE TYPE chat_sender AS ENUM ('user', 'bot', 'system', 'admin');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- Feedback rating enum
-CREATE TYPE feedback_rating AS ENUM ('positive', 'negative', 'neutral');
+DO $$ BEGIN
+    CREATE TYPE feedback_rating AS ENUM ('positive', 'negative', 'neutral');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- =============================================================================
 -- CORE TABLES
@@ -377,7 +402,7 @@ CREATE TABLE IF NOT EXISTS public.knowledge_base (
     category TEXT,
     sub_category TEXT,
     tags TEXT[] DEFAULT '{}',
-    embedding VECTOR(1536), -- Assuming OpenAI embeddings
+    -- embedding VECTOR(1536), -- Commented out as pgvector not available in all Supabase plans
     source_type TEXT DEFAULT 'manual' CHECK (source_type IN ('manual', 'web_scraped', 'document', 'faq', 'api', 'generated')),
     source_url TEXT,
     source_document_id TEXT,
@@ -935,4 +960,446 @@ CREATE TABLE IF NOT EXISTS public.webmail_messages (
 );
 
 -- =============================================================================
---
+-- AUDIT LOGS
+-- =============================================================================
+
+-- Audit logs table
+CREATE TABLE IF NOT EXISTS public.audit_logs (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    action TEXT NOT NULL,
+    entity TEXT NOT NULL,
+    entity_id UUID,
+    user_id UUID REFERENCES public.profiles(id),
+    details JSONB DEFAULT '{}',
+    ip_address INET,
+    user_agent TEXT,
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+-- =============================================================================
+-- INDEXES FOR PERFORMANCE
+-- =============================================================================
+
+-- Core table indexes
+CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles(email);
+CREATE INDEX IF NOT EXISTS idx_profiles_role ON public.profiles(role);
+CREATE INDEX IF NOT EXISTS idx_services_slug ON public.services(slug);
+CREATE INDEX IF NOT EXISTS idx_services_featured ON public.services(is_featured) WHERE is_featured = true;
+CREATE INDEX IF NOT EXISTS idx_team_members_featured ON public.team_members(is_featured) WHERE is_featured = true;
+CREATE INDEX IF NOT EXISTS idx_projects_slug ON public.projects(slug);
+CREATE INDEX IF NOT EXISTS idx_projects_featured ON public.projects(is_featured) WHERE is_featured = true;
+CREATE INDEX IF NOT EXISTS idx_projects_status ON public.projects(status);
+CREATE INDEX IF NOT EXISTS idx_testimonials_featured ON public.testimonials(is_featured) WHERE is_featured = true;
+CREATE INDEX IF NOT EXISTS idx_pages_slug ON public.pages(slug);
+CREATE INDEX IF NOT EXISTS idx_pages_published ON public.pages(is_published) WHERE is_published = true;
+CREATE INDEX IF NOT EXISTS idx_faqs_featured ON public.faqs(is_featured) WHERE is_featured = true;
+
+-- Business table indexes
+CREATE INDEX IF NOT EXISTS idx_leads_status ON public.leads(lead_status);
+CREATE INDEX IF NOT EXISTS idx_leads_assigned_to ON public.leads(assigned_to);
+CREATE INDEX IF NOT EXISTS idx_leads_created_at ON public.leads(created_at);
+CREATE INDEX IF NOT EXISTS idx_quotations_status ON public.quotations(status);
+CREATE INDEX IF NOT EXISTS idx_quotations_lead_id ON public.quotations(lead_id);
+
+-- AI/Chatbot indexes
+CREATE INDEX IF NOT EXISTS idx_knowledge_base_active ON public.knowledge_base(is_active) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_user_id ON public.chat_sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_active ON public.chat_sessions(is_active) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_chat_messages_session_id ON public.chat_messages(session_id);
+
+-- Analytics indexes
+CREATE INDEX IF NOT EXISTS idx_analytics_events_type ON public.analytics_events(event_type);
+CREATE INDEX IF NOT EXISTS idx_analytics_events_created_at ON public.analytics_events(created_at);
+CREATE INDEX IF NOT EXISTS idx_email_logs_status ON public.email_logs(status);
+CREATE INDEX IF NOT EXISTS idx_api_logs_created_at ON public.api_logs(created_at);
+CREATE INDEX IF NOT EXISTS idx_error_logs_created_at ON public.error_logs(created_at);
+CREATE INDEX IF NOT EXISTS idx_performance_logs_created_at ON public.performance_logs(created_at);
+
+-- Audit logs index
+CREATE INDEX IF NOT EXISTS idx_audit_logs_timestamp ON public.audit_logs(timestamp);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_user_id ON public.audit_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_action ON public.audit_logs(action);
+
+-- =============================================================================
+-- ROW LEVEL SECURITY (RLS) POLICIES
+-- =============================================================================
+
+-- Enable RLS on all tables
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.services ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.team_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.testimonials ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.pages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.faqs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.quotations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.knowledge_base ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.chat_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.chat_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.chat_feedback ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.analytics_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.email_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.api_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.error_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.performance_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.file_uploads ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_preferences ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.ab_tests ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.ab_test_results ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.subscribers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.email_campaigns ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.email_campaign_recipients ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.project_tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.time_entries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.webmail_accounts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.webmail_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
+
+-- Profiles policies
+CREATE POLICY "Users can view their own profile" ON public.profiles
+    FOR SELECT USING (auth.uid() = id);
+
+CREATE POLICY "Users can update their own profile" ON public.profiles
+    FOR UPDATE USING (auth.uid() = id);
+
+CREATE POLICY "Admins can view all profiles" ON public.profiles
+    FOR SELECT USING (
+        EXISTS (
+            SELECT 1 FROM public.profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'super_admin')
+        )
+    );
+
+CREATE POLICY "Admins can update all profiles" ON public.profiles
+    FOR UPDATE USING (
+        EXISTS (
+            SELECT 1 FROM public.profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'super_admin')
+        )
+    );
+
+-- Services policies (public read, admin write)
+CREATE POLICY "Anyone can view services" ON public.services
+    FOR SELECT USING (true);
+
+CREATE POLICY "Admins can manage services" ON public.services
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM public.profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'super_admin')
+        )
+    );
+
+-- Team members policies (public read, admin write)
+CREATE POLICY "Anyone can view team members" ON public.team_members
+    FOR SELECT USING (true);
+
+CREATE POLICY "Admins can manage team members" ON public.team_members
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM public.profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'super_admin')
+        )
+    );
+
+-- Projects policies (public read published, admin all)
+DROP POLICY IF EXISTS "Anyone can view published projects" ON public.projects;
+DROP POLICY IF EXISTS "Admins can manage all projects" ON public.projects;
+
+CREATE POLICY "Anyone can view published projects" ON public.projects
+    FOR SELECT USING (true);
+
+CREATE POLICY "Admins can manage all projects" ON public.projects
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM public.profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'super_admin')
+        )
+    );
+
+-- Testimonials policies (public read approved, admin all)
+CREATE POLICY "Anyone can view approved testimonials" ON public.testimonials
+    FOR SELECT USING (approved = true);
+
+CREATE POLICY "Admins can manage all testimonials" ON public.testimonials
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM public.profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'super_admin')
+        )
+    );
+
+-- Pages policies (public read published, admin all)
+CREATE POLICY "Anyone can view published pages" ON public.pages
+    FOR SELECT USING (is_published = true);
+
+CREATE POLICY "Admins can manage all pages" ON public.pages
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM public.profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'super_admin')
+        )
+    );
+
+-- FAQs policies (public read, admin write)
+CREATE POLICY "Anyone can view FAQs" ON public.faqs
+    FOR SELECT USING (true);
+
+CREATE POLICY "Admins can manage FAQs" ON public.faqs
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM public.profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'super_admin')
+        )
+    );
+
+-- Leads policies (admin only)
+CREATE POLICY "Admins can manage leads" ON public.leads
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM public.profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'super_admin')
+        )
+    );
+
+-- Quotations policies (admin only)
+CREATE POLICY "Admins can manage quotations" ON public.quotations
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM public.profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'super_admin')
+        )
+    );
+
+-- Knowledge base policies (public read active, admin all)
+CREATE POLICY "Anyone can view active knowledge base" ON public.knowledge_base
+    FOR SELECT USING (is_active = true);
+
+CREATE POLICY "Admins can manage knowledge base" ON public.knowledge_base
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM public.profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'super_admin')
+        )
+    );
+
+-- Chat sessions policies (user owns, admin all)
+CREATE POLICY "Users can manage their own chat sessions" ON public.chat_sessions
+    FOR ALL USING (auth.uid() = user_id);
+
+CREATE POLICY "Admins can view all chat sessions" ON public.chat_sessions
+    FOR SELECT USING (
+        EXISTS (
+            SELECT 1 FROM public.profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'super_admin')
+        )
+    );
+
+-- Chat messages policies (session owner or admin)
+CREATE POLICY "Users can view messages in their sessions" ON public.chat_messages
+    FOR SELECT USING (
+        EXISTS (
+            SELECT 1 FROM public.chat_sessions
+            WHERE id = session_id AND user_id = auth.uid()
+        )
+    );
+
+CREATE POLICY "Admins can view all messages" ON public.chat_messages
+    FOR SELECT USING (
+        EXISTS (
+            SELECT 1 FROM public.profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'super_admin')
+        )
+    );
+
+-- Analytics policies (admin only)
+CREATE POLICY "Admins can view analytics" ON public.analytics_events
+    FOR SELECT USING (
+        EXISTS (
+            SELECT 1 FROM public.profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'super_admin')
+        )
+    );
+
+-- Audit logs policies (admin only)
+CREATE POLICY "Admins can view audit logs" ON public.audit_logs
+    FOR SELECT USING (
+        EXISTS (
+            SELECT 1 FROM public.profiles
+            WHERE id = auth.uid() AND role IN ('admin', 'super_admin')
+        )
+    );
+
+-- Notifications policies (user owns)
+CREATE POLICY "Users can manage their own notifications" ON public.notifications
+    FOR ALL USING (auth.uid() = user_id);
+
+-- User preferences policies (user owns)
+CREATE POLICY "Users can manage their own preferences" ON public.user_preferences
+    FOR ALL USING (auth.uid() = user_id);
+
+-- =============================================================================
+-- FUNCTIONS AND TRIGGERS
+-- =============================================================================
+
+-- Function to update updated_at timestamp
+CREATE OR REPLACE FUNCTION public.handle_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = TIMEZONE('utc'::text, NOW());
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Apply updated_at triggers to all tables with updated_at column
+CREATE TRIGGER handle_updated_at_profiles
+    BEFORE UPDATE ON public.profiles
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TRIGGER handle_updated_at_services
+    BEFORE UPDATE ON public.services
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TRIGGER handle_updated_at_team_members
+    BEFORE UPDATE ON public.team_members
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TRIGGER handle_updated_at_projects
+    BEFORE UPDATE ON public.projects
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TRIGGER handle_updated_at_testimonials
+    BEFORE UPDATE ON public.testimonials
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TRIGGER handle_updated_at_pages
+    BEFORE UPDATE ON public.pages
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TRIGGER handle_updated_at_faqs
+    BEFORE UPDATE ON public.faqs
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TRIGGER handle_updated_at_leads
+    BEFORE UPDATE ON public.leads
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TRIGGER handle_updated_at_quotations
+    BEFORE UPDATE ON public.quotations
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TRIGGER handle_updated_at_knowledge_base
+    BEFORE UPDATE ON public.knowledge_base
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TRIGGER handle_updated_at_chat_sessions
+    BEFORE UPDATE ON public.chat_sessions
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TRIGGER handle_updated_at_subscribers
+    BEFORE UPDATE ON public.subscribers
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TRIGGER handle_updated_at_email_campaigns
+    BEFORE UPDATE ON public.email_campaigns
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TRIGGER handle_updated_at_user_preferences
+    BEFORE UPDATE ON public.user_preferences
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TRIGGER handle_updated_at_webmail_accounts
+    BEFORE UPDATE ON public.webmail_accounts
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+-- Function to create profile on user signup
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO public.profiles (id, email, full_name)
+    VALUES (NEW.id, NEW.email, NEW.raw_user_meta_data->>'full_name');
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger to create profile on user signup
+CREATE TRIGGER on_auth_user_created
+    AFTER INSERT ON auth.users
+    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- Function to log audit events
+CREATE OR REPLACE FUNCTION public.log_audit_event(
+    p_action TEXT,
+    p_entity TEXT,
+    p_entity_id UUID DEFAULT NULL,
+    p_details JSONB DEFAULT '{}'
+)
+RETURNS VOID AS $$
+BEGIN
+    INSERT INTO public.audit_logs (action, entity, entity_id, user_id, details, ip_address, user_agent)
+    VALUES (
+        p_action,
+        p_entity,
+        p_entity_id,
+        auth.uid(),
+        p_details,
+        inet_client_addr(),
+        current_setting('request.headers', true)::json->>'user-agent'
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- =============================================================================
+-- INITIAL DATA SEEDING
+-- =============================================================================
+
+-- Insert default admin user (this will be handled by the seeding script)
+-- The seeding scripts will populate initial data
+
+-- =============================================================================
+-- FINAL NOTES
+-- =============================================================================
+
+/*
+This schema provides a complete production-ready database setup for Limitless Infotech Solution's
+website with the following features:
+
+1. Comprehensive user management with role-based access
+2. Content management system for pages, services, projects, etc.
+3. Lead management and quotation system
+4. AI chatbot with knowledge base
+5. Analytics and logging
+6. Email marketing capabilities
+7. Project management tools
+8. Webmail integration
+9. A/B testing framework
+10. Audit logging for compliance
+
+Security features:
+- Row Level Security (RLS) on all tables
+- Role-based permissions
+- Audit logging
+- Input validation constraints
+- Secure defaults
+
+Performance optimizations:
+- Strategic indexes
+- Efficient queries
+- Connection pooling ready
+- Caching friendly structure
+
+To use this schema:
+1. Apply it to your Supabase project
+2. Run the seeding scripts to populate initial data
+3. Configure your application with the correct environment variables
+4. Test all functionality thoroughly
+
+For production deployment:
+1. Review and adjust RLS policies as needed
+2. Set up monitoring and alerting
+3. Configure backup strategies
+4. Implement rate limiting
+5. Set up CDN for static assets
+*/

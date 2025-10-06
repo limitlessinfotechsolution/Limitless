@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Menu, X, Sun, Moon, Monitor } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Menu, X, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../hooks/useTheme';
 import Logo from './Logo';
@@ -11,9 +11,11 @@ import Logo from './Logo';
 const Navigation: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [isNavVisible, setIsNavVisible] = useState(true);
   const pathname = usePathname();
+  const router = useRouter();
   const { theme, setTheme } = useTheme();
 
   const navLinks = [
@@ -25,22 +27,27 @@ const Navigation: React.FC = () => {
     { name: 'Contact Us', path: '/contact' },
   ];
 
-  const themeOptions = [
-    { name: 'System', value: 'system' as const, icon: Monitor },
-    { name: 'Light', value: 'light' as const, icon: Sun },
-    { name: 'Dark', value: 'dark' as const, icon: Moon },
-  ];
-
   useEffect(() => {
     setMounted(true);
 
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      const currentScrollY = window.scrollY;
+      setIsScrolled(currentScrollY > 20);
+
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolling down and past 100px, hide navbar
+        setIsNavVisible(false);
+      } else {
+        // Scrolling up, show navbar
+        setIsNavVisible(true);
+      }
+      setLastScrollY(currentScrollY);
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [lastScrollY]);
+
 
   const handleLinkClick = () => {
     setIsMenuOpen(false);
@@ -51,7 +58,21 @@ const Navigation: React.FC = () => {
     return pathname.startsWith(path);
   };
 
-  const ThemeIcon = themeOptions.find(option => option.value === theme)?.icon || Monitor;
+  const getThemeIcon = () => {
+    if (theme === 'light') return Sun;
+    if (theme === 'dark') return Moon;
+    if (theme === 'system') {
+      if (typeof window !== 'undefined') {
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        return systemDark ? Moon : Sun;
+      } else {
+        return Sun; // default icon during SSR
+      }
+    }
+    return Sun;
+  };
+
+  const ThemeIcon = getThemeIcon();
 
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
@@ -76,12 +97,13 @@ const Navigation: React.FC = () => {
     );
   }
 
+
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${
       isScrolled
         ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg'
         : 'bg-transparent'
-    }`} role="navigation" aria-label="Main navigation">
+    } ${isNavVisible ? 'translate-y-0' : '-translate-y-full'}`} role="navigation" aria-label="Main navigation">
       <div className="container-custom">
         <div className="flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8">
           <Logo />
@@ -106,45 +128,16 @@ const Navigation: React.FC = () => {
           {/* Theme Toggle & CTA */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Theme Toggle */}
-            <div className="relative">
-              <button
-                onClick={() => setShowThemeMenu(!showThemeMenu)}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors theme-toggle"
-                aria-label="Toggle theme"
-              >
-                <ThemeIcon className="w-5 h-5" />
-              </button>
-
-              <AnimatePresence>
-                {showThemeMenu && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                    className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50"
-                  >
-                    {themeOptions.map((option) => {
-                      const IconComponent = option.icon;
-                      return (
-                        <button
-                          key={option.value}
-                          onClick={() => {
-                            setTheme(option.value);
-                            setShowThemeMenu(false);
-                          }}
-                          className={`w-full px-3 py-2 text-left flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                            theme === option.value ? 'text-accent' : 'text-gray-700 dark:text-gray-300'
-                          }`}
-                        >
-                          <IconComponent className="w-4 h-4" />
-                          <span className="text-sm">{option.name}</span>
-                        </button>
-                      );
-                    })}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+            <button
+              onClick={() => {
+                const nextTheme = theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light';
+                setTheme(nextTheme);
+              }}
+              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors theme-toggle"
+              aria-label="Cycle theme"
+            >
+              <ThemeIcon className="w-5 h-5" />
+            </button>
 
             {/* Get Started Button - Hidden on mobile, shown on small screens and up */}
             <Link
@@ -193,15 +186,17 @@ const Navigation: React.FC = () => {
                     {link.name}
                   </Link>
                 ))}
-                <div className="px-4 pt-4">
-                  <Link
-                    href="/contact#get-started"
-                    onClick={handleLinkClick}
-                    className="block w-full text-center btn-primary"
-                  >
-                    Get Started
-                  </Link>
-                </div>
+
+                {/* Get Started Button in Mobile Menu */}
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    router.push('/contact#get-started');
+                  }}
+                  className="block w-full px-4 py-3 mt-4 btn-primary text-center"
+                >
+                  Get Started
+                </button>
               </div>
             </motion.div>
           )}

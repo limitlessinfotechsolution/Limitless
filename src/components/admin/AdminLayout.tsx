@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import AdminSidebar from './AdminSidebar';
-import Dashboard from './Dashboard';
+import Dashboard from '././Dashboard';
 import PagesManagement from './PagesManagement';
 import PortfolioManagement from './PortfolioManagement';
 import TestimonialsManagement from './TestimonialsManagement';
 import LeadsManagement from './LeadsManagement';
 import UsersManagement from './UsersManagement';
+import FaqManagement from './FaqManagement';
 
-type AdminView = 'dashboard' | 'pages' | 'portfolio' | 'testimonials' | 'leads' | 'users';
+type AdminView = 'dashboard' | 'pages' | 'portfolio' | 'testimonials' | 'leads' | 'users' | 'faq';
 
 const AdminLayout: React.FC = () => {
   const [activeView, setActiveView] = useState<AdminView>('dashboard');

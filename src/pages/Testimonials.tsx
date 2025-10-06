@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Testimonial } from '../types';
 import { Tables } from '../types/supabase';
 import { Card } from '../components/ui/Card';
-import CardEnhanced from '../components/ui/Card-enhanced';
+import CardEnhanced from '../components/ui/CardEnhanced';
 import StarRating from '../components/ui/StarRating';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
 import LazyImage from '../components/ui/LazyImage';

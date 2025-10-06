@@ -1,19 +1,69 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as Icons from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../lib/supabaseClient';
 import { Project } from '../types';
 import Card from '../components/ui/Card';
-import CardEnhanced from '../components/ui/Card-enhanced';
+import CardEnhanced from '../components/ui/CardEnhanced';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
 import LazyImage from '../components/ui/LazyImage';
 import InteractiveParticleBackground from '../components/ui/InteractiveParticleBackground';
+import PageErrorBoundary from '../components/PageErrorBoundary';
 
-import ProjectTimeline from '../components/portfolio/ProjectTimeline';
-import EnhancedFilters from '../components/portfolio/EnhancedFilters';
+// Lazy load components below the fold for better performance
+const ProjectTimeline = React.lazy(() => import('../components/portfolio/ProjectTimeline'));
+const EnhancedFilters = React.lazy(() => import('../components/portfolio/EnhancedFilters'));
+const TestimonialsCarousel = React.lazy(() => import('../components/home/TestimonialsCarousel'));
+const ClientLogos = React.lazy(() => import('../components/home/ClientLogos'));
+
+// Helper function for dynamic "Why Choose Us" content based on industry filter
+const getWhyChooseUsContent = (industry: string) => {
+  const contentMap: Record<string, Array<{ icon: string, title: string, description: string }>> = {
+    'All': [
+      { icon: 'Award', title: 'Proven Expertise', description: '10+ years of delivering innovative solutions across industries' },
+      { icon: 'Users', title: 'Dedicated Team', description: 'Experienced professionals committed to your success' },
+      { icon: 'Zap', title: 'Agile Methodology', description: 'Flexible approach ensuring timely delivery and quality' },
+      { icon: 'Shield', title: 'Quality Assurance', description: 'Rigorous testing and validation for reliable solutions' }
+    ],
+    'FinTech': [
+      { icon: 'Lock', title: 'Security First', description: 'Bank-grade security with compliance certifications' },
+      { icon: 'TrendingUp', title: 'Scalable Solutions', description: 'Built to handle millions of transactions seamlessly' },
+      { icon: 'CreditCard', title: 'Payment Expertise', description: 'Deep knowledge of payment systems and regulations' },
+      { icon: 'BarChart3', title: 'Financial Analytics', description: 'Advanced reporting and insights for better decisions' }
+    ],
+    'Healthcare': [
+      { icon: 'Heart', title: 'Patient-Centric', description: 'Solutions designed with patient care and privacy in mind' },
+      { icon: 'FileText', title: 'Compliance Ready', description: 'HIPAA and healthcare regulation compliant systems' },
+      { icon: 'Stethoscope', title: 'Medical Expertise', description: 'Understanding of healthcare workflows and requirements' },
+      { icon: 'Clock', title: 'Rapid Deployment', description: 'Quick implementation without disrupting patient care' }
+    ],
+    'Education': [
+      { icon: 'GraduationCap', title: 'Learning Focused', description: 'Technology that enhances educational outcomes' },
+      { icon: 'Users', title: 'User-Friendly', description: 'Intuitive interfaces for students, teachers, and administrators' },
+      { icon: 'BookOpen', title: 'Curriculum Integration', description: 'Seamless integration with existing educational systems' },
+      { icon: 'TrendingUp', title: 'Scalable Platform', description: 'Grows with your institution\'s needs' }
+    ],
+    'E-commerce': [
+      { icon: 'ShoppingCart', title: 'Conversion Optimized', description: 'Maximize sales with proven e-commerce best practices' },
+      { icon: 'Globe', title: 'Global Reach', description: 'Multi-currency and multi-language support' },
+      { icon: 'Package', title: 'Inventory Management', description: 'Real-time inventory tracking and automation' },
+      { icon: 'Headphones', title: 'Customer Support', description: 'Integrated support systems for better service' }
+    ]
+  };
+
+  return contentMap[industry] || contentMap['All'];
+};
 
 const PortfolioFixed: React.FC = () => {
+  return (
+    <PageErrorBoundary pageName="Portfolio">
+      <PortfolioContent />
+    </PageErrorBoundary>
+  );
+};
+
+const PortfolioContent: React.FC = () => {
   const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -249,13 +299,66 @@ const PortfolioFixed: React.FC = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <EnhancedFilters
-                projects={projects}
-                filters={filters}
-                onFiltersChange={setFilters}
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-              />
+              <Suspense fallback={<div className="min-h-[200px] flex items-center justify-center">Loading filters...</div>}>
+                <EnhancedFilters
+                  projects={projects}
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  searchQuery={searchQuery}
+                  onSearchChange={setSearchQuery}
+                />
+              </Suspense>
+            </motion.div>
+
+            {/* Why Choose Us Section - Dynamic based on industry filter */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="mb-16"
+            >
+              <div className="text-center mb-12">
+                <h2 className="text-3xl lg:text-4xl font-bold mb-4 bg-gradient-to-r from-accent to-accent-orange bg-clip-text text-transparent">
+                  Why Choose Us {filters.industry !== 'All' ? `for ${filters.industry}` : ''}
+                </h2>
+                <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                  {filters.industry !== 'All'
+                    ? `Specialized expertise and proven results in ${filters.industry.toLowerCase()} solutions`
+                    : 'Industry-leading expertise with proven results across all sectors'
+                  }
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {getWhyChooseUsContent(filters.industry).map((item, index) => {
+                  const IconComponent = Icons[item.icon as keyof typeof Icons] as React.ComponentType<{ className?: string }>;
+                  return (
+                    <motion.div
+                      key={item.title}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      whileHover={{ y: -5 }}
+                    >
+                      <CardEnhanced
+                        variant='elevated'
+                        hover='lift'
+                        className="h-full p-6 text-center bg-white/50 dark:bg-gray-800/50 border border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm group"
+                      >
+                        <IconComponent className="w-12 h-12 text-accent mx-auto mb-4 group-hover:text-accent-orange transition-colors" />
+                        <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
+                          {item.title}
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                          {item.description}
+                        </p>
+                      </CardEnhanced>
+                    </motion.div>
+                  );
+                })}
+              </div>
             </motion.div>
 
             {/* Animated Stats - Enhanced card design */}
@@ -292,6 +395,32 @@ const PortfolioFixed: React.FC = () => {
                   </CardEnhanced>
                 </motion.div>
               ))}
+            </motion.div>
+
+            {/* Testimonials Carousel */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mb-16"
+            >
+              <Suspense fallback={<div className="min-h-[200px] flex items-center justify-center">Loading testimonials...</div>}>
+                <TestimonialsCarousel />
+              </Suspense>
+            </motion.div>
+
+            {/* Client Logos */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="mb-20"
+            >
+              <Suspense fallback={<div className="min-h-[100px] flex items-center justify-center">Loading client logos...</div>}>
+                <ClientLogos />
+              </Suspense>
             </motion.div>
 
             {/* Enhanced Project Grid - Improved card design and alignment */}

@@ -32,15 +32,13 @@ const Admin: React.FC = () => {
 
   return (
     <LoginGate>
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="max-h-screen flex items-center justify-center">
         <ProfessionalLoader />
       </div>
     </LoginGate>
   );
 };
 
-export const getServerSideProps = async () => {
-  return { props: {} };
-};
+
 
 export default Admin;

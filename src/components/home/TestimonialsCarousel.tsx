@@ -7,7 +7,7 @@ import { Testimonial } from '../../types';
 import StarRating from '../ui/StarRating';
 import SkeletonLoader from '../ui/SkeletonLoader';
 import LazyImage from '../ui/LazyImage';
-import CardEnhanced from '../ui/Card-enhanced';
+import CardEnhanced from '../ui/CardEnhanced';
 
 const TestimonialsCarousel: React.FC = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);

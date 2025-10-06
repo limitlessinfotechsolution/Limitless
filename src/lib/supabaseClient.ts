@@ -4,13 +4,6 @@ import { Database } from '../types/supabase'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-// Create client only if environment variables are available
-export const supabase = supabaseUrl && supabaseAnonKey ? createClient<Database>(supabaseUrl, supabaseAnonKey, {
-  db: {
-    schema: 'public',
-  },
-}) : null
-
 // Function to create client with validation
 export const createSupabaseClient = () => {
   if (!supabaseUrl || !supabaseAnonKey) {
@@ -22,3 +15,19 @@ export const createSupabaseClient = () => {
     },
   });
 }
+
+// Lazy initialization of supabase client using Proxy
+let supabaseInstance: ReturnType<typeof createSupabaseClient> | null = null;
+
+export const supabase = new Proxy({} as ReturnType<typeof createSupabaseClient>, {
+  get(target, prop) {
+    if (!supabaseInstance) {
+      supabaseInstance = createSupabaseClient();
+    }
+    const value = supabaseInstance[prop as keyof typeof supabaseInstance];
+    if (typeof value === 'function') {
+      return value.bind(supabaseInstance);
+    }
+    return value;
+  },
+});

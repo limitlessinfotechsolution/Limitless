@@ -14,7 +14,7 @@ import {
   ExternalLink,
   Search
 } from 'lucide-react';
-import CardEnhanced from '../../src/components/ui/Card-enhanced';
+import CardEnhanced from '../../src/components/ui/CardEnhanced';
 
 interface DocSection {
   id: string;
