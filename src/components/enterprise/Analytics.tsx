@@ -8,7 +8,7 @@ import {
   MoreHorizontal,
   RefreshCw
 } from 'lucide-react';
-import { Card } from';
+import { Card } from '../ui/Card';
 import Button from '../ui/Button';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 

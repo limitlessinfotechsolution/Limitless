@@ -4,7 +4,7 @@ describe('supabaseClient', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    process.env = { ...originalEnv };
+    process.env = {};
   });
 
   afterEach(() => {
@@ -23,6 +23,9 @@ describe('supabaseClient', () => {
 
     // Re-import the module to trigger the client creation
     const { supabase } = await import('../supabaseClient');
+
+    // Access a property to trigger lazy initialization
+    supabase.from;
 
     expect(supabase).toBeDefined();
     expect(mockCreateClient).toHaveBeenCalledWith('https://test.supabase.co', 'test-anon-key', {
