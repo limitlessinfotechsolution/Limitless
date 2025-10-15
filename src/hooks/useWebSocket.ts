@@ -24,7 +24,7 @@ interface UseWebSocketReturn {
 
 export const useWebSocket = (options: UseWebSocketOptions = {}): UseWebSocketReturn => {
   const {
-    url = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3000',
+    url = process.env.NEXT_PUBLIC_SOCKET_URL || 'https://limitlessinfotech.com',
     autoConnect = true,
     reconnection = true,
     reconnectionAttempts = 5,

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, MoreVertical, Eye, Edit, CheckCircle, XCircle, MessageSquare } from 'lucide-react';
-import Card from '../../../src/components/ui/Card';
+import { Card } from';
 
 
 interface Project {
@@ -276,3 +276,4 @@ const ProjectsPage: React.FC = () => {
 };
 
 export default ProjectsPage;
+

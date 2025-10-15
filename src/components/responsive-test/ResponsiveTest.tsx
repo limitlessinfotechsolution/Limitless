@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Card from '../ui/Card';
+import { Card } from';
 
 const ResponsiveTest: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);

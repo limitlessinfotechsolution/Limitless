@@ -77,7 +77,7 @@ npx supabase db push
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [https://limitlessinfotech.com](https://limitlessinfotech.com) in your browser.
 
 ### Environment Variables
 
@@ -104,7 +104,7 @@ GOOGLE_ANALYTICS_ID=your-ga-id
 VERCEL_ANALYTICS_ID=your-vercel-id
 
 # Other
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_SITE_URL=https://limitlessinfotech.com
 ```
 
 ## Project Structure

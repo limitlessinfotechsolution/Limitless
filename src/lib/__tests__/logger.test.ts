@@ -1,15 +1,15 @@
 import { logger } from '../logger';
 
-// Mock console methods
-const consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation();
-const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
-const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-
 // Mock fetch for server logging
 global.fetch = jest.fn();
 
 describe('Logger', () => {
   const originalEnv = process.env;
+
+  // Mock console methods
+  let consoleInfoSpy: jest.SpyInstance;
+  let consoleWarnSpy: jest.SpyInstance;
+  let consoleErrorSpy: jest.SpyInstance;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -18,6 +18,11 @@ describe('Logger', () => {
       value: 'development',
       writable: true,
     });
+
+    // Set up spies after clearing mocks
+    consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation();
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
   });
 
   afterEach(() => {

@@ -6,7 +6,7 @@ import {
   Zap, Shield, BarChart3, Settings,
   Eye, ThumbsUp
 } from 'lucide-react';
-import Card from '../ui/Card';
+import { Card } from';
 
 const InterfaceMaturityReview: React.FC = () => {
   interface Review {

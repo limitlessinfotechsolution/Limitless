@@ -8,7 +8,7 @@ import {
   MoreHorizontal,
   RefreshCw
 } from 'lucide-react';
-import Card from '../ui/Card';
+import { Card } from';
 import Button from '../ui/Button';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
@@ -312,3 +312,4 @@ const Analytics: React.FC<AnalyticsProps> = ({
 };
 
 export default Analytics;
+

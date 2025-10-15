@@ -21,12 +21,38 @@ jest.mock('framer-motion', () => ({
 jest.mock('../../config/uiConfig', () => ({
   UI_CONFIG: {
     colors: {
+      primary: '#D4AF37',
+      secondary: '#1A237E',
+      accent: '#D4AF37',
+      accentOrange: '#FF6B35',
+      accentDark: '#B8860B',
       background: {
-        light: '#ffffff',
-        dark: '#000000',
+        light: '#FFFFFF',
+        dark: '#0F172A',
       },
-      accent: '#007bff',
-      'accent-orange': '#ff6600',
+      text: {
+        light: '#1F2937',
+        dark: '#F9FAFB',
+      },
+      professional: {
+        shadow: 'shadow-lg',
+        border: 'border-gray-200 dark:border-gray-700',
+      },
+      innovative: {
+        primary: '#6366f1',
+        glow: 'shadow-indigo-500/25',
+      },
+    },
+    animations: {
+      duration: {
+        fast: 200,
+        normal: 300,
+        slow: 500,
+      },
+      easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+      professional: {
+        smooth: 'cubic-bezier(0.4, 0, 0.2, 1)',
+      },
     },
   },
 }));

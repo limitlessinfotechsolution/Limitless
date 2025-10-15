@@ -11,7 +11,7 @@ import {
   Search
 } from 'lucide-react';
 import Button from '../ui/Button';
-import Card from '../ui/Card';
+import { Card } from';
 
 interface CalendarEvent {
   id: string;
@@ -353,3 +353,4 @@ const EnterpriseCalendar: React.FC<EnterpriseCalendarProps> = ({
 
 export default EnterpriseCalendar;
 export type { CalendarEvent };
+

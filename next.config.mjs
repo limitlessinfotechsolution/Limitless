@@ -22,7 +22,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; connect-src 'self' ws://localhost:3000 http://localhost:3000 https://wcibajrcacawtcyzpdgb.supabase.co; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://images.unsplash.com;",
+            value: "default-src 'self'; connect-src 'self' wss://limitlessinfotech.com https://limitlessinfotech.com https://wcibajrcacawtcyzpdgb.supabase.co; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://images.unsplash.com;",
           },
         ],
       },

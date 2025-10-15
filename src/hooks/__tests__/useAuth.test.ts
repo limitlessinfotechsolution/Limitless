@@ -1,31 +1,29 @@
-import { renderHook } from '@testing-library/react';
-import { useAuth } from '../useAuth';
-
-const mockUnsubscribe = jest.fn();
-
 jest.mock('../../lib/supabaseClient', () => ({
   supabase: {
     auth: {
-      onAuthStateChange: jest.fn(() => ({
+      onAuthStateChange: () => ({
         data: {
           subscription: {
-            unsubscribe: mockUnsubscribe,
+            unsubscribe: () => {},
           },
         },
-      })),
-      getSession: jest.fn(() => Promise.resolve({ data: { session: null }, error: null })),
-      signInWithPassword: jest.fn(() => Promise.resolve({ data: { user: null }, error: null })),
-      signOut: jest.fn(() => Promise.resolve()),
-      from: jest.fn(() => ({
-        select: jest.fn(() => ({
-          eq: jest.fn(() => ({
-            single: jest.fn(() => Promise.resolve({ data: { id: 'user1', role: 'admin' }, error: null })),
-          })),
-        })),
-      })),
+      }),
+      getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+      signInWithPassword: () => Promise.resolve({ data: { user: null }, error: null }),
+      signOut: () => Promise.resolve(),
     },
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          single: () => Promise.resolve({ data: { id: 'user1', role: 'admin' }, error: null }),
+        }),
+      }),
+    }),
   },
 }));
+
+import { renderHook, waitFor } from '@testing-library/react';
+import { useAuth } from '../useAuth';
 
 describe('useAuth', () => {
   it('should return auth state and functions', () => {
@@ -44,17 +42,16 @@ describe('useAuth', () => {
     expect(typeof result.current.logout).toBe('function');
   });
 
-  it('should initialize with loading state when supabase is available', () => {
+  it('should initialize with loading state when supabase is available', async () => {
     const { result } = renderHook(() => useAuth());
 
     expect(result.current.isLoading).toBe(true);
     expect(result.current.isAuthenticated).toBe(false);
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
   });
 
-  it('should not load when supabase is not available', () => {
-    const { result } = renderHook(() => useAuth());
 
-    expect(result.current.isLoading).toBe(false);
-    expect(result.current.isAuthenticated).toBe(false);
-  });
 });

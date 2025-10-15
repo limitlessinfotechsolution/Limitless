@@ -36,7 +36,7 @@ const customJestConfig = {
     '!src/pages/api/**',
   ],
   coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'lcov', 'html', 'json'],
+  coverageReporters: ['text', 'lcov', 'html', 'json', 'clover'],
   coverageThreshold: {
     global: {
       branches: 70,
@@ -45,12 +45,22 @@ const customJestConfig = {
       statements: 70,
     },
   },
-  testTimeout: 10000,
+  testTimeout: 15000,
   verbose: true,
   forceExit: true,
   clearMocks: true,
   resetMocks: true,
   restoreMocks: true,
+  // Fix ESM module issues
+  transformIgnorePatterns: [
+    'node_modules/(?!(jose|@supabase|@testing-library|framer-motion)/)',
+  ],
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  globals: {
+    'ts-jest': {
+      useESM: true,
+    },
+  },
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

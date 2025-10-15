@@ -2,6 +2,12 @@ import { GET } from '../pages/route';
 import { createServerClient } from '@supabase/ssr';
 import { NextRequest } from 'next/server';
 
+// Mock NextResponse
+jest.mock('next/server', () => ({
+  NextRequest: (global as any).NextRequest,
+  NextResponse: (global as any).NextResponse,
+}));
+
 // Mock the createServerClient and cookies
 jest.mock('@supabase/ssr', () => ({
   createServerClient: jest.fn(),

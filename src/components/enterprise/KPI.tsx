@@ -6,7 +6,7 @@ import {
   Minus,
   BarChart3
 } from 'lucide-react';
-import Card from '../ui/Card';
+import { Card } from';
 
 interface KPIItem {
   id: string;
@@ -165,3 +165,4 @@ const KPI: React.FC<KPIProps> = ({
 };
 
 export default KPI;
+

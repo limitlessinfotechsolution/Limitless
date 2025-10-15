@@ -57,11 +57,40 @@ jest.mock('src/lib/supabaseClient', () => ({
       signInWithPassword: jest.fn(),
       signOut: jest.fn(),
       getUser: jest.fn(),
-      onAuthStateChange: jest.fn(() => ({
-        data: { subscription: { unsubscribe: jest.fn() } },
-      })),
+      onAuthStateChange: jest.fn((callback) => {
+        // Return the expected structure with data.subscription
+        return {
+          data: {
+            subscription: {
+              unsubscribe: jest.fn(),
+            },
+          },
+        };
+      }),
     },
   },
+  createSupabaseClient: jest.fn(() => ({
+    from: jest.fn(() => ({
+      select: jest.fn(() => ({
+        order: jest.fn(() => ({
+          data: [],
+          error: null,
+        })),
+      })),
+    })),
+    auth: {
+      signInWithPassword: jest.fn(),
+      signOut: jest.fn(),
+      getUser: jest.fn(),
+      onAuthStateChange: jest.fn(() => ({
+        data: {
+          subscription: {
+            unsubscribe: jest.fn(),
+          },
+        },
+      })),
+    },
+  })),
 }));
 
 // Mock environment variables
@@ -183,10 +212,23 @@ global.testUtils = {
 // Legacy mocks for backward compatibility
 global.Request = class Request {
   constructor(url, options = {}) {
-    this.url = url;
+    Object.defineProperty(this, 'url', {
+      value: url,
+      writable: false,
+      enumerable: true,
+      configurable: false
+    });
     this.method = options.method || 'GET';
-    this.headers = options.headers || {};
+    this.headers = options.headers || new Map();
     this.body = options.body;
+  }
+
+  json() {
+    return Promise.resolve(JSON.parse(this.body));
+  }
+
+  text() {
+    return Promise.resolve(this.body);
   }
 };
 
@@ -208,7 +250,13 @@ global.Response = class Response {
   }
 };
 
-global.NextRequest = global.Request;
+global.NextRequest = class NextRequest extends Request {
+  constructor(url, options = {}) {
+    super(url, options);
+    this.nextUrl = new URL(url);
+  }
+};
+
 global.NextResponse = {
   json: (data, options = {}) => new Response(JSON.stringify(data), { ...options, headers: { 'Content-Type': 'application/json', ...options.headers } }),
   redirect: (url) => ({ url, status: 302 }),

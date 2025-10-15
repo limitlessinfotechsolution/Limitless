@@ -13,7 +13,7 @@ import {
   CheckCheck
 } from 'lucide-react';
 import Button from '../ui/Button';
-import Card from '../ui/Card';
+import { Card } from';
 import Image from 'next/image';
 
 interface ChatMessage {
@@ -396,3 +396,4 @@ const Chat: React.FC<ChatProps> = ({
 
 export default Chat;
 export type { ChatMessage, ChatParticipant, ChatAttachment };
+

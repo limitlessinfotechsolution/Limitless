@@ -4,7 +4,7 @@ import * as Icons from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../lib/supabaseClient';
 import { Project } from '../types';
-import Card from '../components/ui/Card';
+import { Card } from '../components/ui/Card';
 import CardEnhanced from '../components/ui/CardEnhanced';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
 import LazyImage from '../components/ui/LazyImage';

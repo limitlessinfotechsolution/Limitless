@@ -165,7 +165,7 @@ const Dashboard: React.FC = () => {
   const [aiInsights, setAiInsights] = useState<AiInsight[]>([]);
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const supabase = createClientComponentClient();
-  const wsService = useMemo(() => new WebSocketService(process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001'), []);
+  const wsService = useMemo(() => new WebSocketService(process.env.NEXT_PUBLIC_WS_URL || 'wss://limitlessinfotech.com'), []);
 
   useEffect(() => {
     const fetchDashboardData = async () => {

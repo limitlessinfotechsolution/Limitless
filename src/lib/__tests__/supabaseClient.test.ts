@@ -1,3 +1,4 @@
+
 describe('supabaseClient', () => {
   const originalEnv = process.env;
 
@@ -14,11 +15,19 @@ describe('supabaseClient', () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
 
+    // Mock createClient to avoid actual client creation
+    const mockCreateClient = jest.fn().mockReturnValue({});
+    jest.doMock('@supabase/supabase-js', () => ({
+      createClient: mockCreateClient,
+    }));
+
     // Re-import the module to trigger the client creation
     const { supabase } = await import('../supabaseClient');
 
     expect(supabase).toBeDefined();
-    // Since we can't mock createClient easily for top-level, we just check it doesn't throw
+    expect(mockCreateClient).toHaveBeenCalledWith('https://test.supabase.co', 'test-anon-key', {
+      db: { schema: 'public' },
+    });
   });
 
   it('should throw error when NEXT_PUBLIC_SUPABASE_URL is missing', async () => {

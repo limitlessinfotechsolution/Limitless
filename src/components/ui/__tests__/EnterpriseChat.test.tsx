@@ -8,8 +8,8 @@ Element.prototype.scrollIntoView = jest.fn();
 
 // Mock child components that use icons
 jest.mock('../Card', () => {
-  return function MockCard({ children, className }: { children: React.ReactNode; className?: string }) {
-    return <div className={className} data-testid="mock-card">{children}</div>;
+  return function MockCard({ children, className, ...props }: { children: React.ReactNode; className?: string; [key: string]: any }) {
+    return <div className={className} data-testid="mock-card" {...props}>{children}</div>;
   };
 });
 
@@ -40,7 +40,8 @@ const mockMessages = [
     id: '1',
     sender: {
       id: '1',
-      name: 'John Doe'
+      name: 'John Doe',
+      status: 'online' as const
     },
     content: 'Hello there!',
     timestamp: new Date(),
@@ -50,7 +51,8 @@ const mockMessages = [
     id: '2',
     sender: {
       id: '2',
-      name: 'Jane Smith'
+      name: 'Jane Smith',
+      status: 'away' as const
     },
     content: 'Hi! How are you?',
     timestamp: new Date(),

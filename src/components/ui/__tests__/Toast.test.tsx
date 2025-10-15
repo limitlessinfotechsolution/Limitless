@@ -48,7 +48,7 @@ describe('Toast', () => {
 
     expect(screen.getByText('Test Title')).toBeInTheDocument();
 
-    jest.advanceTimersByTime(1000);
+    jest.advanceTimersByTime(1300); // duration + 300ms animation delay
 
     await waitFor(() => {
       expect(defaultProps.onClose).toHaveBeenCalledWith('test-toast');

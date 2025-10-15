@@ -8,18 +8,8 @@ process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
 
 // Mock NextResponse
 jest.mock('next/server', () => ({
-  NextRequest: jest.fn().mockImplementation((url, options) => ({
-    url,
-    method: options?.method || 'GET',
-    json: jest.fn().mockResolvedValue(options?.body ? JSON.parse(options.body) : {}),
-    ...options,
-  })),
-  NextResponse: {
-    json: jest.fn((data, options) => ({
-      status: options?.status || 200,
-      json: () => Promise.resolve(data),
-    })),
-  },
+  NextRequest: global.NextRequest,
+  NextResponse: global.NextResponse,
 }));
 
 // Mock the createServerClient and cookies
@@ -158,23 +148,40 @@ describe('/api/pages', () => {
       expect(result.id).toBe(1);
     });
 
-    it('should handle missing page name', async () => {
-      const invalidData = {
-        content: { title: 'Test' },
-        is_published: true,
-      };
+  it('should handle missing page name', async () => {
+    const mockSupabase = {
+      auth: {
+        getSession: jest.fn().mockResolvedValue({ data: { session: { user: { id: 'admin-id' } } } }),
+      },
+      from: jest.fn()
+        .mockReturnValueOnce({
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockReturnValue({
+              single: jest.fn().mockResolvedValue({ data: { role: 'admin' }, error: null }),
+            }),
+          }),
+        }),
+    };
 
-      const request = new NextRequest('http://localhost:3000/api/pages', {
-        method: 'POST',
-        body: JSON.stringify(invalidData),
-      });
-      const response = await POST(request);
-      const result = await response.json();
+    (createServerClient as jest.Mock).mockReturnValue(mockSupabase);
 
-      expect(response.status).toBe(400);
-      expect(Array.isArray(result.error)).toBe(true);
-      expect(result.error.length).toBeGreaterThan(0);
+    const invalidData = {
+      content: { title: 'Test' },
+      is_published: true,
+    };
+
+    const request = new NextRequest('http://localhost:3000/api/pages', {
+      method: 'POST',
+      body: JSON.stringify(invalidData),
     });
+
+    const response = await POST(request);
+    const result = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(Array.isArray(result.error)).toBe(true);
+    expect(result.error.length).toBeGreaterThan(0);
+  });
 
     it('should handle database errors', async () => {
       const pageData = {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import EnterpriseCalendar from '../EnterpriseCalendar';
 
@@ -47,14 +47,14 @@ describe('EnterpriseCalendar', () => {
   test('displays current month and year', () => {
     const currentDate = new Date();
     const monthYear = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    
+
     render(<EnterpriseCalendar />);
     expect(screen.getByText(monthYear)).toBeInTheDocument();
   });
 
   test('renders calendar days correctly', () => {
     render(<EnterpriseCalendar />);
-    
+
     // Check that day names are rendered
     expect(screen.getByText('Sun')).toBeInTheDocument();
     expect(screen.getByText('Mon')).toBeInTheDocument();
@@ -67,15 +67,15 @@ describe('EnterpriseCalendar', () => {
 
   test('renders events when provided', () => {
     render(<EnterpriseCalendar events={mockEvents} />);
-    
-    // Check that events are rendered (this might need adjustment based on implementation)
+
+    // Check that events are rendered in the calendar grid
     expect(screen.getByText('Team Meeting')).toBeInTheDocument();
     expect(screen.getByText('Product Review')).toBeInTheDocument();
   });
 
   test('shows navigation buttons', () => {
     render(<EnterpriseCalendar />);
-    
+
     expect(screen.getByText('Previous')).toBeInTheDocument();
     expect(screen.getByText('Today')).toBeInTheDocument();
     expect(screen.getByText('Next')).toBeInTheDocument();
@@ -83,9 +83,47 @@ describe('EnterpriseCalendar', () => {
 
   test('renders event details panel when date is selected', () => {
     render(<EnterpriseCalendar events={mockEvents} />);
-    
-    // This test might need adjustment based on how the component handles date selection
-    // For now, we'll just check that the component renders without errors
+
+    // Find today's date cell and click it
+    const today = new Date().getDate().toString();
+    const todayCell = screen.getByText(today);
+    fireEvent.click(todayCell);
+
+    // Check that event details panel is shown
+    expect(screen.getByText(`Events for ${new Date().toLocaleDateString()}`)).toBeInTheDocument();
+    expect(screen.getByText('Team Meeting')).toBeInTheDocument();
+    expect(screen.getByText('Product Review')).toBeInTheDocument();
+  });
+
+  test('navigates to previous month', () => {
+    render(<EnterpriseCalendar />);
+
+    const initialMonthYear = screen.getByText(new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }));
+
+    const prevButton = screen.getByText('Previous');
+    fireEvent.click(prevButton);
+
+    // The month should change (this is a basic check - in a real scenario you might mock the date)
+    expect(initialMonthYear).toBeInTheDocument(); // The element still exists but content might change
+  });
+
+  test('navigates to next month', () => {
+    render(<EnterpriseCalendar />);
+
+    const nextButton = screen.getByText('Next');
+    fireEvent.click(nextButton);
+
+    // Similar to previous test - basic interaction check
+    expect(screen.getByText('Calendar')).toBeInTheDocument();
+  });
+
+  test('navigates to today', () => {
+    render(<EnterpriseCalendar />);
+
+    const todayButton = screen.getByText('Today');
+    fireEvent.click(todayButton);
+
+    // Should reset to current month
     expect(screen.getByText('Calendar')).toBeInTheDocument();
   });
 });

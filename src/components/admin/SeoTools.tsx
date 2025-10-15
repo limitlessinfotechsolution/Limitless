@@ -1,7 +1,7 @@
 'use client';
 
 
-import Card from '../ui/Card';
+import { Card } from';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import { Search, TrendingUp, Globe, FileText, BarChart3 } from 'lucide-react';
 
@@ -213,3 +213,4 @@ const SeoTools: React.FC = () => {
 };
 
 export default SeoTools;
+

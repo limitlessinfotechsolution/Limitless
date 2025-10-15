@@ -1,10 +1,93 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Server, Database, Wifi, AlertTriangle, CheckCircle, Clock, Zap, Users } from 'lucide-react';
+import { Server, Database, Wifi, AlertTriangle, CheckCircle, Clock, Zap, Users, RefreshCw } from 'lucide-react';
+
+interface HealthData {
+  status: string;
+  timestamp: string;
+  database: {
+    status: string;
+    error?: string;
+  };
+  sessions: {
+    active: number;
+    error?: string;
+  };
+  security: {
+    recent_logins: number;
+    failed_logins: number;
+    error?: string;
+  };
+  system: {
+    uptime_seconds: number;
+    memory_usage_mb: {
+      rss: number;
+      heap_used: number;
+      heap_total: number;
+    };
+    node_version: string;
+    environment: string;
+  };
+}
 
 const SystemHealthPage: React.FC = () => {
+  const [healthData, setHealthData] = useState<HealthData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
+  const fetchHealthData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/admin/health');
+      if (!response.ok) {
+        throw new Error('Failed to fetch health data');
+      }
+      const data: HealthData = await response.json();
+      setHealthData(data);
+      setLastUpdated(new Date());
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchHealthData();
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(fetchHealthData, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const formatUptime = (seconds: number) => {
+    const days = Math.floor(seconds / 86400);
+    const hours = Math.floor((seconds % 86400) / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return `${days}d ${hours}h ${minutes}m`;
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'healthy': return 'text-green-600';
+      case 'degraded': return 'text-yellow-600';
+      case 'error': return 'text-red-600';
+      default: return 'text-gray-600';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'healthy': return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'degraded': return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
+      case 'error': return <AlertTriangle className="h-4 w-4 text-red-500" />;
+      default: return <Clock className="h-4 w-4 text-gray-500" />;
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -12,18 +95,48 @@ const SystemHealthPage: React.FC = () => {
           <h1 className="text-3xl font-bold tracking-tight">System Health</h1>
           <p className="text-muted-foreground">Real-time monitoring of system performance and health metrics.</p>
         </div>
+        <div className="flex items-center space-x-2">
+          {lastUpdated && (
+            <span className="text-sm text-muted-foreground">
+              Last updated: {lastUpdated.toLocaleTimeString()}
+            </span>
+          )}
+          <button
+            onClick={fetchHealthData}
+            disabled={loading}
+            className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+          >
+            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
+        </div>
       </div>
+
+      {error && (
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="p-4">
+            <div className="flex items-center">
+              <AlertTriangle className="h-5 w-5 text-red-500 mr-2" />
+              <span className="text-red-700">Error loading health data: {error}</span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Status Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">API Status</CardTitle>
-            <CheckCircle className="h-4 w-4 text-green-500" />
+            <CardTitle className="text-sm font-medium">System Status</CardTitle>
+            {healthData ? getStatusIcon(healthData.status) : <Clock className="h-4 w-4 text-gray-500" />}
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">Online</div>
-            <p className="text-xs text-muted-foreground">99.9% uptime</p>
+            <div className={`text-2xl font-bold ${healthData ? getStatusColor(healthData.status) : 'text-gray-600'}`}>
+              {loading ? 'Loading...' : healthData ? healthData.status.toUpperCase() : 'Unknown'}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {healthData ? `Updated ${new Date(healthData.timestamp).toLocaleTimeString()}` : 'Fetching data...'}
+            </p>
           </CardContent>
         </Card>
 
@@ -33,8 +146,12 @@ const SystemHealthPage: React.FC = () => {
             <Database className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Healthy</div>
-            <p className="text-xs text-muted-foreground">Response: 12ms</p>
+            <div className={`text-2xl font-bold ${healthData?.database.status === 'healthy' ? 'text-green-600' : 'text-red-600'}`}>
+              {loading ? 'Loading...' : healthData?.database.status || 'Unknown'}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {healthData?.database.error ? `Error: ${healthData.database.error}` : 'Connection healthy'}
+            </p>
           </CardContent>
         </Card>
 
@@ -44,19 +161,21 @@ const SystemHealthPage: React.FC = () => {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">47</div>
-            <p className="text-xs text-muted-foreground">Current users</p>
+            <div className="text-2xl font-bold">{loading ? '...' : healthData?.sessions.active || 0}</div>
+            <p className="text-xs text-muted-foreground">Current admin sessions</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Failed Jobs</CardTitle>
+            <CardTitle className="text-sm font-medium">Security Alerts</CardTitle>
             <AlertTriangle className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">2</div>
-            <p className="text-xs text-muted-foreground">Require attention</p>
+            <div className="text-2xl font-bold text-red-600">
+              {loading ? '...' : healthData?.security.failed_logins || 0}
+            </div>
+            <p className="text-xs text-muted-foreground">Failed logins (last hour)</p>
           </CardContent>
         </Card>
       </div>
@@ -73,27 +192,45 @@ const SystemHealthPage: React.FC = () => {
           <CardContent>
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-sm">CPU Usage</span>
-                <span className="text-sm font-medium">23%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '23%' }}></div>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Memory Usage</span>
-                <span className="text-sm font-medium">67%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-green-600 h-2 rounded-full" style={{ width: '67%' }}></div>
+                <span className="text-sm">System Uptime</span>
+                <span className="text-sm font-medium">
+                  {loading ? 'Loading...' : healthData ? formatUptime(healthData.system.uptime_seconds) : 'Unknown'}
+                </span>
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-sm">Disk Usage</span>
-                <span className="text-sm font-medium">45%</span>
+                <span className="text-sm">Memory Usage (RSS)</span>
+                <span className="text-sm font-medium">
+                  {loading ? 'Loading...' : healthData ? `${healthData.system.memory_usage_mb.rss} MB` : 'Unknown'}
+                </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-yellow-600 h-2 rounded-full" style={{ width: '45%' }}></div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-sm">Heap Used</span>
+                <span className="text-sm font-medium">
+                  {loading ? 'Loading...' : healthData ? `${healthData.system.memory_usage_mb.heap_used} MB` : 'Unknown'}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-sm">Heap Total</span>
+                <span className="text-sm font-medium">
+                  {loading ? 'Loading...' : healthData ? `${healthData.system.memory_usage_mb.heap_total} MB` : 'Unknown'}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-sm">Node Version</span>
+                <span className="text-sm font-medium">
+                  {loading ? 'Loading...' : healthData ? healthData.system.node_version : 'Unknown'}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-sm">Environment</span>
+                <span className="text-sm font-medium">
+                  {loading ? 'Loading...' : healthData ? healthData.system.environment : 'Unknown'}
+                </span>
               </div>
             </div>
           </CardContent>
@@ -103,29 +240,44 @@ const SystemHealthPage: React.FC = () => {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Wifi className="mr-2 h-5 w-5" />
-              Network & Connectivity
+              Security & Activity
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-sm">Response Time</span>
-                <span className="text-sm font-medium text-green-600">142ms</span>
+                <span className="text-sm">Recent Logins (1h)</span>
+                <span className="text-sm font-medium text-green-600">
+                  {loading ? 'Loading...' : healthData?.security.recent_logins || 0}
+                </span>
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-sm">Requests/min</span>
-                <span className="text-sm font-medium">1,247</span>
+                <span className="text-sm">Failed Logins (1h)</span>
+                <span className="text-sm font-medium text-red-600">
+                  {loading ? 'Loading...' : healthData?.security.failed_logins || 0}
+                </span>
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-sm">Error Rate</span>
-                <span className="text-sm font-medium text-red-600">0.02%</span>
+                <span className="text-sm">Active Admin Sessions</span>
+                <span className="text-sm font-medium">
+                  {loading ? 'Loading...' : healthData?.sessions.active || 0}
+                </span>
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-sm">Active Connections</span>
-                <span className="text-sm font-medium">89</span>
+                <span className="text-sm">Database Status</span>
+                <span className={`text-sm font-medium ${healthData?.database.status === 'healthy' ? 'text-green-600' : 'text-red-600'}`}>
+                  {loading ? 'Loading...' : healthData?.database.status || 'Unknown'}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-sm">Overall Status</span>
+                <span className={`text-sm font-medium ${healthData ? getStatusColor(healthData.status) : 'text-gray-600'}`}>
+                  {loading ? 'Loading...' : healthData ? healthData.status.toUpperCase() : 'Unknown'}
+                </span>
               </div>
             </div>
           </CardContent>

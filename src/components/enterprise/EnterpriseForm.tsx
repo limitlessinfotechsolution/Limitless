@@ -13,7 +13,7 @@ import {
   CheckCircle
 } from 'lucide-react';
 import Button from './Button';
-import Card from './Card';
+import { Card } from';
 
 interface FormField {
   id: string;

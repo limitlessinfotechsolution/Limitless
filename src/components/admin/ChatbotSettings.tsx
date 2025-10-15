@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
-import Card from '../ui/Card';
+import { Card } from';
 import LoadingSpinner from '../ui/LoadingSpinner';
 
 interface ChatbotConfig {
@@ -297,3 +297,4 @@ const ChatbotSettings: React.FC = () => {
 };
 
 export default ChatbotSettings;
+

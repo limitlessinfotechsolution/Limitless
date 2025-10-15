@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { ThemeProvider } from '../../common/ThemeProvider';
 import { useThemeContext } from '../../common/useThemeContext';
 
@@ -21,6 +21,21 @@ describe('ThemeProvider', () => {
   beforeEach(() => {
     // Clear localStorage before each test
     localStorage.clear();
+
+    // Mock window.matchMedia
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: jest.fn().mockImplementation(query => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: jest.fn(), // deprecated
+        removeListener: jest.fn(), // deprecated
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      })),
+    });
   });
 
   it('provides default theme context', () => {
@@ -47,7 +62,9 @@ describe('ThemeProvider', () => {
     expect(themeValue.textContent).toBe('system');
 
     // Click to change theme
-    setDarkButton.click();
+    act(() => {
+      setDarkButton.click();
+    });
 
     // Theme should be updated
     expect(themeValue.textContent).toBe('dark');

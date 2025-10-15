@@ -11,7 +11,7 @@ import {
   BadgeCheck
 } from 'lucide-react';
 import Button from '../ui/Button';
-import Card from '../ui/Card';
+import { Card } from';
 
 interface PricingFeature {
   name: string;
@@ -316,3 +316,4 @@ const Pricing: React.FC<PricingProps> = ({
 };
 
 export default Pricing;
+
