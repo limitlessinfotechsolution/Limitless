@@ -1,94 +1,55 @@
-// UI Constants Configuration
-export const UI_CONFIG = {
-  // Colors
-  colors: {
-    primary: '#D4AF37', // Gold
-    secondary: '#1A237E', // Dark Blue
-    accent: '#D4AF37',
-    accentOrange: '#FF6B35',
-    accentDark: '#B8860B',
-    background: {
-      light: '#FFFFFF',
-      dark: '#0F172A',
-    },
-    text: {
-      light: '#1F2937',
-      dark: '#F9FAFB',
-    },
-    professional: {
-      shadow: 'shadow-lg',
-      border: 'border-gray-200 dark:border-gray-700',
-    },
-    innovative: {
-      primary: '#6366f1',
-      glow: 'shadow-indigo-500/25',
-    },
+export const uiConfig = {
+  theme: {
+    primaryColor: '#007bff',
+    secondaryColor: '#6c757d',
+    accentColor: '#28a745',
+    dangerColor: '#dc3545',
+    warningColor: '#ffc107',
+    infoColor: '#17a2b8',
+    lightColor: '#f8f9fa',
+    darkColor: '#343a40',
   },
-
-  // Animations
+  breakpoints: {
+    xs: '0px',
+    sm: '576px',
+    md: '768px',
+    lg: '992px',
+    xl: '1200px',
+    xxl: '1400px',
+  },
+  spacing: {
+    xs: '0.25rem',
+    sm: '0.5rem',
+    md: '1rem',
+    lg: '1.5rem',
+    xl: '3rem',
+  },
+  borderRadius: {
+    none: '0',
+    sm: '0.125rem',
+    md: '0.375rem',
+    lg: '0.5rem',
+    xl: '0.75rem',
+    full: '9999px',
+  },
+  shadows: {
+    none: 'none',
+    sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+    md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+    xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+    enterprise: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+  },
   animations: {
     duration: {
-      fast: 200,
-      normal: 300,
-      slow: 500,
+      fast: '150ms',
+      normal: '300ms',
+      slow: '500ms',
     },
-    easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-    professional: {
-      smooth: 'cubic-bezier(0.4, 0, 0.2, 1)',
-    },
-  },
-
-  // Breakpoints (Tailwind defaults)
-  breakpoints: {
-    sm: '640px',
-    md: '768px',
-    lg: '1024px',
-    xl: '1280px',
-    '2xl': '1536px',
-  },
-
-  // Spacing
-  spacing: {
-    container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8',
-    section: 'py-16 sm:py-20 lg:py-24',
-  },
-
-  // Typography
-  typography: {
-    fontFamily: {
-      primary: 'Inter, system-ui, sans-serif',
-      secondary: 'Poppins, system-ui, sans-serif',
-    },
-    fontSize: {
-      xs: '0.75rem',
-      sm: '0.875rem',
-      base: '1rem',
-      lg: '1.125rem',
-      xl: '1.25rem',
-      '2xl': '1.5rem',
-      '3xl': '1.875rem',
-      '4xl': '2.25rem',
-      '5xl': '3rem',
-      '6xl': '3.75rem',
-      '7xl': '4.5rem',
+    easing: {
+      easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
+      easeOut: 'cubic-bezier(0.0, 0, 0.2, 1)',
+      easeIn: 'cubic-bezier(0.4, 0, 1, 1)',
     },
   },
-
-  // Shadows
-  shadows: {
-    sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-    md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-    lg: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-    xl: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
-  },
-
-  // Z-index layers
-  zIndex: {
-    dropdown: 1000,
-    sticky: 1020,
-    fixed: 1030,
-    modal: 1040,
-    popover: 1050,
-    tooltip: 1060,
-  },
-} as const;
+};

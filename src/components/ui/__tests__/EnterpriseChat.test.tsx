@@ -24,14 +24,12 @@ const mockParticipants = [
   {
     id: '1',
     name: 'John Doe',
-    status: 'online' as const,
-    lastSeen: new Date()
+    status: 'online' as const
   },
   {
     id: '2',
     name: 'Jane Smith',
-    status: 'away' as const,
-    lastSeen: new Date()
+    status: 'away' as const
   }
 ];
 
@@ -60,11 +58,7 @@ const mockMessages = [
   }
 ];
 
-const mockCurrentUser = {
-  id: '1',
-  name: 'John Doe',
-  status: 'online' as const
-};
+
 
 describe('EnterpriseChat', () => {
   test('renders EnterpriseChat component with title', () => {
@@ -72,7 +66,6 @@ describe('EnterpriseChat', () => {
       <EnterpriseChat
         participants={mockParticipants}
         messages={mockMessages}
-        currentUser={mockCurrentUser}
         title="Team Chat"
       />
     );
@@ -84,7 +77,6 @@ describe('EnterpriseChat', () => {
       <EnterpriseChat
         participants={mockParticipants}
         messages={mockMessages}
-        currentUser={mockCurrentUser}
       />
     );
     
@@ -100,22 +92,20 @@ describe('EnterpriseChat', () => {
       <EnterpriseChat
         participants={mockParticipants}
         messages={mockMessages}
-        currentUser={mockCurrentUser}
       />
     );
-    
+
     expect(screen.getByText('Hello there!')).toBeInTheDocument();
     expect(screen.getByText('Hi! How are you?')).toBeInTheDocument();
   });
 
   test('shows message input when participant is selected', () => {
     const mockOnParticipantSelect = jest.fn();
-    
+
     render(
       <EnterpriseChat
         participants={mockParticipants}
         messages={mockMessages}
-        currentUser={mockCurrentUser}
         onParticipantSelect={mockOnParticipantSelect}
       />
     );
@@ -135,7 +125,6 @@ describe('EnterpriseChat', () => {
       <EnterpriseChat
         participants={mockParticipants}
         messages={mockMessages}
-        currentUser={mockCurrentUser}
       />
     );
     

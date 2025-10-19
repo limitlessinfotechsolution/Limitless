@@ -3,12 +3,49 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import EnterpriseDataGrid from '../EnterpriseDataGrid';
 
-// Mock child components that use icons
-jest.mock('../Button', () => {
-  return function MockButton({ children, className }: { children: React.ReactNode; className?: string }) {
-    return <button className={className}>{children}</button>;
-  };
-});
+// Mock framer-motion
+jest.mock('framer-motion', () => ({
+  motion: {
+    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
+  },
+}));
+
+// Mock lucide-react icons
+jest.mock('lucide-react', () => ({
+  ChevronDown: () => <div data-testid="chevron-down">ChevronDown</div>,
+  Search: () => <div data-testid="search">Search</div>,
+  Filter: () => <div data-testid="filter">Filter</div>,
+  Download: () => <div data-testid="download">Download</div>,
+  Eye: () => <div data-testid="eye">Eye</div>,
+  Edit: () => <div data-testid="edit">Edit</div>,
+  Trash2: () => <div data-testid="trash">Trash2</div>,
+  Plus: () => <div data-testid="plus">Plus</div>,
+}));
+
+// Mock @tanstack/react-table
+jest.mock('@tanstack/react-table', () => ({
+  useReactTable: jest.fn(() => ({
+    getHeaderGroups: jest.fn(() => []),
+    getRowModel: jest.fn(() => ({ rows: [] })),
+    getFilteredRowModel: jest.fn(() => ({ rows: [] })),
+    getSelectedRowModel: jest.fn(() => ({ rows: [] })),
+    getState: jest.fn(() => ({ pagination: { pageIndex: 0, pageSize: 10 } })),
+    getPageCount: jest.fn(() => 1),
+    getIsAllRowsSelected: jest.fn(() => false),
+    getToggleAllRowsSelectedHandler: jest.fn(() => jest.fn()),
+    getCanPreviousPage: jest.fn(() => false),
+    getCanNextPage: jest.fn(() => false),
+    previousPage: jest.fn(),
+    nextPage: jest.fn(),
+    setGlobalFilter: jest.fn(),
+  })),
+  getCoreRowModel: jest.fn(() => ({})),
+  getFilteredRowModel: jest.fn(() => ({})),
+  getPaginationRowModel: jest.fn(() => ({})),
+  getSortedRowModel: jest.fn(() => ({})),
+  flexRender: jest.fn((component) => component),
+}));
 
 // Mock data for testing
 const mockData = [

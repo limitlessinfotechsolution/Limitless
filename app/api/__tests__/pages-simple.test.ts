@@ -35,17 +35,20 @@ describe('/api/pages GET', () => {
         getSession: jest.fn(() => Promise.resolve({ data: { session: { user: { id: 'admin-id' } } } })),
       },
       from: jest.fn()
-        .mockReturnValueOnce({
-          select: jest.fn(() => ({
-            eq: jest.fn(() => ({
+        .mockImplementation((table) => {
+          if (table === 'profiles') {
+            return {
+              select: jest.fn().mockReturnThis(),
+              eq: jest.fn().mockReturnThis(),
               single: jest.fn(() => Promise.resolve({ data: { role: 'admin' }, error: null })),
-            })),
-          })),
-        })
-        .mockReturnValueOnce({
-          select: jest.fn(() => ({
-            order: jest.fn(() => Promise.resolve({ data: mockPages, error: null })),
-          })),
+            };
+          } else if (table === 'pages') {
+            return {
+              select: jest.fn().mockReturnThis(),
+              order: jest.fn(() => Promise.resolve({ data: mockPages, error: null })),
+            };
+          }
+          return {};
         }),
     };
 
@@ -66,19 +69,22 @@ describe('/api/pages GET', () => {
       auth: {
         getSession: jest.fn(() => Promise.resolve({ data: { session: { user: { id: 'admin-id' } } } })),
       },
-      from: jest.fn(() => ({
-        select: jest.fn()
-          .mockReturnValueOnce({
-            eq: jest.fn(() => ({
+      from: jest.fn()
+        .mockImplementation((table) => {
+          if (table === 'profiles') {
+            return {
+              select: jest.fn().mockReturnThis(),
+              eq: jest.fn().mockReturnThis(),
               single: jest.fn(() => Promise.resolve({ data: { role: 'admin' }, error: null })),
-            })),
-          })
-          .mockReturnValueOnce({
-            select: jest.fn(() => ({
+            };
+          } else if (table === 'pages') {
+            return {
+              select: jest.fn().mockReturnThis(),
               order: jest.fn(() => Promise.resolve({ data: null, error: mockError })),
-            })),
-          }),
-      })),
+            };
+          }
+          return {};
+        }),
     };
 
     (createServerClient as jest.Mock).mockReturnValue(mockSupabase);

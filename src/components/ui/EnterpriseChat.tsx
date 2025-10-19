@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card } from './Card';
+import Card from './Card';
 
 interface User {
   id: string;
@@ -25,7 +25,6 @@ interface EnterpriseChatProps {
 const EnterpriseChat: React.FC<EnterpriseChatProps> = ({
   participants = [],
   messages = [],
-  currentUser: _currentUser,
   title = 'Team Chat',
   onParticipantSelect
 }) => {

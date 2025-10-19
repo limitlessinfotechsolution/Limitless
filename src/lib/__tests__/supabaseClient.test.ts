@@ -1,68 +1,85 @@
 
+import { createClient } from '@supabase/supabase-js';
+import { supabase, createSupabaseClient } from '../supabaseClient';
+
+// Mock the createClient function
+jest.mock('@supabase/supabase-js', () => ({
+  createClient: jest.fn(),
+}));
+
+const mockCreateClient = createClient as jest.MockedFunction<typeof createClient>;
+
 describe('supabaseClient', () => {
   const originalEnv = process.env;
 
   beforeEach(() => {
     jest.resetModules();
-    process.env = {};
+    // Properly clear env variables by deleting keys
+    delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+    delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    mockCreateClient.mockClear();
   });
 
   afterEach(() => {
     process.env = originalEnv;
   });
 
-  it('should create Supabase client when environment variables are provided', async () => {
+  it('should create Supabase client when environment variables are provided', () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
 
-    // Mock createClient to avoid actual client creation
-    const mockCreateClient = jest.fn().mockReturnValue({});
-    jest.doMock('@supabase/supabase-js', () => ({
-      createClient: mockCreateClient,
-    }));
-
-    // Re-import the module to trigger the client creation
-    const { supabase } = await import('../supabaseClient');
+    const mockSupabaseClient = {};
+    mockCreateClient.mockReturnValue(mockSupabaseClient as any);
 
     // Access a property to trigger lazy initialization
-    supabase.from;
+    expect(supabase.from).toBeDefined();
 
-    expect(supabase).toBeDefined();
     expect(mockCreateClient).toHaveBeenCalledWith('https://test.supabase.co', 'test-anon-key', {
       db: { schema: 'public' },
     });
+    expect(mockCreateClient).toHaveBeenCalledTimes(1);
   });
 
-  it('should throw error when NEXT_PUBLIC_SUPABASE_URL is missing', async () => {
+  it('should throw error when NEXT_PUBLIC_SUPABASE_URL is missing', () => {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
     delete process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-    const { createSupabaseClient } = await import('../supabaseClient');
-
     expect(() => {
       createSupabaseClient();
     }).toThrow('Supabase URL and Anon Key must be provided in .env.local');
   });
 
-  it('should throw error when NEXT_PUBLIC_SUPABASE_ANON_KEY is missing', async () => {
+  it('should throw error when NEXT_PUBLIC_SUPABASE_ANON_KEY is missing', () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
     delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-    const { createSupabaseClient } = await import('../supabaseClient');
+    expect(() => {
+      createSupabaseClient();
+    }).toThrow('Supabase URL and Anon Key must be provided in .env.local');
+  });
+
+  it('should throw error when both environment variables are missing', () => {
+    delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+    delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     expect(() => {
       createSupabaseClient();
     }).toThrow('Supabase URL and Anon Key must be provided in .env.local');
   });
 
-  it('should throw error when both environment variables are missing', async () => {
-    delete process.env.NEXT_PUBLIC_SUPABASE_DATABASE_URL;
-    delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  it('should reuse the same client instance on multiple accesses', () => {
+    process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
 
-    const { createSupabaseClient } = await import('../supabaseClient');
+    const mockSupabaseClient = {};
+    mockCreateClient.mockReturnValue(mockSupabaseClient as any);
 
-    expect(() => {
-      createSupabaseClient();
-    }).toThrow('Supabase URL and Anon Key must be provided in .env.local');
+    // Access multiple properties to trigger lazy initialization multiple times
+    expect(supabase.from).toBeDefined();
+    expect(supabase.auth).toBeDefined();
+    expect(supabase.storage).toBeDefined();
+
+    // createClient should only be called once due to lazy initialization caching
+    expect(mockCreateClient).toHaveBeenCalledTimes(1);
   });
 });

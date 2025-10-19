@@ -17,5 +17,14 @@ export const createSupabaseClient = () => {
   });
 }
 
-// Initialize supabase client immediately
-export const supabase = createSupabaseClient();
+// Lazy initialize supabase client
+let _supabase: ReturnType<typeof createSupabaseClient> | null = null;
+
+export const supabase = new Proxy({} as ReturnType<typeof createSupabaseClient>, {
+  get(target, prop) {
+    if (!_supabase) {
+      _supabase = createSupabaseClient();
+    }
+    return (_supabase as any)[prop];
+  },
+});
