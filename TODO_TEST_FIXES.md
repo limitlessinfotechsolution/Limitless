@@ -1,25 +1,25 @@
 # Test Fixes TODO
 
-## Critical Issues
-- [ ] Fix NextRequest/Request mocking in jest.setup.js (url property getter issue)
-- [ ] Fix Supabase client mocking (onAuthStateChange structure)
-- [ ] Create missing EnterpriseForm component
-- [ ] Create missing ErrorBoundary component
-- [ ] Fix ESM module issues in jest.config.cjs
+## API Tests
+- [ ] Fix app/api/__tests__/pages-simple.test.ts - Correct Supabase query mock chain
+- [ ] Fix app/api/testimonials/__tests__/route.test.ts - Fix NextResponse.json mock
 
-## Component Implementation Issues
-- [ ] Fix EnterpriseReporting component (missing actual implementation)
-- [ ] Fix EnterpriseCalendar component (missing actual implementation)
-- [ ] Fix EnterpriseDataGrid component (missing actual implementation)
-- [ ] Fix EnterpriseChat component (missing actual implementation)
-- [ ] Fix EnterprisePage component (ESM import issues)
+## Component Tests
+- [ ] Fix src/components/ui/__tests__/EnterpriseChat.test.tsx - Remove invalid currentUser prop
+- [ ] Fix src/components/ui/__tests__/EnterpriseDataGrid.test.tsx - Ensure proper export
+- [ ] Fix src/components/ui/__tests__/Toast.test.tsx - Fix onClose callback test
+- [ ] Fix src/components/common/__tests__/ErrorBoundary.test.tsx - Update text expectations
+- [ ] Fix src/components/ui/__tests__/EnterpriseCalendar.test.tsx - Make queries more specific
 
-## Test-Specific Issues
-- [ ] Fix Toast test act warnings
-- [ ] Fix ThemeProvider window.matchMedia mocking
-- [ ] Fix useAuth hook destructuring issues
-- [ ] Fix supabaseClient test mocking
+## Hook Tests
+- [ ] Fix src/hooks/__tests__/useTheme.test.ts - Mock window.matchMedia
 
-## Configuration Updates
-- [ ] Update jest.config.cjs transformIgnorePatterns
-- [ ] Improve jest.setup.js mocks
+## Missing Files/Components
+- [ ] Create src/config/uiConfig.ts - UI configuration file
+- [ ] Create src/components/ui/EnterprisePricing.tsx - Pricing component
+
+## Configuration
+- [ ] Update jest.config.cjs - Add transformIgnorePatterns for ES modules
+
+## Verification
+- [ ] Run tests to verify all fixes

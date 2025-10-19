@@ -1,7 +1,7 @@
 'use client';
 
-
-import { Card } from';
+import React, { useState } from 'react';
+import { Card } from '../ui/Card';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import { Search, TrendingUp, Globe, FileText, BarChart3 } from 'lucide-react';
 

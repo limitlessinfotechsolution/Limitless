@@ -34,19 +34,19 @@ describe('/api/pages GET', () => {
       auth: {
         getSession: jest.fn(() => Promise.resolve({ data: { session: { user: { id: 'admin-id' } } } })),
       },
-      from: jest.fn(() => ({
-        select: jest.fn()
-          .mockReturnValueOnce({
+      from: jest.fn()
+        .mockReturnValueOnce({
+          select: jest.fn(() => ({
             eq: jest.fn(() => ({
               single: jest.fn(() => Promise.resolve({ data: { role: 'admin' }, error: null })),
             })),
-          })
-          .mockReturnValueOnce({
-            select: jest.fn(() => ({
-              order: jest.fn(() => Promise.resolve({ data: mockPages, error: null })),
-            })),
-          }),
-      })),
+          })),
+        })
+        .mockReturnValueOnce({
+          select: jest.fn(() => ({
+            order: jest.fn(() => Promise.resolve({ data: mockPages, error: null })),
+          })),
+        }),
     };
 
     (createServerClient as jest.Mock).mockReturnValue(mockSupabase);

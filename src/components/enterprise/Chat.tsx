@@ -13,7 +13,7 @@ import {
   CheckCheck
 } from 'lucide-react';
 import Button from '../ui/Button';
-import { Card } from';
+import { Card } from '../ui/Card';
 import Image from 'next/image';
 
 interface ChatMessage {
@@ -354,7 +354,6 @@ const Chat: React.FC<ChatProps> = ({
                   size="sm"
                   icon={<Send className="w-4 h-4" />}
                   onClick={handleSendMessage}
-                  disabled={!newMessage.trim()}
                 >
                   &nbsp;
                 </Button>

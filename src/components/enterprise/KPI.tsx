@@ -6,7 +6,7 @@ import {
   Minus,
   BarChart3
 } from 'lucide-react';
-import { Card } from';
+import { Card } from '../ui/Card';
 
 interface KPIItem {
   id: string;

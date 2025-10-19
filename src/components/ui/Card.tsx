@@ -34,4 +34,5 @@ const CardContent: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ children,
   );
 };
 
+export default Card;
 export { Card, CardHeader, CardTitle, CardContent };

@@ -11,7 +11,7 @@ import {
   BadgeCheck
 } from 'lucide-react';
 import Button from '../ui/Button';
-import { Card } from';
+import { Card } from '../ui/Card';
 
 interface PricingFeature {
   name: string;

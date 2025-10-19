@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from';
+import { Card } from '../ui/Card';
 
 const PortfolioManagement: React.FC = () => {
   return (
