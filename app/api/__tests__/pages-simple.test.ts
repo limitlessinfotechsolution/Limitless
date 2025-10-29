@@ -1,14 +1,13 @@
-import { GET } from '../pages/route';
-import { createServerClient } from '@supabase/ssr';
-import { NextRequest } from 'next/server';
-
-// Mock NextResponse
 jest.mock('next/server', () => ({
-  NextRequest: (global as any).NextRequest,
-  NextResponse: (global as any).NextResponse,
+  NextRequest: jest.fn().mockImplementation((url) => ({ url })),
+  NextResponse: {
+    json: jest.fn((data, options) => ({
+      status: options?.status || 200,
+      json: () => Promise.resolve(data),
+    })),
+  },
 }));
 
-// Mock the createServerClient and cookies
 jest.mock('@supabase/ssr', () => ({
   createServerClient: jest.fn(),
 }));
@@ -18,6 +17,10 @@ jest.mock('next/headers', () => ({
     get: jest.fn(),
   })),
 }));
+
+import { GET } from '../pages/route';
+import { createServerClient } from '@supabase/ssr';
+import { NextRequest } from 'next/server';
 
 describe('/api/pages GET', () => {
   beforeEach(() => {

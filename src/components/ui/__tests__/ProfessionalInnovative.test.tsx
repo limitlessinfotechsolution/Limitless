@@ -7,6 +7,16 @@ import ProfessionalLoader from '../ProfessionalLoader';
 import ProfessionalHero from '../../home/ProfessionalHero';
 import InnovativeStats from '../../home/InnovativeStats';
 
+// Mock components that may not exist
+jest.mock('../InnovativeBackground', () => ({
+  __esModule: true,
+  default: ({ variant, intensity, speed }: any) => (
+    <div data-testid="innovative-background" data-variant={variant} data-intensity={intensity} data-speed={speed}>
+      Innovative Background
+    </div>
+  ),
+}));
+
 // Mock framer-motion since it's not compatible with JSDOM
 jest.mock('framer-motion', () => ({
   motion: {

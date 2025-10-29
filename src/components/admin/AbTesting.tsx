@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
-import { Card } from';
+import { Card } from '../ui/Card';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import { Plus, Edit, Trash2, BarChart3 } from 'lucide-react';
 

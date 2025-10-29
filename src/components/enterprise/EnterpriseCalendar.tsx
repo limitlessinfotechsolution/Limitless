@@ -11,7 +11,7 @@ import {
   Search
 } from 'lucide-react';
 import Button from '../ui/Button';
-import { Card } from';
+import { Card } from '../ui/Card';
 
 interface CalendarEvent {
   id: string;

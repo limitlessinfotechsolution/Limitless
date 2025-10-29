@@ -53,5 +53,25 @@ describe('useAuth', () => {
     });
   });
 
+  it('should handle login functionality', async () => {
+    const { result } = renderHook(() => useAuth());
 
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Test login function exists
+    expect(typeof result.current.login).toBe('function');
+  });
+
+  it('should handle logout functionality', async () => {
+    const { result } = renderHook(() => useAuth());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Test logout function exists
+    expect(typeof result.current.logout).toBe('function');
+  });
 });

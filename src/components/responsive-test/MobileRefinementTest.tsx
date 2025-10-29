@@ -6,7 +6,7 @@ import {
   Star, CheckCircle, Download, BarChart3
 } from 'lucide-react';
 import CardEnhanced from '../ui/CardEnhanced';
-import { Card } from';
+import { Card } from '../ui/Card';
 
 const MobileRefinementTest: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);

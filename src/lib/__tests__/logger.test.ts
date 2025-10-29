@@ -34,8 +34,7 @@ describe('Logger', () => {
       logger.info('Test info message', { data: 'test' });
 
       expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringMatching(/^\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\] INFO:/),
-        'Test info message',
+        expect.stringMatching(/^\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\] INFO: Test info message$/),
         { data: 'test' }
       );
     });
@@ -46,8 +45,7 @@ describe('Logger', () => {
       logger.warn('Test warning message', { warning: true });
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        expect.stringMatching(/^\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\] WARN:/),
-        'Test warning message',
+        expect.stringMatching(/^\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\] WARN: Test warning message$/),
         { warning: true }
       );
     });
@@ -59,8 +57,7 @@ describe('Logger', () => {
       logger.error('Test error message', testError);
 
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        expect.stringMatching(/^\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\] ERROR:/),
-        'Test error message',
+        expect.stringMatching(/^\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\] ERROR: Test error message$/),
         testError
       );
     });

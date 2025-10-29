@@ -25,26 +25,70 @@ jest.mock('lucide-react', () => ({
 
 // Mock @tanstack/react-table
 jest.mock('@tanstack/react-table', () => ({
-  useReactTable: jest.fn(() => ({
-    getHeaderGroups: jest.fn(() => []),
-    getRowModel: jest.fn(() => ({ rows: [] })),
-    getFilteredRowModel: jest.fn(() => ({ rows: [] })),
-    getSelectedRowModel: jest.fn(() => ({ rows: [] })),
-    getState: jest.fn(() => ({ pagination: { pageIndex: 0, pageSize: 10 } })),
-    getPageCount: jest.fn(() => 1),
-    getIsAllRowsSelected: jest.fn(() => false),
-    getToggleAllRowsSelectedHandler: jest.fn(() => jest.fn()),
-    getCanPreviousPage: jest.fn(() => false),
-    getCanNextPage: jest.fn(() => false),
-    previousPage: jest.fn(),
-    nextPage: jest.fn(),
-    setGlobalFilter: jest.fn(),
-  })),
-  getCoreRowModel: jest.fn(() => ({})),
-  getFilteredRowModel: jest.fn(() => ({})),
-  getPaginationRowModel: jest.fn(() => ({})),
-  getSortedRowModel: jest.fn(() => ({})),
-  flexRender: jest.fn((component) => component),
+  useReactTable: (options: any) => {
+    const data = options.data || [];
+    const columns = options.columns || [];
+
+    return {
+      getHeaderGroups: () => [
+        {
+          id: 'header-group-0',
+          headers: columns.map((col: any, index: number) => ({
+            id: `header-${index}`,
+            column: {
+              getCanSort: () => true,
+              getIsSorted: () => false,
+              getToggleSortingHandler: () => () => {},
+              columnDef: col,
+            },
+            getContext: () => ({}),
+            isPlaceholder: false,
+          })),
+        },
+      ],
+      getRowModel: () => ({
+        rows: data.map((row: any, index: number) => ({
+          id: `row-${index}`,
+          original: row,
+          getVisibleCells: () => columns.map((col: any, colIndex: number) => ({
+            id: `cell-${index}-${colIndex}`,
+            column: { columnDef: col },
+            getContext: () => ({ getValue: () => row[col.accessorKey] }),
+          })),
+          getIsSelected: () => false,
+          getToggleSelectedHandler: () => () => {},
+        })),
+      }),
+      getFilteredRowModel: () => ({
+        rows: data.map((row: any, index: number) => ({
+          id: `row-${index}`,
+          original: row,
+          getVisibleCells: () => columns.map((col: any, colIndex: number) => ({
+            id: `cell-${index}-${colIndex}`,
+            column: { columnDef: col },
+            getContext: () => ({ getValue: () => row[col.accessorKey] }),
+          })),
+          getIsSelected: () => false,
+          getToggleSelectedHandler: () => () => {},
+        })),
+      }),
+      getSelectedRowModel: () => ({ rows: [] }),
+      getState: () => ({ pagination: { pageIndex: 0, pageSize: 10 } }),
+      getPageCount: () => Math.ceil(data.length / 10),
+      getIsAllRowsSelected: () => false,
+      getToggleAllRowsSelectedHandler: () => () => {},
+      getCanPreviousPage: () => false,
+      getCanNextPage: () => data.length > 10,
+      previousPage: () => {},
+      nextPage: () => {},
+      setGlobalFilter: () => {},
+    };
+  },
+  getCoreRowModel: () => ({}),
+  getFilteredRowModel: () => ({}),
+  getPaginationRowModel: () => ({}),
+  getSortedRowModel: () => ({}),
+  flexRender: (component: any, context: any) => component || context.getValue(),
 }));
 
 // Mock data for testing
@@ -173,12 +217,12 @@ describe('EnterpriseDataGrid', () => {
         title="User Management"
       />
     );
-    
+
     // Check for the loading animation container
-    expect(screen.getByText('', { selector: '.animate-pulse' })).toBeInTheDocument();
-    
+    expect(screen.getByTestId('loading-skeleton')).toBeInTheDocument();
+
     // Check for skeleton elements
-    expect(screen.getAllByText('', { selector: '.bg-gray-200' }).length).toBeGreaterThan(0);
+    expect(screen.getAllByTestId('skeleton').length).toBeGreaterThan(0);
   });
 
   test('renders toolbar when showToolbar is true', () => {

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card } from';
+import { Card } from '../ui/Card';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import { Users, MessageSquare, Clock, ThumbsUp } from 'lucide-react';
 

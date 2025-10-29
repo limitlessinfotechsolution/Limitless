@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Navigation from '../../components/common/Navigation';
-import { Card } from';
+import { Card } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import { 
   Sparkles, 

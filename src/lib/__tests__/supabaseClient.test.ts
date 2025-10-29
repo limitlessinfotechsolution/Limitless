@@ -71,7 +71,11 @@ describe('supabaseClient', () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
 
-    const mockSupabaseClient = {};
+    const mockSupabaseClient = {
+      from: jest.fn(),
+      auth: jest.fn(),
+      storage: jest.fn(),
+    };
     mockCreateClient.mockReturnValue(mockSupabaseClient as any);
 
     // Access multiple properties to trigger lazy initialization multiple times

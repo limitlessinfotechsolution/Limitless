@@ -14,7 +14,7 @@ import {
   TrendingUp
 } from 'lucide-react';
 import Button from '../ui/Button';
-import { Card } from '../ui/Card';
+import Card from '../ui/Card';
 import Image from 'next/image';
 
 interface TeamMember {

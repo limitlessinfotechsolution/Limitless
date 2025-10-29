@@ -43,7 +43,7 @@ export const useTheme = () => {
 
     const applyTheme = (newTheme: Theme) => {
       if (newTheme === 'system') {
-        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        const systemTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         root.classList.toggle('dark', systemTheme === 'dark');
       } else {
         root.classList.toggle('dark', newTheme === 'dark');

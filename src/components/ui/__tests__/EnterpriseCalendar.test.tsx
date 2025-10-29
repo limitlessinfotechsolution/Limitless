@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import EnterpriseCalendar from '../EnterpriseCalendar';
 
@@ -115,6 +115,14 @@ describe('EnterpriseCalendar', () => {
 
     // Similar to previous test - basic interaction check
     expect(screen.getByText('Calendar')).toBeInTheDocument();
+  });
+
+  test('renders calendar with events', () => {
+    render(<EnterpriseCalendar events={mockEvents} />);
+
+    // Check that events are rendered in the calendar grid
+    expect(screen.getByText('Team Meeting')).toBeInTheDocument();
+    expect(screen.getByText('Product Review')).toBeInTheDocument();
   });
 
   test('navigates to today', () => {

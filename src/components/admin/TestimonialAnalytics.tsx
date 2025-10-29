@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, Star, CheckCircle, Clock } from 'lucide-react';
-import { Card } from';
+import { Card } from '../ui/Card';
 
 interface AnalyticsData {
   totalTestimonials: number;

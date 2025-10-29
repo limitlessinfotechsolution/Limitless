@@ -13,7 +13,7 @@ import {
   CheckCheck
 } from 'lucide-react';
 import Button from '../ui/Button';
-import { Card } from';
+import { Card } from '../ui/Card';
 import Image from 'next/image';
 
 interface ChatMessage {

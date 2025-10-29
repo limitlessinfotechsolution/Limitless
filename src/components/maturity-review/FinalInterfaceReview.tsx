@@ -8,7 +8,7 @@ import {
   Monitor, Smartphone, Tablet,
   Palette as DesignIcon, UserCheck
 } from 'lucide-react';
-import { Card } from';
+import { Card } from '../ui/Card';
 
 interface Review {
   id: string;

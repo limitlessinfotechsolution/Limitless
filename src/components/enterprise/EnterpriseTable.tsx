@@ -26,7 +26,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import Button from './Button';
-import { Card } from';
+import { Card } from '../ui/Card';
 
 interface EnterpriseTableProps<T> {
   data: T[];

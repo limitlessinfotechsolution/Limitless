@@ -20,8 +20,9 @@ Object.defineProperty(window, 'localStorage', {
 
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
+  writable: true,
   value: jest.fn().mockImplementation((query: string) => ({
-    matches: false,
+    matches: query === '(prefers-color-scheme: dark)',
     media: query,
     onchange: null,
     addListener: jest.fn(),

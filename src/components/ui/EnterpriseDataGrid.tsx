@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -81,6 +81,7 @@ const EnterpriseDataGrid = <T extends Record<string, unknown>>({
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    enableRowSelection: enableRowSelection,
     state: {
       sorting,
       columnFilters,
@@ -91,11 +92,12 @@ const EnterpriseDataGrid = <T extends Record<string, unknown>>({
   });
 
   const selectedRows = useMemo(() => {
+    if (!enableRowSelection) return [];
     return table.getSelectedRowModel().rows.map(row => row.original);
-  }, [table]);
+  }, [table, enableRowSelection]);
 
   // Notify parent of selection changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (onSelectionChange) {
       onSelectionChange(selectedRows);
     }
@@ -137,12 +139,12 @@ const EnterpriseDataGrid = <T extends Record<string, unknown>>({
     return (
       <div className={`rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm ${className}`}>
         <div className="p-6">
-          <div className="animate-pulse">
-            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-6"></div>
+          <div className="animate-pulse" data-testid="loading-skeleton">
+            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4" data-testid="skeleton"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-6" data-testid="skeleton"></div>
             <div className="space-y-3">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                <div key={i} className="h-10 bg-gray-200 dark:bg-gray-700 rounded" data-testid="skeleton"></div>
               ))}
             </div>
           </div>
