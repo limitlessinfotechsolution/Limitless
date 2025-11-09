@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { CheckCircle, XCircle } from 'lucide-react';
 import ReCAPTCHA from 'react-google-recaptcha';
-import { useContactBehaviorTracking } from '../../hooks/useContactBehaviorTracking';
-import { useAdaptiveForms } from '../../hooks/useAdaptiveForms';
+import { useContactBehaviorTracking } from '../../hooks/contact/useContactBehaviorTracking';
+import { useAdaptiveForms } from '../../hooks/forms/useAdaptiveForms';
 
 type FormData = {
   name: string;

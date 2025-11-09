@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AuralisAI } from '../../../src/lib/auralisAI-updated';
+import { AuralisAI } from '@/lib/ai/auralisAI-updated';
 import { createClient } from '@supabase/supabase-js';
 
 export const runtime = 'nodejs';

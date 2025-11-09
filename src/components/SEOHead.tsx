@@ -7,7 +7,7 @@ import {
   generateServiceSchema,
   generateFAQSchema,
   generateArticleSchema
-} from '../lib/seoSchemas';
+} from '../lib/utils/seoSchemas';
 
 interface SEOHeadProps {
   title?: string;

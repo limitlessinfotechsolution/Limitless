@@ -4,8 +4,8 @@ import { Send, RefreshCw, X, Mic, MicOff, Download, Sparkles, Minimize2 } from '
 import Message from './Message';
 import TypingIndicator from './TypingIndicator';
 import SuggestedPrompts from './SuggestedPrompts';
-import { useChatMessages } from '../../hooks/useChatMessages';
-import { useSpeechRecognition } from '../../hooks/useSpeechRecognition';
+import { useChatMessages } from '../../hooks/chat/useChatMessages';
+import { useSpeechRecognition } from '../../hooks/misc/useSpeechRecognition';
 import { RESPONSIVE_BREAKPOINTS } from '../../config/chatConfig';
 
 interface ChatWindowProps {

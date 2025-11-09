@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { getEnhancedAnalytics } from '../../../../src/lib/enhancedAnalytics';
+import { getEnhancedAnalytics } from '@/lib/analytics/enhancedAnalytics';
 
 // Initialize Supabase client
 const supabase = createClient(

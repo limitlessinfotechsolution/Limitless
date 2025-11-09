@@ -1,5 +1,5 @@
 import React from 'react';
-import FaqManagement from '../../../src/components/admin/FaqManagement';
+import FaqManagement from '@/components/admin/management/FaqManagement';
 
 const AdminFaq: React.FC = () => {
   return <FaqManagement />;

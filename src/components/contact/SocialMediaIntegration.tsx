@@ -13,8 +13,8 @@ import {
   Share2,
   MessageCircle
 } from 'lucide-react';
-import { useContactBehaviorTracking } from '../../hooks/useContactBehaviorTracking';
-import { usePersonalization } from '../../hooks/usePersonalization';
+import { useContactBehaviorTracking } from '../../hooks/contact/useContactBehaviorTracking';
+import { usePersonalization } from '../../hooks/ui/usePersonalization';
 
 interface SocialPlatform {
   name: string;
@@ -33,7 +33,8 @@ const SocialMediaIntegration: React.FC<SocialMediaIntegrationProps> = ({ classNa
   const [recentPosts, setRecentPosts] = useState<Array<{id: number; platform: string; content: string; timestamp: string; likes: number; comments: number; shares: number}>>([]);
   const [loading, setLoading] = useState(true);
   const { trackSocialClick } = useContactBehaviorTracking();
-  const { trackInterest } = usePersonalization();
+  const personalizationHook = usePersonalization();
+  const trackInterest = personalizationHook?.trackInterest;
 
   const socialPlatforms: SocialPlatform[] = [
     {
@@ -126,7 +127,9 @@ const SocialMediaIntegration: React.FC<SocialMediaIntegrationProps> = ({ classNa
 
   const handleShare = (platform: SocialPlatform) => {
     trackSocialClick(platform.name);
-    trackInterest(platform.name.toLowerCase());
+    if (trackInterest) {
+      trackInterest(platform.name.toLowerCase());
+    }
     
     const url = encodeURIComponent(window.location.href);
     const text = encodeURIComponent(`Check out Limitless Infotech Solutions - ${platform.description}`);

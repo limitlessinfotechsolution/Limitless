@@ -1,5 +1,6 @@
 'use client';
 
+<<<<<<< Updated upstream
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../lib/supabaseClient';
@@ -37,6 +38,13 @@ const Admin: React.FC = () => {
       </div>
     </LoginGate>
   );
+=======
+import React from 'react';
+import LoginGate from '../components/admin/utils/LoginGate';
+
+const Admin: React.FC = () => {
+  return <LoginGate />;
+>>>>>>> Stashed changes
 };
 
 

@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import HeroSection from '../components/home/HeroSection';
 import Partners from '../components/home/Partners';
 import ClientLogos from '../components/home/ClientLogos';
+import ProjectsAndProducts from '../components/home/ProjectsAndProducts';
 
 // Lazy load components below the fold for better performance
 const SolutionsOverview = React.lazy(() => import('../components/home/SolutionsOverview'));
@@ -17,6 +18,7 @@ const Home: React.FC = () => {
       <HeroSection />
       <Partners />
       <ClientLogos />
+      <ProjectsAndProducts />
 
       <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
         <SolutionsOverview />

@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import AdminSidebar from '@/components/admin/AdminSidebar';
+import AdminSidebar from '@/components/admin/ui/AdminSidebar';
 import Breadcrumb from '@/components/ui/Breadcrumb';
 
 interface AuditLayoutProps {

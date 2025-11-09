@@ -1,7 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+<<<<<<< Updated upstream:src/components/admin/AdminSidebar.tsx
 import { useTheme } from '../../hooks/useTheme';
+=======
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useTheme } from '../../../hooks/ui/useTheme';
+>>>>>>> Stashed changes:src/components/admin/ui/AdminSidebar.tsx
 import {
   LayoutDashboard,
   FileText,
@@ -15,6 +21,9 @@ import {
   Bell,
   Moon,
   Sun,
+  Shield,
+  Settings,
+  Activity,
 } from 'lucide-react';
 
 export type AdminView = 'dashboard' | 'pages' | 'portfolio' | 'testimonials' | 'leads' | 'users' | 'faq';
@@ -109,6 +118,21 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = true, onClose, act
           icon: HelpCircle,
         },
       ],
+    },
+    {
+      name: 'Audit Logs',
+      href: '/admin/audit',
+      icon: Activity,
+    },
+    {
+      name: 'Settings',
+      href: '/admin/settings',
+      icon: Settings,
+    },
+    {
+      name: 'Security',
+      href: '/admin/security',
+      icon: Shield,
     },
   ];
 

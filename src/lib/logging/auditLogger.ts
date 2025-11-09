@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import type { AuditLogQuery } from '../types';
+import type { AuditLogQuery } from '../../types';
 
 interface AuditLogDetails {
   [key: string]: string | number | boolean | object | null;

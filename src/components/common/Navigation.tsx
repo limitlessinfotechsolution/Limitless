@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '../../hooks/ui/useTheme';
 import Logo from './Logo';
 
 const Navigation: React.FC = () => {

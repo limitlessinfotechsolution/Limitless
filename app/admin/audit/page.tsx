@@ -9,9 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/Table';
 import { Badge } from '@/components/ui/Badge';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/Pagination';
-import { ExportModal } from '@/components/admin/ExportModal';
-import { auditLogger, AuditLogEntry } from '@/lib/auditLogger';
+import { ExportModal } from '@/components/admin/utils/ExportModal';
+import { auditLogger, AuditLogEntry } from '@/lib/logging/auditLogger';
 import { AuditLogQuery } from '@/types';
+import { downloadExport } from '@/lib/utils/exportUtils';
 
 const AuditLogsPage: React.FC = () => {
   const [logs, setLogs] = useState<AuditLogEntry[]>([]);
@@ -222,9 +223,9 @@ const AuditLogsPage: React.FC = () => {
         isOpen={showExportModal}
         onClose={() => setShowExportModal(false)}
         data={logs}
+        filename="audit-logs"
         onExport={(format) => {
-          // Implement export logic using exportUtils
-          console.log('Exporting audit logs as', format);
+          downloadExport(logs, format, `audit-logs-${new Date().toISOString().split('T')[0]}`);
         }}
       />
     </div>

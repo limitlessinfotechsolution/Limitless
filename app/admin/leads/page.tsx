@@ -1,5 +1,5 @@
 import React from 'react';
-import LeadsManagement from '../../../src/components/admin/LeadsManagement';
+import LeadsManagement from '@/components/admin/management/LeadsManagement';
 
 const AdminLeads: React.FC = () => {
   return <LeadsManagement />;

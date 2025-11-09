@@ -1,5 +1,5 @@
 import React from 'react';
-import PagesManagement from '../../../src/components/admin/PagesManagement';
+import PagesManagement from '@/components/admin/management/PagesManagement';
 
 const AdminPages: React.FC = () => {
   return <PagesManagement />;

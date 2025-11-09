@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { ChatMessage } from '../types';
-import { INITIAL_MESSAGE } from '../config/chatConfig';
-import { useToast } from './useToast';
+import { INITIAL_MESSAGE } from '../../config/chatConfig';
+import { useToast } from '../ui/useToast';
 
 interface UseChatMessagesReturn {
   messages: ChatMessage[];

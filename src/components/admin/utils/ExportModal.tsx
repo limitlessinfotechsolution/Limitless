@@ -5,19 +5,26 @@ import Button from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
 import { ExportFormat } from '@/types';
+import { downloadExport } from '@/lib/utils/exportUtils';
 
 interface ExportModalProps {
   isOpen: boolean;
   onClose: () => void;
   data: unknown[];
-  onExport: (format: ExportFormat, data: unknown[]) => void;
+  filename: string;
+  onExport?: (format: ExportFormat, data: unknown[]) => void;
 }
 
-export function ExportModal({ isOpen, onClose, data, onExport }: ExportModalProps) {
+export function ExportModal({ isOpen, onClose, data, filename, onExport }: ExportModalProps) {
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>(ExportFormat.CSV);
 
   const handleExport = () => {
-    onExport(selectedFormat, data);
+    if (onExport) {
+      onExport(selectedFormat, data);
+    } else {
+      // Use default export functionality
+      downloadExport(data, selectedFormat, filename);
+    }
     onClose();
   };
 

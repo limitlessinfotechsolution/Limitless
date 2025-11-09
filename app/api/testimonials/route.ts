@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { logger } from '../../../src/lib/logger';
+import { logger } from '@/lib/logging/logger';
 
 // Helper function to create a Supabase client with user session
 const createSupabaseClient = async () => {

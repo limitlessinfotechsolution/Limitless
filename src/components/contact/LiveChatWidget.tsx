@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Send, Minimize2, Maximize2 } from 'lucide-react';
-import { useContactBehaviorTracking } from '../../hooks/useContactBehaviorTracking';
+import { useContactBehaviorTracking } from '../../hooks/contact/useContactBehaviorTracking';
 
 interface Message {
   id: string;

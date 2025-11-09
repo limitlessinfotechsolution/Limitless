@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AuralisAI } from '../../../../src/lib/auralisAI';
+import { AuralisAI } from '@/lib/ai/auralisAI';
 
 const auralisAI = new AuralisAI();
 

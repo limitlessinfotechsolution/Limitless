@@ -19,8 +19,8 @@ interface SeoMetrics {
 }
 
 const SeoTools: React.FC = () => {
-  const [url, setUrl] = useState('');
-  const [analyzing, setAnalyzing] = useState(false);
+  const [url, setUrl] = useState<string | true>('');
+  const [analyzing, setAnalyzing] = useState<boolean>(false);
   const [metrics, setMetrics] = useState<SeoMetrics | null>(null);
   const [error, setError] = useState<string | null>(null);
 

@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream:src/components/admin/UsersManagement.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -15,6 +16,10 @@ interface User {
   created_at: string;
   updated_at: string;
 }
+=======
+import React from 'react';
+import Card from '@/components/ui/Card';
+>>>>>>> Stashed changes:src/components/admin/management/UsersManagement.tsx
 
 const UsersManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);

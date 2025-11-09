@@ -1,5 +1,5 @@
 import React from 'react';
-import SeoTools from '../../../src/components/admin/SeoTools';
+import SeoTools from '@/components/admin/settings/SeoTools';
 
 const SeoPage: React.FC = () => {
   return <SeoTools />;

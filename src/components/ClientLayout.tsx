@@ -6,7 +6,7 @@ import Navigation from './common/Navigation';
 import Footer from './common/Footer';
 import ChatbotWidget from './chatbot/ChatbotWidget';
 import PWA from './PWA';
-import '../lib/i18n';
+import '../lib/utils/i18n';
 
 export default function ClientLayout({
   children,

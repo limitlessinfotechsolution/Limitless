@@ -2,11 +2,18 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+<<<<<<< Updated upstream:src/components/admin/AdvancedDashboard.tsx
 import { Card } from '../ui/Card';
 import Breadcrumb from '../ui/Breadcrumb';
 import Skeleton from '../ui/Skeleton';
 import { RefreshCw, Wifi, WifiOff } from 'lucide-react';
 import { useWebSocket } from '../../hooks/useWebSocket';
+=======
+import Card from '@/components/ui/Card';
+import Breadcrumb from '@/components/ui/Breadcrumb';
+import Skeleton from '@/components/ui/Skeleton';
+import ProjectsAndProducts from '@/components/home/ProjectsAndProducts';
+>>>>>>> Stashed changes:src/components/admin/dashboard/AdvancedDashboard.tsx
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import {
   Users,
@@ -690,6 +697,9 @@ const AdvancedDashboard: React.FC = () => {
           </button>
         </div>
       </Card>
+      
+      {/* Projects and Products Section */}
+      <ProjectsAndProducts />
     </div>
   );
 };

@@ -109,10 +109,25 @@ export interface Project {
   };
 }
 
+<<<<<<< Updated upstream
 export interface TeamMember {
   id: string;
   name: string;
   role: string;
   bio: string;
   image: string;
+=======
+export interface AdvancedFormData {
+  companyName: string;
+  industry: string;
+  businessStage: string;
+  currentChallenges?: string;
+  serviceType: string;
+  desiredFeatures?: string;
+  techPreferences?: string;
+  budgetRange: string;
+  preferredStartDate?: string;
+  targetCompletionDate?: string;
+  additionalNotes?: string;
+>>>>>>> Stashed changes
 }

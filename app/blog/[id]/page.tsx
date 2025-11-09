@@ -7,7 +7,7 @@ import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, Clock, Bookmark, ThumbsUp, MessageCircle, Twitter, Facebook, Linkedin, Link2 } from 'lucide-react';
 import SEOHead from '../../../src/components/SEOHead';
-import { generateArticleSchema, generateBreadcrumbSchema } from '../../../src/lib/seoSchemas';
+import { generateArticleSchema, generateBreadcrumbSchema } from '../../../src/lib/utils/seoSchemas';
 
 // Mock blog data - in production, this would come from a CMS or API
 const blogPosts = [

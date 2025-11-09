@@ -2,10 +2,27 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
+<<<<<<< Updated upstream
 export async function GET(_request: NextRequest) {
   try {
     const cookieStore = await cookies();
     const supabase = createServerClient(
+=======
+export const runtime = 'edge';
+
+// Zod schema for page creation
+const pageSchema = z.object({
+  page_name: z.string().min(1, 'Page name is required'),
+  content: z.string().optional(),
+  is_published: z.boolean().optional(),
+});
+
+// Helper function to create a Supabase client with user session
+const createSupabaseClient = async () => {
+  try {
+    const cookieStore = await cookies();
+    return createServerClient(
+>>>>>>> Stashed changes
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
@@ -16,12 +33,26 @@ export async function GET(_request: NextRequest) {
         },
       }
     );
+<<<<<<< Updated upstream
 
     // Auth check
     const { data: { session } } = await supabase.auth.getSession();
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+=======
+  } catch (error) {
+    // Fallback for test environment or when cookies are not available
+    if (process.env.NODE_ENV === 'test') {
+      return createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
+    }
+    throw error;
+  }
+};
+>>>>>>> Stashed changes
 
     // Verify admin role
     const { data: profile } = await supabase

@@ -8,8 +8,23 @@ process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
 
 // Mock NextResponse
 jest.mock('next/server', () => ({
+<<<<<<< Updated upstream
   NextRequest: global.NextRequest,
   NextResponse: global.NextResponse,
+=======
+  NextRequest: jest.fn().mockImplementation((url, options) => ({
+    url,
+    method: options?.method || 'GET',
+    json: jest.fn().mockResolvedValue(options?.body ? JSON.parse(options.body) : {}),
+    ...options,
+  })),
+  NextResponse: {
+    json: jest.fn((data, options) => ({
+      status: options?.status || 200,
+      json: () => Promise.resolve(data),
+    })),
+  },
+>>>>>>> Stashed changes
 }));
 
 // Mock the createServerClient and cookies
@@ -18,9 +33,15 @@ jest.mock('@supabase/ssr', () => ({
 }));
 
 jest.mock('next/headers', () => ({
+<<<<<<< Updated upstream
   cookies: jest.fn(() => Promise.resolve({
     get: jest.fn(),
   })),
+=======
+  cookies: jest.fn(() => {
+    throw new Error('Cookies not available in test');
+  }),
+>>>>>>> Stashed changes
 }));
 
 describe('/api/pages', () => {
@@ -165,6 +186,7 @@ describe('/api/pages', () => {
 
     (createServerClient as jest.Mock).mockReturnValue(mockSupabase);
 
+<<<<<<< Updated upstream
     const invalidData = {
       content: { title: 'Test' },
       is_published: true,
@@ -173,6 +195,11 @@ describe('/api/pages', () => {
     const request = new NextRequest('http://localhost:3000/api/pages', {
       method: 'POST',
       body: JSON.stringify(invalidData),
+=======
+      expect(response.status).toBe(400);
+      expect(Array.isArray(result.error)).toBe(true);
+      expect(result.error.length).toBeGreaterThan(0);
+>>>>>>> Stashed changes
     });
 
     const response = await POST(request);

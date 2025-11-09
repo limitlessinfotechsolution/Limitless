@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AdvancedFormData } from '../../types';
-import { useContactBehaviorTracking } from '../../hooks/useContactBehaviorTracking';
-import { useAdaptiveForms } from '../../hooks/useAdaptiveForms';
+import { useContactBehaviorTracking } from '../../hooks/contact/useContactBehaviorTracking';
+import { useAdaptiveForms } from '../../hooks/forms/useAdaptiveForms';
 
 const steps = [
   { id: 1, name: 'Business Basics' },

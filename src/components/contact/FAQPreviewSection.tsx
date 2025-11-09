@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, HelpCircle } from 'lucide-react';
-import { useContactBehaviorTracking } from '../../hooks/useContactBehaviorTracking';
-import { usePersonalization } from '../../hooks/usePersonalization';
+import { useContactBehaviorTracking } from '../../hooks/contact/useContactBehaviorTracking';
+import { usePersonalization } from '../../hooks/ui/usePersonalization';
 
 interface FAQItem {
   id: string;
@@ -19,7 +19,7 @@ interface FAQPreviewSectionProps {
 const FAQPreviewSection: React.FC<FAQPreviewSectionProps> = ({ className = '' }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const { trackFAQExpansion } = useContactBehaviorTracking();
-  const { trackInterest } = usePersonalization();
+  const { trackUserInterest } = usePersonalization();
 
   const faqs: FAQItem[] = [
     {

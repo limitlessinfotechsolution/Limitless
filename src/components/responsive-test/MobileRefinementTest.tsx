@@ -5,8 +5,12 @@ import {
   User, Shield, TrendingUp, Search, Filter, Plus, Edit, Eye, Trash2,
   Star, CheckCircle, Download, BarChart3
 } from 'lucide-react';
+<<<<<<< Updated upstream
 import CardEnhanced from '../ui/CardEnhanced';
 import { Card } from '../ui/Card';
+=======
+import CardEnhanced from '../ui/Card-enhanced';
+>>>>>>> Stashed changes
 
 const MobileRefinementTest: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);

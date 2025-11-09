@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import LoginGate from '../../src/components/admin/LoginGate';
-import AdminSidebar from '../../src/components/admin/AdminSidebar';
+import LoginGate from '../../src/components/admin/utils/LoginGate';
+import AdminSidebar from '../../src/components/admin/ui/AdminSidebar';
 
 const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);

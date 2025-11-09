@@ -2,9 +2,9 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-import en from '../messages/en.json';
-import es from '../messages/es.json';
-import enAE from '../messages/en-AE.json';
+import en from '../../messages/en.json';
+import es from '../../messages/es.json';
+import enAE from '../../messages/en-AE.json';
 
 const resources = {
   en: {

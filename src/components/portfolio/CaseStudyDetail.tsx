@@ -6,6 +6,7 @@ import Link from 'next/link';
 import * as Icons from 'lucide-react';
 import CardEnhanced from '../ui/CardEnhanced';
 import LazyImage from '../ui/LazyImage';
+import EnhancedBackground from '../common/EnhancedBackground';
 
 interface CaseStudyData {
   id: number;
@@ -39,7 +40,7 @@ const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project }) => {
   return (
     <div className="pt-20">
       {/* Hero Section */}
-      <section className="section-padding bg-gradient-to-br from-gray-50 via-white to-accent/5 dark:from-gray-900 dark:via-gray-800 dark:to-accent/10">
+      <EnhancedBackground className="section-padding">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -84,7 +85,7 @@ const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project }) => {
             </div>
           </motion.div>
         </div>
-      </section>
+      </EnhancedBackground>
 
       {/* Main Content */}
       <section className="section-padding">

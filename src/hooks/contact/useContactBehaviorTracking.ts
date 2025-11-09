@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { getAnalytics } from '../lib/analytics';
+import { getAnalytics } from '../../lib/analytics/analytics';
 
 interface ContactBehaviorData {
   timeOnPage: number;

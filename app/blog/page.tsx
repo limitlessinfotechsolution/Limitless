@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, Search, Filter, ArrowRight } from 'lucide-react';
 import SEOHead from '../../src/components/SEOHead';
-import { generateWebPageSchema, generateArticleSchema, generateBreadcrumbSchema } from '../../src/lib/seoSchemas';
+import { generateWebPageSchema, generateArticleSchema, generateBreadcrumbSchema } from '../../src/lib/utils/seoSchemas';
 
 // Mock blog data - in production, this would come from a CMS or API
 const blogPosts = [

@@ -42,13 +42,14 @@ RETURNS VOID AS $$
 BEGIN
     INSERT INTO public.audit_logs (action, entity, entity_id, user_id, details, ip_address, user_agent, timestamp)
     SELECT 
-        (jsonb_array_elements(entries)->>'action')::TEXT,
-        (jsonb_array_elements(entries)->>'entity')::TEXT,
-        (jsonb_array_elements(entries)->>'entity_id')::UUID,
-        (jsonb_array_elements(entries)->>'user_id')::UUID,
-        jsonb_array_elements(entries)->'details',
-        (jsonb_array_elements(entries)->>'ip_address')::INET,
-        jsonb_array_elements(entries)->>'user_agent',
-        (jsonb_array_elements(entries)->>'timestamp')::TIMESTAMPTZ;
+        (entry->>'action')::TEXT,
+        (entry->>'entity')::TEXT,
+        (entry->>'entity_id')::UUID,
+        (entry->>'user_id')::UUID,
+        COALESCE(entry->'details', '{}')::JSONB,
+        (entry->>'ip_address')::INET,
+        entry->>'user_agent',
+        (entry->>'timestamp')::TIMESTAMPTZ
+    FROM jsonb_array_elements(entries) AS entry;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

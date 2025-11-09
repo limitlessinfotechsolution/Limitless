@@ -1,5 +1,5 @@
 import React from 'react';
-import PortfolioManagement from '../../../src/components/admin/PortfolioManagement';
+import PortfolioManagement from '@/components/admin/management/PortfolioManagement';
 
 const AdminPortfolio: React.FC = () => {
   return <PortfolioManagement />;

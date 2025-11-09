@@ -1,4 +1,5 @@
 'use client';
+<<<<<<< Updated upstream
 
 import React from 'react';
 import Link from 'next/link';
@@ -212,3 +213,5 @@ const ClientPortal: React.FC = () => {
 };
 
 export default ClientPortal;
+=======
+>>>>>>> Stashed changes
