@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     // Build the base query
     let query = supabase
       .from('testimonials')
-      .select('*')
+      .select('*', { count: 'exact' })
       .order('created_at', { ascending: false });
     
     // Apply search filter if provided
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
       testimonials,
       count,
       page,
-      totalPages: Math.ceil(count! / limit)
+      totalPages: count ? Math.ceil(count / limit) : 0
     });
   } catch (error) {
     logger.error('Error fetching testimonials', { error });

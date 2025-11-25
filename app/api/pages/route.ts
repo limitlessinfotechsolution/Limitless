@@ -1,13 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { z } from 'zod';
 
-<<<<<<< Updated upstream
-export async function GET(_request: NextRequest) {
-  try {
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-=======
 export const runtime = 'edge';
 
 // Zod schema for page creation
@@ -22,7 +17,6 @@ const createSupabaseClient = async () => {
   try {
     const cookieStore = await cookies();
     return createServerClient(
->>>>>>> Stashed changes
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
@@ -33,14 +27,6 @@ const createSupabaseClient = async () => {
         },
       }
     );
-<<<<<<< Updated upstream
-
-    // Auth check
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-=======
   } catch (error) {
     // Fallback for test environment or when cookies are not available
     if (process.env.NODE_ENV === 'test') {
@@ -52,7 +38,16 @@ const createSupabaseClient = async () => {
     throw error;
   }
 };
->>>>>>> Stashed changes
+
+export async function GET(_request: NextRequest) {
+  try {
+    const supabase = await createSupabaseClient();
+
+    // Auth check
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     // Verify admin role
     const { data: profile } = await supabase
@@ -85,18 +80,7 @@ const createSupabaseClient = async () => {
 
 export async function POST(request: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return cookieStore.get(name)?.value;
-          },
-        },
-      }
-    );
+    const supabase = await createSupabaseClient();
 
     // Auth check
     const { data: { session } } = await supabase.auth.getSession();
@@ -117,16 +101,15 @@ export async function POST(request: NextRequest) {
 
     // Parse request body
     const body = await request.json();
-    const { page_name, content, is_published } = body;
 
-    // Basic validation
-    const errors = [];
-    if (!page_name || typeof page_name !== 'string' || page_name.trim() === '') {
-      errors.push('Page name is required and must be a non-empty string');
-    }
-    if (errors.length > 0) {
+    // Validate with Zod schema
+    const parseResult = pageSchema.safeParse(body);
+    if (!parseResult.success) {
+      const errors = parseResult.error.errors.map((e: { message: string }) => e.message);
       return NextResponse.json({ error: errors }, { status: 400 });
     }
+
+    const { page_name, content, is_published } = parseResult.data;
 
     // Create page
     const { data: page, error } = await supabase
