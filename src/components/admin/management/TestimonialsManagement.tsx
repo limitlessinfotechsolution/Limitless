@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card } from '../../ui/Card';
+import CardEnhanced from '../../ui/CardEnhanced';
 import LoadingSpinner from '../../ui/LoadingSpinner';
-import { Search, Download, CheckSquare, Square, Trash2, Edit, Star, Eye, EyeOff, Filter } from 'lucide-react';
+import { Search, Download, CheckSquare, Square, Trash2, Edit, Star, Eye, EyeOff, Filter, Plus } from 'lucide-react';
 
 interface Testimonial {
   id: string;
@@ -245,19 +245,13 @@ const TestimonialsManagement: React.FC = () => {
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6 relative">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Testimonials Management</h1>
-        <button
-          onClick={() => router.push('/admin/testimonials/new')}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          Add New Testimonial
-        </button>
       </div>
 
       {/* Search and Filters */}
-      <Card className="p-4">
+      <Card className="p-4 bg-white/70 backdrop-blur-md rounded-lg shadow-glass">
         <div className="flex flex-col gap-4">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
@@ -331,6 +325,15 @@ const TestimonialsManagement: React.FC = () => {
           )}
         </div>
       </Card>
+
+      {/* Add New Testimonial Floating Action Button */}
+      <button
+        onClick={() => router.push('/admin/testimonials/new')}
+        className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-full shadow-lg transition-colors duration-200 z-50"
+        aria-label="Add New Testimonial"
+      >
+        New Testimonial
+      </button>
 
       {/* Bulk Actions */}
       {selectedTestimonials.size > 0 && (
@@ -419,7 +422,7 @@ const TestimonialsManagement: React.FC = () => {
 
         {/* Testimonials */}
         {filteredTestimonials.map((testimonial) => (
-          <Card key={testimonial.id} className="p-4">
+          <CardEnhanced key={testimonial.id} className="p-4 bg-white/70 backdrop-blur rounded-lg shadow-glass">
             <div className="flex items-start gap-4">
               <button
                 onClick={() => handleSelectTestimonial(testimonial.id)}
@@ -498,15 +501,24 @@ const TestimonialsManagement: React.FC = () => {
                 </button>
               </div>
             </div>
-          </Card>
-        ))}
+          </CardEnhanced>
+    ))}
 
-        {filteredTestimonials.length === 0 && (
-          <Card className="p-8 text-center">
-            <p className="text-gray-500">No testimonials found matching your criteria.</p>
-          </Card>
-        )}
-      </div>
+    {filteredTestimonials.length === 0 && (
+      <CardEnhanced className="p-8 text-center">
+        <p className="text-gray-500">No testimonials found matching your criteria.</p>
+      </CardEnhanced>
+    )}
+
+    {/* Floating Action Button for New Testimonial */}
+    <button
+      onClick={() => router.push('/admin/testimonials/new')}
+      className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg flex items-center justify-center"
+      aria-label="Add New Testimonial"
+    >
+      <Plus className="w-6 h-6" />
+    </button>
+  </div>
     </div>
   );
 };

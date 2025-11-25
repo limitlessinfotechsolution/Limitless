@@ -10,7 +10,7 @@ const Pagination = ({ className, ...props }: React.HTMLAttributes<HTMLEmbedEleme
   <nav
     role="navigation"
     aria-label="pagination"
-    className={cn('mx-auto flex w-full justify-center', className)}
+    className={cn('mx-auto flex w-full justify-center shadow-glass', className)}
     {...props}
   />
 )
@@ -49,7 +49,9 @@ const PaginationLink = React.forwardRef<HTMLAnchorElement, React.AnchorHTMLAttri
         variant: isActive ? 'default' : 'ghost',
         size,
       }),
-      className
+      className,
+      'transition-colors duration-200',
+      isActive && 'bg-primary/10 text-primary shadow-glass'
     )}
     {...props}
   />

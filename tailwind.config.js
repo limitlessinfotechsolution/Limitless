@@ -41,6 +41,9 @@ module.exports = {
         'section-padding': '4rem',
         'section-padding-lg': '6rem',
       },
+      boxShadow: {
+        glass: '0 4px 30px rgba(0,0,0,0.12)',
+      },
     },
   },
   plugins: [],
