@@ -1,12 +1,11 @@
-<<<<<<< Updated upstream:src/components/admin/UsersManagement.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card } from '../ui/Card';
-import LoadingSpinner from '../ui/LoadingSpinner';
+import { Card } from '../../ui/Card';
+import LoadingSpinner from '../../ui/LoadingSpinner';
 import { Search, Download, CheckSquare, Square, Trash2, Edit, User, Mail, Filter, Users as UsersIcon } from 'lucide-react';
-import { supabase } from '../../lib/supabaseClient';
+import { supabase } from '../../../lib/supabaseClient';
 
 interface User {
   id: string;
@@ -16,10 +15,6 @@ interface User {
   created_at: string;
   updated_at: string;
 }
-=======
-import React from 'react';
-import Card from '@/components/ui/Card';
->>>>>>> Stashed changes:src/components/admin/management/UsersManagement.tsx
 
 const UsersManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);

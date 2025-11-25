@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
-<<<<<<< Updated upstream
 import { Card } from '../ui/Card';
-=======
-import CardEnhanced from '../ui/Card-enhanced';
->>>>>>> Stashed changes
 
 const ResponsiveTest: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);

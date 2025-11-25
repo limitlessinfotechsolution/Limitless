@@ -3,13 +3,8 @@
 import * as React from 'react'
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
 
-<<<<<<< Updated upstream
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils/utils'
 import { buttonVariants } from './button-variants'
-=======
-import { cn } from '@/lib/utils/utils'
-import { ButtonProps, buttonVariants } from '@/components/ui/Button'
->>>>>>> Stashed changes
 
 const Pagination = ({ className, ...props }: React.HTMLAttributes<HTMLEmbedElement>) => (
   <nav

@@ -1,20 +1,8 @@
-'use client';
-
 import React, { useState, useEffect } from 'react';
-<<<<<<< Updated upstream:src/components/admin/AdminSidebar.tsx
-import { useTheme } from '../../hooks/useTheme';
-=======
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useTheme } from '../../../hooks/ui/useTheme';
->>>>>>> Stashed changes:src/components/admin/ui/AdminSidebar.tsx
+import { useTheme } from 'next-themes';
 import {
-  LayoutDashboard,
-  FileText,
-  Briefcase,
-  MessageSquare,
-  Users,
   UserCheck,
+  Users,
   HelpCircle,
   Search,
   X,
@@ -24,9 +12,20 @@ import {
   Shield,
   Settings,
   Activity,
+  LayoutDashboard,
+  FileText,
+  Briefcase,
+  MessageSquare,
 } from 'lucide-react';
 
-export type AdminView = 'dashboard' | 'pages' | 'portfolio' | 'testimonials' | 'leads' | 'users' | 'faq';
+export type AdminView =
+  | 'dashboard'
+  | 'pages'
+  | 'portfolio'
+  | 'testimonials'
+  | 'leads'
+  | 'users'
+  | 'faq';
 
 interface AdminSidebarProps {
   isOpen?: boolean;
@@ -35,21 +34,29 @@ interface AdminSidebarProps {
   setActiveView: React.Dispatch<React.SetStateAction<AdminView>>;
 }
 
-const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = true, onClose, activeView, setActiveView }) => {
+const AdminSidebar: React.FC<AdminSidebarProps> = ({
+  isOpen = true,
+  onClose,
+  activeView,
+  setActiveView,
+}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   // Close notifications when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (notificationsOpen && !(event.target as Element).closest('.notifications-container')) {
+      if (
+        notificationsOpen &&
+        !(event.target as Element).closest('.notifications-container')
+      ) {
         setNotificationsOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [notificationsOpen]);
+
   const { theme, setTheme } = useTheme();
 
   const notifications = [
@@ -76,73 +83,35 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = true, onClose, act
     },
   ];
 
-  const unreadCount = notifications.filter(n => n.unread).length;
+  const unreadCount = notifications.filter((n) => n.unread).length;
 
   const navigationGroups = [
     {
       name: 'Core Management',
       items: [
-        {
-          name: 'Dashboard',
-          view: 'dashboard' as AdminView,
-          icon: LayoutDashboard,
-        },
-        {
-          name: 'Pages',
-          view: 'pages' as AdminView,
-          icon: FileText,
-        },
-        {
-          name: 'Portfolio',
-          view: 'portfolio' as AdminView,
-          icon: Briefcase,
-        },
-        {
-          name: 'Testimonials',
-          view: 'testimonials' as AdminView,
-          icon: MessageSquare,
-        },
-        {
-          name: 'Leads',
-          view: 'leads' as AdminView,
-          icon: Users,
-        },
-        {
-          name: 'Users',
-          view: 'users' as AdminView,
-          icon: UserCheck,
-        },
-        {
-          name: 'FAQ',
-          view: 'faq' as AdminView,
-          icon: HelpCircle,
-        },
+        { name: 'Dashboard', view: 'dashboard' as AdminView, icon: LayoutDashboard },
+        { name: 'Pages', view: 'pages' as AdminView, icon: FileText },
+        { name: 'Portfolio', view: 'portfolio' as AdminView, icon: Briefcase },
+        { name: 'Testimonials', view: 'testimonials' as AdminView, icon: MessageSquare },
+        { name: 'Leads', view: 'leads' as AdminView, icon: Users },
+        { name: 'Users', view: 'users' as AdminView, icon: UserCheck },
+        { name: 'FAQ', view: 'faq' as AdminView, icon: HelpCircle },
       ],
     },
-    {
-      name: 'Audit Logs',
-      href: '/admin/audit',
-      icon: Activity,
-    },
-    {
-      name: 'Settings',
-      href: '/admin/settings',
-      icon: Settings,
-    },
-    {
-      name: 'Security',
-      href: '/admin/security',
-      icon: Shield,
-    },
+    { name: 'Audit Logs', href: '/admin/audit', icon: Activity },
+    { name: 'Settings', href: '/admin/settings', icon: Settings },
+    { name: 'Security', href: '/admin/security', icon: Shield },
   ];
 
   const filteredGroups = searchQuery
-    ? navigationGroups.map(group => ({
-        ...group,
-        items: group.items.filter(item =>
-          item.name.toLowerCase().includes(searchQuery.toLowerCase())
-        ),
-      })).filter(group => group.items.length > 0)
+    ? navigationGroups
+        .map((group) => ({
+          ...group,
+          items: group.items?.filter((item) =>
+            item.name.toLowerCase().includes(searchQuery.toLowerCase())
+          ),
+        }))
+        .filter((group) => group.items && group.items.length > 0)
     : navigationGroups;
 
   return (
@@ -156,15 +125,15 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = true, onClose, act
       )}
 
       {/* Sidebar */}
-      <aside className={`${
-        isOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-transform duration-300 ease-in-out`}>
+      <aside
+        className={`${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-transform duration-300 ease-in-out`}
+      >
         <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-            Admin Panel
-          </h1>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">Admin Panel</h1>
           <div className="flex items-center space-x-2">
-            {/* Theme toggle button */}
+            {/* Theme toggle */}
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -172,7 +141,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = true, onClose, act
             >
               {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
-            {/* Notifications button */}
+            {/* Notifications */}
             <button
               onClick={() => setNotificationsOpen(!notificationsOpen)}
               className="relative p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -216,7 +185,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = true, onClose, act
                     {group.name}
                   </h3>
                   <ul className="space-y-1">
-                    {group.items.map((item) => {
+                    {group.items?.map((item) => {
                       const Icon = item.icon;
                       const isActive = activeView === item.view;
                       return (
@@ -239,15 +208,13 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = true, onClose, act
                 </div>
               ))
             ) : (
-              <div className="px-3 py-2 text-gray-500 dark:text-gray-400 text-sm">
-                No navigation items found.
-              </div>
+              <p className="text-center text-gray-500 dark:text-gray-400">No navigation items found.</p>
             )}
           </div>
         </nav>
       </aside>
 
-      {/* Notifications Dropdown */}
+      {/* Notifications dropdown */}
       {notificationsOpen && (
         <div className="notifications-container absolute top-20 right-4 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
           <div className="p-4 border-b border-gray-200 dark:border-gray-700">
@@ -267,15 +234,11 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = true, onClose, act
                 </div>
               ))
             ) : (
-              <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-                No notifications
-              </div>
+              <div className="p-4 text-center text-gray-500 dark:text-gray-400">No notifications</div>
             )}
           </div>
           <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-            <button className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
-              Mark all as read
-            </button>
+            <button className="text-sm text-blue-600 dark:text-blue-400 hover:underline">Mark all as read</button>
           </div>
         </div>
       )}

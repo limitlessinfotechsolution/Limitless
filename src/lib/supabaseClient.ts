@@ -22,5 +22,5 @@ export function getSupabaseClient(): SupabaseClient<Database> {
   return cachedSupabase
 }
 
-// Removed eager export of supabase instance to prevent premature initialization
-// Users should call getSupabaseClient() to get the singleton instance
+// Export supabase instance for backward compatibility
+export const supabase = getSupabaseClient()

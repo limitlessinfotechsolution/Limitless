@@ -3,11 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Lock, User, AlertCircle } from 'lucide-react';
-<<<<<<< Updated upstream:src/components/admin/LoginGate.tsx
-import { useAuth } from '../../hooks/useAuth';
-=======
-import { supabase } from '../../../lib/supabaseClient';
->>>>>>> Stashed changes:src/components/admin/utils/LoginGate.tsx
+import { useAuth } from '../../../hooks/useAuth';
 
 interface LoginGateProps {
   children?: React.ReactNode;
@@ -24,84 +20,17 @@ const LoginGate: React.FC<LoginGateProps> = ({ children }) => {
   const isAdminAuthenticated = isAuthenticated && (profile?.role === 'admin' || profile?.role === 'super_admin');
 
   useEffect(() => {
-<<<<<<< Updated upstream:src/components/admin/LoginGate.tsx
     if (isAuthenticated && profile && !isAdminAuthenticated) {
       logout();
       setError('Access denied. Admin privileges required.');
     }
   }, [isAuthenticated, profile, isAdminAuthenticated, logout]);
-=======
-    // Check if user is already authenticated
-    const checkAuth = async () => {
-      try {
-        if (!supabase) {
-          setError('Supabase client not initialized');
-          setIsLoading(false);
-          return;
-        }
-        
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          // Check if user has admin role
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', session.user.id)
-            .single();
-
-          if (profile?.role === 'admin' || profile?.role === 'super_admin') {
-            setIsAuthenticated(true);
-          } else {
-            if (supabase && supabase.auth) {
-              await supabase.auth.signOut();
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Auth check failed:', error);
-      }
-      setIsLoading(false);
-    };
-
-    checkAuth();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase && supabase.auth ? supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!supabase) return;
-      
-      if (event === 'SIGNED_IN' && session?.user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
-
-        if (profile?.role === 'admin' || profile?.role === 'super_admin') {
-          setIsAuthenticated(true);
-        } else {
-          if (supabase && supabase.auth) {
-            await supabase.auth.signOut();
-          }
-          setError('Access denied. Admin privileges required.');
-        }
-      } else if (event === 'SIGNED_OUT') {
-        setIsAuthenticated(false);
-        setEmail('');
-        setPassword('');
-        setError('');
-      }
-    }) : { data: { subscription: { unsubscribe: () => {} } } };
-
-    return () => subscription.unsubscribe();
-  }, []);
->>>>>>> Stashed changes:src/components/admin/utils/LoginGate.tsx
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoggingIn(true);
     setError('');
 
-<<<<<<< Updated upstream:src/components/admin/LoginGate.tsx
     const result = await login(email, password);
 
     if (!result.success) {
@@ -109,83 +38,16 @@ const LoginGate: React.FC<LoginGateProps> = ({ children }) => {
     } else if (profile && profile.role !== 'admin' && profile.role !== 'super_admin') {
       setError('Access denied. Admin privileges required.');
       await logout();
-=======
-    try {
-      if (!supabase) {
-        setError('Supabase client not initialized');
-        setIsLoggingIn(false);
-        return;
-      }
-      
-      // Sign in with Supabase
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (authError) {
-        setError(authError.message);
-        setIsLoggingIn(false);
-        return;
-      }
-
-      if (data.user) {
-        // Check if user has admin role
-        if (!supabase) {
-          setError('Supabase client not initialized');
-          setIsLoggingIn(false);
-          return;
-        }
-        
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', data.user.id)
-          .single();
-
-        if (profileError) {
-          setError('Failed to verify admin access');
-          if (supabase && supabase.auth) {
-            await supabase.auth.signOut();
-          }
-          setIsLoggingIn(false);
-          return;
-        }
-
-        if (profile?.role !== 'admin' && profile?.role !== 'super_admin') {
-          setError('Access denied. Admin privileges required.');
-          if (supabase && supabase.auth) {
-            await supabase.auth.signOut();
-          }
-          setIsLoggingIn(false);
-          return;
-        }
-
-        setIsAuthenticated(true);
-      }
-    } catch (err) {
-      setError('An unexpected error occurred');
-      console.error('Login error:', err);
-      setIsLoggingIn(false);
->>>>>>> Stashed changes:src/components/admin/utils/LoginGate.tsx
     }
 
     setIsLoggingIn(false);
   };
 
-
-
   const handleLogout = async () => {
-<<<<<<< Updated upstream:src/components/admin/LoginGate.tsx
     await logout();
     setEmail('');
     setPassword('');
     setError('');
-=======
-    if (supabase && supabase.auth) {
-      await supabase.auth.signOut();
-    }
->>>>>>> Stashed changes:src/components/admin/utils/LoginGate.tsx
   };
 
   if (isLoading) {

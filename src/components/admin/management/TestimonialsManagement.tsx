@@ -2,13 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-<<<<<<< Updated upstream:src/components/admin/TestimonialsManagement.tsx
-import { Card } from '../ui/Card';
-import LoadingSpinner from '../ui/LoadingSpinner';
-=======
-import Card from '@/components/ui/Card';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
->>>>>>> Stashed changes:src/components/admin/management/TestimonialsManagement.tsx
+import { Card } from '../../ui/Card';
+import LoadingSpinner from '../../ui/LoadingSpinner';
 import { Search, Download, CheckSquare, Square, Trash2, Edit, Star, Eye, EyeOff, Filter } from 'lucide-react';
 
 interface Testimonial {

@@ -3,6 +3,10 @@ import RootHtml from '../src/components/RootHtml';
 import ClientLayout from '../src/components/ClientLayout';
 import ErrorBoundary from '../src/components/ErrorBoundary';
 import './globals.css';
+import './theme.css';
+import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 export default function RootLayout({
   children,
@@ -13,9 +17,11 @@ export default function RootLayout({
     <RootHtml>
       <body>
         <ErrorBoundary>
-          <ClientLayout>
-            {children}
-          </ClientLayout>
+          <main className={`${inter.variable} font-sans antialiased`}>
+            <ClientLayout>
+              {children}
+            </ClientLayout>
+          </main>
         </ErrorBoundary>
       </body>
     </RootHtml>

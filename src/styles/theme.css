@@ -1,0 +1,15 @@
+:root {
+  --primary-h: 220;   /* blue */
+  --primary-s: 90%;
+  --primary-l: 55%;
+  --accent-h: 340;    /* pink */
+  --accent-s: 80%;
+  --accent-l: 60%;
+}
+
+/* Tailwind utilities */
+@layer utilities {
+  .bg-primary { background-color: hsl(var(--primary-h) var(--primary-s) var(--primary-l)); }
+  .text-primary { color: hsl(var(--primary-h) var(--primary-s) var(--primary-l)); }
+  .bg-accent { background-color: hsl(var(--accent-h) var(--accent-s) var(--accent-l)); }
+}
