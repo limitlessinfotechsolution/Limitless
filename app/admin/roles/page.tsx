@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../src/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Shield, Users, Key, Settings, Plus, Edit, Trash2 } from 'lucide-react';
-import PermissionMatrix from '../../../src/components/admin/PermissionMatrix';
+import PermissionMatrix from '@/components/admin/PermissionMatrix';
 
 interface Role {
   id: string;

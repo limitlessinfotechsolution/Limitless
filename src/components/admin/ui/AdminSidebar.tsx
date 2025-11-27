@@ -1,5 +1,9 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import { useTheme } from 'next-themes';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useTheme } from '@/hooks/ui/useTheme';
 import {
   UserCheck,
   Users,
@@ -30,8 +34,8 @@ export type AdminView =
 interface AdminSidebarProps {
   isOpen?: boolean;
   onClose?: () => void;
-  activeView: AdminView;
-  setActiveView: React.Dispatch<React.SetStateAction<AdminView>>;
+  activeView?: AdminView;
+  setActiveView?: (view: AdminView) => void;
 }
 
 const AdminSidebar: React.FC<AdminSidebarProps> = ({
@@ -40,6 +44,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
   activeView,
   setActiveView,
 }) => {
+  const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState('');
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
@@ -105,14 +110,51 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
   const filteredGroups = searchQuery
     ? navigationGroups
-        .map((group) => ({
-          ...group,
-          items: group.items?.filter((item) =>
-            item.name.toLowerCase().includes(searchQuery.toLowerCase())
-          ),
-        }))
-        .filter((group) => group.items && group.items.length > 0)
+        .map((group: any) => {
+          if (group.items) {
+            return {
+              ...group,
+              items: group.items.filter((item: any) =>
+                item.name.toLowerCase().includes(searchQuery.toLowerCase())
+              ),
+            };
+          }
+          return group.name.toLowerCase().includes(searchQuery.toLowerCase()) ? group : null;
+        })
+        .filter(Boolean)
     : navigationGroups;
+
+  const renderNavItem = (item: any) => {
+    const Icon = item.icon;
+    const isViewActive = activeView && item.view && activeView === item.view;
+    const isPathActive = item.href && pathname === item.href;
+    const isActive = isViewActive || isPathActive;
+
+    const baseClasses = `flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors w-full text-left ${
+      isActive
+        ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+    }`;
+
+    if (item.href) {
+      return (
+        <Link href={item.href} className={baseClasses}>
+          <Icon className="w-5 h-5" />
+          <span>{item.name}</span>
+        </Link>
+      );
+    }
+
+    return (
+      <button
+        onClick={() => setActiveView && item.view && setActiveView(item.view)}
+        className={baseClasses}
+      >
+        <Icon className="w-5 h-5" />
+        <span>{item.name}</span>
+      </button>
+    );
+  };
 
   return (
     <>
@@ -179,32 +221,24 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
           </div>
           <div className="space-y-4">
             {filteredGroups.length > 0 ? (
-              filteredGroups.map((group) => (
-                <div key={group.name}>
-                  <h3 className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {group.name}
-                  </h3>
-                  <ul className="space-y-1">
-                    {group.items?.map((item) => {
-                      const Icon = item.icon;
-                      const isActive = activeView === item.view;
-                      return (
-                        <li key={item.name}>
-                          <button
-                            onClick={() => setActiveView(item.view)}
-                            className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors w-full text-left ${
-                              isActive
-                                ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                            }`}
-                          >
-                            <Icon className="w-5 h-5" />
-                            <span>{item.name}</span>
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
+              filteredGroups.map((group: any, index: number) => (
+                <div key={group.name || index}>
+                  {group.items ? (
+                    <>
+                      <h3 className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        {group.name}
+                      </h3>
+                      <ul className="space-y-1">
+                        {group.items.map((item: any) => (
+                          <li key={item.name}>
+                            {renderNavItem(item)}
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : (
+                    renderNavItem(group)
+                  )}
                 </div>
               ))
             ) : (

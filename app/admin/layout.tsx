@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import LoginGate from '../../src/components/admin/utils/LoginGate';
+import LoginGate from '@/components/admin/utils/LoginGate';
 import AdminSidebar from '../../src/components/admin/ui/AdminSidebar';
 
 const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -10,7 +10,12 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <LoginGate>
       <div className="flex h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-        <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <AdminSidebar 
+          isOpen={sidebarOpen} 
+          onClose={() => setSidebarOpen(false)} 
+          activeView="dashboard" 
+          setActiveView={() => {}} 
+        />
         <main className="flex-1 lg:ml-0 p-2 sm:p-4 lg:p-6 overflow-y-auto">
           {/* Mobile menu button */}
           <button

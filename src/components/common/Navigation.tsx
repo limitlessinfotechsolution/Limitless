@@ -99,41 +99,44 @@ const Navigation: React.FC = () => {
 
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
       isScrolled
-        ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg'
-        : 'bg-transparent'
+        ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-glass border-b border-white/20 dark:border-gray-800/50 py-2'
+        : 'bg-transparent py-4'
     } ${isNavVisible ? 'translate-y-0' : '-translate-y-full'}`} role="navigation" aria-label="Main navigation">
       <div className="container-custom">
-        <div className="flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
           <Logo />
 
           {/* Desktop Navigation - Shows on medium screens and up */}
-          <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
+          <div className="hidden md:flex items-center space-x-1">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 href={link.path}
-                className={`font-medium transition-colors duration-200 hover:text-accent whitespace-nowrap ${
+                className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 group overflow-hidden ${
                   isActivePath(link.path)
-                    ? 'text-accent border-b-2 border-accent'
-                    : 'text-gray-700 dark:text-gray-300'
+                    ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20'
+                    : 'text-secondary-600 dark:text-secondary-300 hover:text-primary-600 dark:hover:text-primary-400'
                 }`}
               >
-                {link.name}
+                <span className="relative z-10">{link.name}</span>
+                {!isActivePath(link.path) && (
+                  <span className="absolute inset-0 bg-primary-50 dark:bg-primary-900/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-full -z-0"></span>
+                )}
               </Link>
             ))}
           </div>
 
           {/* Theme Toggle & CTA */}
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center space-x-3">
             {/* Theme Toggle */}
             <button
               onClick={() => {
                 const nextTheme = theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light';
                 setTheme(nextTheme);
               }}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors theme-toggle"
+              className="p-2 rounded-full bg-secondary-100 dark:bg-secondary-800 hover:bg-secondary-200 dark:hover:bg-secondary-700 text-secondary-600 dark:text-secondary-300 transition-all duration-300 theme-toggle focus:ring-2 focus:ring-primary-500"
               aria-label="Cycle theme"
             >
               <ThemeIcon className="w-5 h-5" />
@@ -142,7 +145,7 @@ const Navigation: React.FC = () => {
             {/* Get Started Button - Hidden on mobile, shown on small screens and up */}
             <Link
               href="/contact#get-started"
-              className="hidden sm:inline-block btn-primary whitespace-nowrap"
+              className="hidden sm:inline-flex btn-primary rounded-full shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40"
             >
               Get Started
             </Link>
@@ -150,7 +153,7 @@ const Navigation: React.FC = () => {
             {/* Mobile Menu Button - Shown on mobile and small screens */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="md:hidden p-2 rounded-full hover:bg-secondary-100 dark:hover:bg-secondary-800 text-secondary-600 dark:text-secondary-300 transition-colors focus:ring-2 focus:ring-primary-500"
               aria-label="Toggle menu"
             >
               {isMenuOpen ? (
@@ -166,37 +169,51 @@ const Navigation: React.FC = () => {
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden"
+              initial={{ opacity: 0, height: 0, y: -20 }}
+              animate={{ opacity: 1, height: 'auto', y: 0 }}
+              exit={{ opacity: 0, height: 0, y: -20 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="md:hidden absolute top-full left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-t border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden rounded-b-2xl mx-4 mt-2"
             >
-              <div className="py-4 space-y-2 px-4">
-                {navLinks.map((link) => (
-                  <Link
+              <div className="py-4 px-4 space-y-1">
+                {navLinks.map((link, index) => (
+                  <motion.div
                     key={link.path}
-                    href={link.path}
-                    onClick={handleLinkClick}
-                    className={`block px-4 py-3 rounded-lg font-medium transition-colors ${
-                      isActivePath(link.path)
-                        ? 'text-accent bg-accent/10'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                    }`}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
                   >
-                    {link.name}
-                  </Link>
+                    <Link
+                      href={link.path}
+                      onClick={handleLinkClick}
+                      className={`block px-4 py-3 rounded-xl font-medium transition-all ${
+                        isActivePath(link.path)
+                          ? 'text-primary-600 bg-primary-50 dark:bg-primary-900/20 dark:text-primary-400'
+                          : 'text-secondary-600 dark:text-secondary-300 hover:bg-secondary-50 dark:hover:bg-secondary-800 hover:pl-6'
+                      }`}
+                    >
+                      {link.name}
+                    </Link>
+                  </motion.div>
                 ))}
 
                 {/* Get Started Button in Mobile Menu */}
-                <button
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    router.push('/contact#get-started');
-                  }}
-                  className="block w-full px-4 py-3 mt-4 btn-primary text-center"
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="pt-2"
                 >
-                  Get Started
-                </button>
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      router.push('/contact#get-started');
+                    }}
+                    className="block w-full px-4 py-3 mt-2 btn-primary text-center rounded-xl shadow-lg shadow-primary-500/20"
+                  >
+                    Get Started
+                  </button>
+                </motion.div>
               </div>
             </motion.div>
           )}

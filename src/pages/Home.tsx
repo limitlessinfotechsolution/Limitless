@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import HeroSection from '../components/home/HeroSection';
+import ProfessionalHero from '../components/home/ProfessionalHero';
 import Partners from '../components/home/Partners';
 import ClientLogos from '../components/home/ClientLogos';
 import ProjectsAndProducts from '../components/home/ProjectsAndProducts';
@@ -15,7 +15,15 @@ const FinalCta = React.lazy(() => import('../components/home/FinalCta'));
 const Home: React.FC = () => {
   return (
     <>
-      <HeroSection />
+      <ProfessionalHero
+        title="Limitless Infotech Solution"
+        subtitle="Where Innovation Meets Execution"
+        description="Professional. Scalable. Data-driven. Transform your business with our cutting-edge technology solutions."
+        ctaText="Start Your Project"
+        ctaLink="/contact"
+        secondaryCtaText="View Our Work"
+        secondaryCtaLink="/portfolio"
+      />
       <Partners />
       <ClientLogos />
       <ProjectsAndProducts />

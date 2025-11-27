@@ -2,7 +2,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Suspense } from 'react';
-import Calendar from '../../../src/components/enterprise/Calendar';
+import Calendar from '@/components/enterprise/Calendar';
 import Skeleton from '@/components/ui/Skeleton';
 import { Plus } from 'lucide-react';
 
@@ -18,7 +18,7 @@ interface CalendarEvent {
   allDay: boolean;
 }
 
-import { TypedSupabaseClient } from '../../../src/types';
+import { TypedSupabaseClient } from '@/types';
 
 async function fetchCalendarEvents(supabase: TypedSupabaseClient): Promise<CalendarEvent[]> {
   // Fetch events from Supabase (assume 'events' table with fields: title, start, end, description, attendees (json), color, location, all_day)
@@ -65,7 +65,7 @@ const CalendarContent = () => {
     );
   }
 
-  const handleEventClick = (event: any) => {
+  const handleEventClick = (event: CalendarEvent) => {
     // Handle event click, e.g., open modal or navigate to event details
     console.log('Clicked event:', event.id);
     alert(`Opening event ${event.id}`);

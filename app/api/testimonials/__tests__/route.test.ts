@@ -72,16 +72,17 @@ jest.mock('next/headers', () => ({
 }));
 
 // Helper function to extract JSON from NextResponse
-async function getJsonFromResponse(response: any) {
+async function getJsonFromResponse(response: unknown) {
   if (!response) return null;
-  if (typeof response.json === 'function') {
-    return response.json();
+  const res = response as { json?: () => Promise<unknown>; _json?: unknown; text?: () => Promise<string> };
+  if (typeof res.json === 'function') {
+    return res.json();
   }
-  if (response._json) {
-    return Promise.resolve(response._json);
+  if (res._json) {
+    return Promise.resolve(res._json);
   }
-  if (typeof response.text === 'function') {
-    return response.text().then((text: any) => JSON.parse(text));
+  if (typeof res.text === 'function') {
+    return res.text().then((text: string) => JSON.parse(text));
   }
   return Promise.resolve(null);
 }
@@ -206,7 +207,7 @@ jest.mock('next/headers', () => ({
   }))
 }));
 
-import { Headers, NextResponse } from 'next/server';
+
 
 // Mock NextResponse.json to avoid errors in tests
 jest.mock('next/server', () => {
@@ -216,7 +217,7 @@ jest.mock('next/server', () => {
     ...originalModule,
     NextResponse: {
       ...originalModule.NextResponse,
-      json: jest.fn((body: any, init?: any) => {
+      json: jest.fn((body: unknown, init?: unknown) => {
         return {
           status: init?.status || 200,
           json: async () => body,
@@ -228,19 +229,7 @@ jest.mock('next/server', () => {
   };
 });
 
-function getJsonFromResponse(response: any) {
-  if (!response) return null;
-  if (typeof response.json === 'function') {
-    return response.json();
-  }
-  if (response._json) {
-    return Promise.resolve(response._json);
-  }
-  if (typeof response.text === 'function') {
-    return response.text().then(text => JSON.parse(text));
-  }
-  return Promise.resolve(null);
-}
+
 
 describe('/api/testimonials', () => {
   describe('GET', () => {

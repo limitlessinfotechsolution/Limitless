@@ -3,7 +3,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Suspense } from 'react';
-import EnterpriseReporting from '../../../src/components/enterprise/EnterpriseReporting';
+import EnterpriseReporting from '@/components/enterprise/EnterpriseReporting';
 import Skeleton from '@/components/ui/Skeleton';
 import { Download } from 'lucide-react';
 import jsPDF from 'jspdf';
@@ -20,7 +20,7 @@ interface ReportData {
   color?: string;
 }
 
-import { TypedSupabaseClient } from '../../../src/types';
+import { TypedSupabaseClient } from '@/types';
 
 async function fetchReports(supabase: TypedSupabaseClient): Promise<ReportData[]> {
   // Fetch reports from Supabase (assume 'reports' table with fields: title, type, period, generated_at, data (json), summary (json))

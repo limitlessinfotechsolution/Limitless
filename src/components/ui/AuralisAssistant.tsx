@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, Bot } from 'lucide-react';
-import { AuralisAI } from '../../lib/auralisAI';
+import { AuralisAI } from '@/lib/ai/auralisAI';
 
 interface Message {
   id: string;

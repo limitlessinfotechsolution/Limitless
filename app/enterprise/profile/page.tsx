@@ -4,7 +4,7 @@ import { useUser } from '@supabase/auth-helpers-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Suspense } from 'react';
-import EnterpriseUserProfile from '../../../src/components/enterprise/EnterpriseUserProfile';
+import EnterpriseUserProfile from '@/components/enterprise/EnterpriseUserProfile';
 import Skeleton from '@/components/ui/Skeleton';
 import { Edit } from 'lucide-react';
 
@@ -28,7 +28,7 @@ interface UserProfile {
   };
 }
 
-import { TypedSupabaseClient } from '../../../src/types';
+import { TypedSupabaseClient } from '@/types';
 
 async function fetchUserProfile(supabase: TypedSupabaseClient, userId: string): Promise<UserProfile> {
   // Fetch user profile from Supabase (assume 'profiles' table linked to auth.users)

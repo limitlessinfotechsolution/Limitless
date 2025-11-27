@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Mail, Send, Inbox, Star, Archive, Trash2, Reply, Forward, Plus, Search, Filter } from 'lucide-react';
-import { Card } from '../../../src/components/ui/Card';
+import { Card } from '@/components/ui/Card';
 
 interface Email {
   id: string;

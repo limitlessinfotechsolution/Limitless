@@ -30,11 +30,7 @@ const createSupabaseClient = async () => {
 
 // GET: Fetch a specific page by ID
 export async function GET(
-<<<<<<< Updated upstream
-  _request: NextRequest,
-=======
   request: NextRequest,
->>>>>>> Stashed changes
   { params }: { params: Promise<{ id: string }> }
 ) {
   const supabase = await createSupabaseClient();
@@ -71,16 +67,7 @@ export async function PUT(
     const body = await request.json();
     const validated = updatePageSchema.parse(body);
 
-<<<<<<< Updated upstream
-    const updateData: Partial<{
-      page_name: string;
-      content: string;
-      is_published: boolean;
-      updated_at: string;
-    }> = {};
-=======
-    const updateData: any = {};
->>>>>>> Stashed changes
+    const updateData: Record<string, unknown> = {};
     if (validated.page_name !== undefined) updateData.page_name = validated.page_name;
     if (validated.content !== undefined) updateData.content = validated.content;
     if (validated.is_published !== undefined) updateData.is_published = validated.is_published;
@@ -112,11 +99,7 @@ export async function PUT(
 
 // DELETE: Delete a specific page by ID
 export async function DELETE(
-<<<<<<< Updated upstream
-  _request: NextRequest,
-=======
   request: NextRequest,
->>>>>>> Stashed changes
   { params }: { params: Promise<{ id: string }> }
 ) {
   const supabase = await createSupabaseClient();

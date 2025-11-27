@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
-import { supabase } from '../../../src/lib/supabaseClient';
-import CaseStudyDetail from '../../../src/components/portfolio/CaseStudyDetail';
+import { supabase } from '@/lib/supabaseClient';
+import CaseStudyDetail from '@/components/portfolio/CaseStudyDetail';
 
 interface PageProps {
   params: {

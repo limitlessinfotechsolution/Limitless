@@ -30,12 +30,12 @@ const AdvancedCard = React.forwardRef<HTMLDivElement, AdvancedCardProps>(
     const baseClasses = 'rounded-2xl transition-all duration-300 overflow-hidden';
 
     const variantClasses = {
-      default: 'bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl border border-gray-100 dark:border-gray-700',
-      elevated: 'bg-white dark:bg-gray-800 shadow-2xl hover:shadow-3xl border border-gray-200 dark:border-gray-600',
-      outlined: 'bg-transparent border-2 border-gray-200 dark:border-gray-600 hover:border-accent hover:bg-accent/5',
-      gradient: 'bg-gradient-to-br from-accent/10 to-accent/5 dark:from-accent/20 dark:to-accent/10 border border-accent/20 shadow-lg hover:shadow-xl',
-      glass: 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border border-white/20 dark:border-gray-700/50 shadow-lg hover:shadow-xl',
-      neumorphism: 'bg-gray-100 dark:bg-gray-800 shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] dark:shadow-[5px_5px_10px_#111827,-5px_-5px_10px_#1f2937] hover:shadow-[inset_5px_5px_10px_#d1d9e6,inset_-5px_-5px_10px_#ffffff] dark:hover:shadow-[inset_5px_5px_10px_#111827,inset_-5px_-5px_10px_#1f2937]'
+      default: 'bg-white dark:bg-secondary-900 shadow-lg hover:shadow-xl border border-secondary-100 dark:border-secondary-800',
+      elevated: 'bg-white dark:bg-secondary-900 shadow-2xl hover:shadow-3xl border border-secondary-200 dark:border-secondary-700',
+      outlined: 'bg-transparent border-2 border-secondary-200 dark:border-secondary-700 hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/10',
+      gradient: 'bg-gradient-to-br from-primary-50 to-primary-100/50 dark:from-primary-900/20 dark:to-primary-800/10 border border-primary-200/50 dark:border-primary-700/30 shadow-lg hover:shadow-xl',
+      glass: 'bg-white/80 dark:bg-secondary-900/80 backdrop-blur-md border border-white/20 dark:border-secondary-700/50 shadow-glass hover:shadow-glass-hover',
+      neumorphism: 'bg-secondary-50 dark:bg-secondary-900 shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] dark:shadow-[5px_5px_10px_#0f172a,-5px_-5px_10px_#1e293b] hover:shadow-[inset_5px_5px_10px_#d1d9e6,inset_-5px_-5px_10px_#ffffff] dark:hover:shadow-[inset_5px_5px_10px_#0f172a,inset_-5px_-5px_10px_#1e293b]'
     };
 
     const sizeClasses = {

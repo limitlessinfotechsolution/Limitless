@@ -3,7 +3,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Suspense } from 'react';
-import Team from '../../../src/components/enterprise/Team';
+import Team from '@/components/enterprise/Team';
 import Skeleton from '@/components/ui/Skeleton';
 
 interface TeamMember {
@@ -20,7 +20,7 @@ interface TeamMember {
   joinDate: string;
 }
 
-import { TypedSupabaseClient } from '../../../src/types';
+import { TypedSupabaseClient } from '@/types';
 
 async function fetchTeamMembers(supabase: TypedSupabaseClient): Promise<TeamMember[]> {
   // Fetch team members from Supabase (assume 'team_members' table with fields: id, name, role, email, phone, location, status, performance, projects, join_date, avatar_url)

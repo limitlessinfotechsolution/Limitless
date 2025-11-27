@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from 'src/lib/supabaseClient';
-import LoginGate from 'src/components/admin/utils/LoginGate';
-import ProfessionalLoader from 'src/components/ui/ProfessionalLoader';
-import { AdminLayout } from 'src/components/admin/layout/AdminLayout';
-import Dashboard from 'src/components/admin/dashboard/AdvancedDashboard';
+import { supabase } from '@/lib/supabaseClient';
+import LoginGate from '@/components/admin/utils/LoginGate';
+import ProfessionalLoader from '@/components/ui/ProfessionalLoader';
+import { AdminLayout } from '@/components/admin/layout/AdminLayout';
+import Dashboard from '@/components/admin/dashboard/AdvancedDashboard';
 
 export type AdminView = 'dashboard' | 'pages' | 'portfolio' | 'testimonials' | 'leads' | 'users' | 'faq';
 

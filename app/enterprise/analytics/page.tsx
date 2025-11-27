@@ -1,6 +1,6 @@
 'use client';
 import { Suspense } from 'react';
-import Analytics from '../../../src/components/enterprise/Analytics';
+import Analytics from '@/components/enterprise/Analytics';
 import Skeleton from '@/components/ui/Skeleton';
 
 const AnalyticsContent = () => {

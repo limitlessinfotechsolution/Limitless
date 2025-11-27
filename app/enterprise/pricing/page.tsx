@@ -1,6 +1,6 @@
 'use client';
 import { Suspense } from 'react';
-import Pricing from '../../../src/components/enterprise/Pricing';
+import Pricing from '@/components/enterprise/Pricing';
 import Skeleton from '@/components/ui/Skeleton';
 
 const PricingContent = () => {

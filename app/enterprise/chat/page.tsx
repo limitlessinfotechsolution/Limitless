@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useUser } from '@supabase/auth-helpers-react';
 import { Suspense } from 'react';
-import Chat from '../../../src/components/enterprise/Chat';
+import Chat from '@/components/enterprise/Chat';
 import Skeleton from '@/components/ui/Skeleton';
 import { UserPlus } from 'lucide-react';
 
@@ -39,7 +39,7 @@ interface ChatAttachment {
   name?: string;
 }
 
-import { TypedSupabaseClient } from '../../../src/types';
+import { TypedSupabaseClient } from '@/types';
 
 async function fetchChatData(supabase: TypedSupabaseClient, currentUserId: string): Promise<{
   participants: ChatParticipant[];

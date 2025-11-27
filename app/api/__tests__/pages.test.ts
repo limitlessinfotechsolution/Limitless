@@ -9,16 +9,16 @@ process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
 // Mock NextRequest and NextResponse from next/server
 jest.mock('next/server', () => {
   class NextResponse {
-    _data: any;
+    _data: unknown;
     status: number;
-    constructor(data: any, options?: { status?: number }) {
+    constructor(data: unknown, options?: { status?: number }) {
       this._data = data;
       this.status = options?.status || 200;
     }
     async json() {
       return this._data;
     }
-    static json(data: any, options?: { status?: number }) {
+    static json(data: unknown, options?: { status?: number }) {
       return new NextResponse(data, options);
     }
   }
@@ -36,7 +36,7 @@ jest.mock('next/server', () => {
       if (this._body) {
         try {
           return JSON.parse(this._body);
-        } catch (e) {
+        } catch {
           return null;
         }
       }

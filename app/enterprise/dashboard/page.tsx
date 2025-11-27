@@ -2,9 +2,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Suspense } from 'react';
-import Dashboard from '../../../src/components/enterprise/Dashboard';
-import KPI from '../../../src/components/enterprise/KPI';
-import Skeleton from '../../../src/components/ui/Skeleton';
+import Dashboard from '@/components/enterprise/Dashboard';
+import KPI from '@/components/enterprise/KPI';
+import Skeleton from '@/components/ui/Skeleton';
 
 interface KPIItem {
   id: string;
@@ -18,7 +18,7 @@ interface KPIItem {
   progress: number;
 }
 
-import { TypedSupabaseClient } from '../../../src/types';
+import { TypedSupabaseClient } from '@/types';
 
 async function fetchKPIs(supabase: TypedSupabaseClient): Promise<KPIItem[]> {
   // Fetch KPIs from Supabase (assume 'kpis' table with fields: title, value, change, change_type, description, target, progress)

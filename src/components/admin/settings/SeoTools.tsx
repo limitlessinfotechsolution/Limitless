@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card } from '../ui/Card';
-import LoadingSpinner from '../ui/LoadingSpinner';
+import Card from '@/components/ui/Card';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { Search, TrendingUp, Globe, FileText, BarChart3 } from 'lucide-react';
 
 interface SeoMetrics {

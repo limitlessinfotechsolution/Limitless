@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { supabase } from '../../../src/lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 
 interface PageProps {
   params: {

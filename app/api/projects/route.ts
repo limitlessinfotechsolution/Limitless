@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '../../../src/lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 
 export async function GET(_request: NextRequest) {
   if (!supabase) {

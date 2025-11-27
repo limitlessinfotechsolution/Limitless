@@ -122,50 +122,70 @@ const AdminLogin: React.FC = () => {
 
         {/* Login Form */}
         <motion.form
-          onSubmit={handleLogin}
-        className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8"
+          onSubmit={twoFactorRequired ? handleTwoFactorSubmit : handleLogin}
+          className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8"
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2 }}
         >
-          {/* Email Field */}
-          <div className="mb-4 sm:mb-6">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Email Address
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm sm:text-base"
-              placeholder="admin@limitlessinfotech.com"
-              required
-            />
-          </div>
+          {!twoFactorRequired ? (
+            <>
+              {/* Email Field */}
+              <div className="mb-4 sm:mb-6">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm sm:text-base"
+                  placeholder="admin@limitlessinfotech.com"
+                  required
+                />
+              </div>
 
-          {/* Password Field */}
-          <div className="mb-4 sm:mb-6">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 sm:px-4 py-2 sm:py-3 pr-10 sm:pr-12 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm sm:text-base"
-                placeholder="Enter your password"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" /> : <Eye className="w-4 h-4 sm:w-5 sm:h-5" />}
-              </button>
-            </div>
-          </div>
+              {/* Password Field */}
+              <div className="mb-4 sm:mb-6">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 pr-10 sm:pr-12 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm sm:text-base"
+                    placeholder="Enter your password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" /> : <Eye className="w-4 h-4 sm:w-5 sm:h-5" />}
+                  </button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="mb-4 sm:mb-6">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Two-Factor Authentication ({twoFactorMethod === 'totp' ? 'Authenticator App' : 'Email'})
+                </label>
+                <input
+                  type="text"
+                  value={twoFactorCode}
+                  onChange={(e) => setTwoFactorCode(e.target.value)}
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm sm:text-base"
+                  placeholder="Enter 6-digit code"
+                  required
+                />
+              </div>
+            </>
+          )}
 
           {/* Error Message */}
           {error && (
@@ -179,7 +199,7 @@ const AdminLogin: React.FC = () => {
             </motion.div>
           )}
 
-          {/* Login Button */}
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={isLoggingIn}
@@ -188,26 +208,38 @@ const AdminLogin: React.FC = () => {
             {isLoggingIn ? (
               <>
                 <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Signing In...</span>
+                <span>{twoFactorRequired ? 'Verifying...' : 'Signing In...'}</span>
               </>
             ) : (
               <>
                 <Lock className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span>Access Admin Panel</span>
+                <span>{twoFactorRequired ? 'Verify Code' : 'Access Admin Panel'}</span>
               </>
             )}
           </button>
 
-          {/* Demo Credentials */}
-          <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">
-              <strong>Demo Credentials:</strong>
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-500">
-              Email: admin@limitlessinfotech.com<br />
-              Password: Try@Admin123
-            </p>
-          </div>
+          {twoFactorRequired && (
+            <button
+              type="button"
+              onClick={handleBackToLogin}
+              className="w-full mt-4 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+            >
+              Back to Login
+            </button>
+          )}
+
+          {/* Demo Credentials - Only show on login step */}
+          {!twoFactorRequired && (
+            <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">
+                <strong>Demo Credentials:</strong>
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-500">
+                Email: admin@limitlessinfotech.com<br />
+                Password: Try@Admin123
+              </p>
+            </div>
+          )}
 
           {/* Enterprise Link */}
           <div className="mt-4 text-center">

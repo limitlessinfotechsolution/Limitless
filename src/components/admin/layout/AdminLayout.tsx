@@ -1,6 +1,6 @@
 import React from 'react';
-import AdminSidebar, { AdminView } from 'components/admin/ui/AdminSidebar';
-import { useTheme } from 'next-themes';
+import AdminSidebar, { AdminView } from '@/components/admin/ui/AdminSidebar';
+import { useTheme } from '@/hooks/ui/useTheme';
 
 interface AdminLayoutProps {
   activeView: AdminView;
@@ -16,7 +16,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   const { theme } = useTheme();
 
   return (
-    <div className={`flex min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Sidebar */}
       <AdminSidebar
         isOpen={true}
